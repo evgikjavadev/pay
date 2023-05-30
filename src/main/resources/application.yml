@@ -1,0 +1,255 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: rfrm-core
+    version: @project.version@
+
+  security:
+    oauth2:
+      client:
+        registration:
+          epa-session-client:
+            provider: epa-session-client
+            client-id: ${TUS_CC_SESSION_DATA}
+            client-secret: ${TUS_PASSW_SESSION_DATA}
+            authorization-grant-type: client_credentials
+          epa-tyk-client:
+            provider: epa-tyk-client
+            client-id: ${TUS_EPA}
+            client-secret: ${TUS_PASSW_EPA}
+            authorization-grant-type: client_credentials
+        provider:
+          epa-session-client:
+            token-uri: ${EPA_IG_URL}/passport/tech/oauth2/token
+          epa-tyk-client:
+            token-uri: ${EPA_AM_URL}/passport/oauth2/token
+
+#Трассировка
+ru:
+  vtb:
+    tstr:
+      client-starter:
+        enabled: ${TRACING_MODE:true}
+      kafka:
+        bootstrap-servers: ${TRACE_KAFKA_SERVER}
+
+opentracing:
+  jaeger:
+    enabled: true
+    log-spans: true
+    service-name: RFRM.rfrm-core
+
+#Аудит
+audit:
+  local-mode: ${AUDIT_LOCAL_MODE:false}
+  kafka:
+    bootstrap:
+      server: ${AUDIT_KAFKA_SERVER}
+    consumer:
+      group-id: audit-management
+    topic: audit
+    ssl:
+      enabled: true
+      truststore:
+        # для запуска из idea
+       location: ${PATH_TRUSTSTORE}
+       password: ${STORE_PASSWORD}
+      keystore:
+        # для запуска из idea
+        location: ${PATH_KEYSTORE}
+        password: ${STORE_PASSWORD}
+      key:
+        password: ${STORE_PASSWORD}
+      truststore-type: 'JKS'
+      keystore-type: 'JKS'
+  default-resolver:
+    sub: sub_from_kafka
+    channel: channel_from_kafka
+  consumer:
+    initial-poll:
+      time: 1000
+
+ms.properties.infoSystemCode: ${SYSTEM_RIS_CODE}
+ms.properties.infoSystemId: ${SYSTEM_RIS_ID}
+
+omni-jwt-common:
+  security:
+    enabled: ${OMNI_JWT_ENABLED:false}
+  token-validate:
+    enable: ${OMNI_JWT_TOKEN_VALIDATE_ENABLED:false}
+  issuers:
+    epa:
+      #имя ишьюер, откуда будет получен public key
+      issuer: ${URL_EPA_JWKS}
+      #адрес по которому необходимо получить public key
+      url: ${EPA_JWKS_URL}/passport/oauth2/jwks
+
+omni-jwt-security-starter:
+  audit-security: true
+
+management:
+  metrics:
+    tags:
+      appName:  @project.build.finalName@
+      appVersion:  @project.version@
+  endpoints:
+    enabled-by-default: true
+    web.exposure.include: health,prometheus,metrics,info
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+      probes:
+        group:
+          readiness:
+            include: db
+    shutdown.enabled: true
+    restart.enabled: true
+    prometheus.enabled: true
+    logfile.enabled: true
+msa:
+  monitoring:
+    certificates:
+      enabled: ${MONITORING_CERT_ENABLED:false}
+    kafka:
+      brokers:
+        addresses: "test"
+        description: "test"
+        enabled: ${MONITORING_CERT_ENABLED:false}
+ms:
+  frame-link: gui-vtbmobile.vtb.ru
+  token-checking:
+    enabled: ${TOKEN_CHECKING_ENABLED:false}
+
+session-client:
+  clientContainer: ${SESSION_CLIENT_CONTAINER}
+  employeeContainer: ${SESSION_EMPLOYEE_CONTAINER}
+  roleList: ${CHECK_ROLE_REGION}
+  base-url: ${SESSION_URL}
+  query-path: /session
+  retry:
+    count: 3
+    duration: 2000
+
+aclib:
+  replication:
+    enabled: ${ACLIB_REPLICATION:true}
+  ac:
+    token:
+    service-name: ${ACLIB_SERVICE_NAME}
+  kafka:
+    bootstrap-servers: ${ACLIB_KAFKA_SERVER}
+    security:
+      protocol: SSL
+    ssl:
+      enabled: ${ACLIB_REPLICATION:true}
+      truststore:
+        # при локальном запуске в режиме ssl необходимо указать абсолютный путь
+        location: ${PATH_TRUSTSTORE}
+        password: ${STORE_PASSWORD}
+      keystore:
+        # при локальном запуске в режиме ssl необходимо указать абсолютный путь
+        location: ${PATH_KEYSTORE}
+        password: ${STORE_PASSWORD}
+      key:
+        password: ${STORE_PASSWORD}
+      truststore-type: 'JKS'
+      keystore-type: 'JKS'
+
+logging:
+  level:
+    ROOT: INFO
+    ru.vtb.omni: INFO
+    ru.vtb.omni.ac: ${LOG_LEVEL}
+    ru.vtb.msa: ${LOG_LEVEL}
+    org.apache.http: INFO
+    ru.vtb.omni.audit: ${LOG_LEVEL}
+    ru.vtb.msa.partner: ${LOG_LEVEL}
+    ru.vtb.msa.rfrm.integration: ${LOG_LEVEL}
+    ru.vtb.msa.mdclogging: ${LOG_LEVEL}
+
+
+epa-anti-replay.epa-endpoint: ${ANTI_REPLAY_URL}/passport/jti?{jti}
+
+person-client:
+  url: ${EPA_IG_URL}
+  getPerson: ${GET_PERSON_END_POINT}
+  updatePhone: ${UPDATE_PHONE_END_POINT}
+  headers:
+    X-CSPC-RISCODE: ${X-CSPC-RISCODE_HEADERS}
+    X-CSPC-MDMCODE: ${X-CSPC-MDMCODE_HEADERS}
+    X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
+    X-Initiator-Host:
+    X-Call-ID:
+  retry:
+    count: 3
+    duration: 2000
+
+ssl-config-tyk:
+  enable: true
+  enableHttps: ${ENABLE_HTTPS}
+  keyStore:
+    storeLocation: ${PATH_KEYSTORE}
+    storePassword: ${STORE_PASSWORD}
+  trustStore:
+    storeLocation: ${PATH_TRUSTSTORE}
+    storePassword: ${STORE_PASSWORD}
+
+consent-client:
+  url: ${EPA_IG_URL}
+  search: ${SEARCH_END_POINT}
+  headers:
+    X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
+  retry:
+    count: 3
+    duration: 2000
+
+employee-client:
+  url: ${EPA_IG_URL}
+  get: ${GET_END_POINT}
+  headers:
+    X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
+  retry:
+    count: 3
+    duration: 2000
+
+complex-check:
+  url: ${EPA_IG_URL}
+  check: ${CHECK_END_POINT}
+  headers:
+    X-TYK-API-KEY: ${TYK_API_KEY}
+    X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
+  retry:
+    count: 3
+    duration: 2000
+
+call-arbitration:
+  url: ${EPA_IG_URL}
+  check: /api/rb/rarb/publicnp/v1/create_arbtr_np
+  headers:
+    X-TYK-API-KEY: ${TYK_API_KEY}
+  retry:
+    count: 3
+    duration: 2000
+
+feature.toggle:
+  roleModelToggle:
+      roleOn: ${FEATURE_TOGGLE_ROLE_MODEL:true}
+
+audit-events:
+  auditEventCodeMetadataInfoList:
+    - event-code: "EXAMPLE_EVENT_CODE"
+      event-type: "Отправка"
+      business-object: "Название бизнес-объекта"
+      business-operation: "Название бизнес операции"
+      audit-event-start:
+        title: "Название стартового сообщения"
+        messageTemplate: "'Начало операции'"
+      audit-event-success:
+        title: "Название успешного сообщения"
+        messageTemplate: "Успешно завершено"
+      audit-event-failure:
+        title: "Название ошибочного сообщени"
+        messageTemplate: "Произошла ошибка: + error.message"
