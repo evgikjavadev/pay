@@ -1,7 +1,3 @@
 .idea/
-UNP_02cd_dsl.iml
-.teamcity/target/
+*.iml
 /target/
-!/pgdata/
-/pgdata/
-
