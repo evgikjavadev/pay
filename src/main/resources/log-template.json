@@ -1,0 +1,107 @@
+{
+  "appName": "${appName}",
+  "risCode": "${risCode}",
+  "projectCode": "${projectCode}",
+  "localTime": {
+    "$resolver": "timestamp",
+    "pattern": {
+      "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+      "timeZone": "UTC"
+    }
+  },
+  "level": {
+    "$resolver": "level",
+    "field": "name"
+  },
+  "text": {
+    "$resolver": "pattern",
+    "pattern" : "%mask",
+    "stringified": true
+  },
+  "eventId": "${vtbEventId:uuid}",
+  "extEventId": {
+    "$resolver": "mdc",
+    "key": "extEventId"
+  },
+  "parentId": null,
+  "encProvider": "${encProvider}",
+  "agrType": "${jaegerSpan:agrType}",
+  "traceId": "${jaegerSpan:traceId}",
+  "spanId": "${jaegerSpan:spanId}",
+  "parentSpanId": {
+    "$resolver": "mdc",
+    "key": "parentSpanId"
+  },
+  "userId": {
+    "$resolver": "mdc",
+    "key": "userId"
+  },
+  "logicTime": {
+    "$resolver": "mdc",
+    "key": "logicTime"
+  },
+  "appType": "${appType}",
+  "stack": {
+    "$resolver": "exception",
+    "field": "stackTrace",
+    "stackTrace": {
+      "stringified": true
+    }
+  },
+  "levelInt": {
+    "$resolver": "level",
+    "field": "severity",
+    "severity": {
+      "field": "code"
+    }
+  },
+  "loggerName": {
+    "$resolver": "logger",
+    "field": "name"
+  },
+  "threadName": {
+    "$resolver": "thread",
+    "field": "name"
+  },
+  "callerClass": {
+    "$resolver": "source",
+    "field": "className"
+  },
+  "callerMethod": {
+    "$resolver": "source",
+    "field": "methodName"
+  },
+  "callerLine": {
+    "$resolver": "source",
+    "field": "lineNumber"
+  },
+  "mdc": {
+    "$resolver": "mdc",
+    "pattern": "(?!extEventId|parentSpanId|userId|logicTime|status).+"
+  },
+  "status": {
+    "$resolver": "mdc",
+    "key": "status"
+  },
+  "remoteUser": {
+    "$resolver": "mdc",
+    "key": "remoteUser"
+  },
+  "request": {
+    "$resolver": "mdc",
+    "key": "request"
+  },
+  "requestTime": {
+    "$resolver": "mdc",
+    "key": "requestTime"
+  },
+  "bodyBytesSent": {
+    "$resolver": "mdc",
+    "key": "bodyBytesSent"
+  },
+  "sessionId": {
+    "$resolver": "mdc",
+    "key": "sessionId"
+  },
+  "esIndexLevelSuffix": "${esIndexLevelSuffix:level}"
+}

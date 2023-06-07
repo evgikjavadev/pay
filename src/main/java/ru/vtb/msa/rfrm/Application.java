@@ -12,8 +12,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @ComponentScan("ru.vtb.msa")
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableRetry
-public class RfrmRegistrationApplication {
+public class Application {
     public static void main(String[] args) {
-        SpringApplication.run(RfrmRegistrationApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 }

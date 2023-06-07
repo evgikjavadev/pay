@@ -17,7 +17,7 @@
     <properties>
         <revision>0.0.1</revision>
         <java.version>11</java.version>
-        <finalName>example-integrations</finalName>
+        <finalName>rfrm-core</finalName>
         <mapstruct.version>1.4.1.Final</mapstruct.version>
         <lombok.version>1.18.22</lombok.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
@@ -25,7 +25,7 @@
         <omni-jwt-common-lib.version>20.3.0.2</omni-jwt-common-lib.version>
         <omni-jwt-security-lib-starter.version>20.3.0.2</omni-jwt-security-lib-starter.version>
         <omni-access-control-lib.version>20.3.0.7</omni-access-control-lib.version>
-        <audit.version>20.3.0.8</audit.version>
+        <audit.version>30.0.0.1</audit.version>
         <springdoc.version>1.5.6</springdoc.version>
         <logbook.version>2.15.0</logbook.version>
         <tstr-starter.version>4.2.1.9</tstr-starter.version>
@@ -86,8 +86,54 @@
         <dependency>
             <groupId>ru.vtb.infra.logging</groupId>
             <artifactId>logback-integration</artifactId>
-            <version>1.4.33</version>
+            <version>1.6.105</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-log4j-appender</artifactId>
+            <version>3.0.0</version>
+           <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-layout-template-json</artifactId>
         </dependency>
 
         <!-- Трассировка -->
@@ -204,14 +250,6 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-bom</artifactId>
-            <version>${logbook.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
         </dependency>
     </dependencies>
     <build>
