@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: rfrm-core
+    name: rfrm-pay
     version: @project.version@
 
   security:
@@ -39,7 +39,7 @@ opentracing:
   jaeger:
     enabled: true
     log-spans: true
-    service-name: RFRM.rfrm-core
+    service-name: RFRM.rfrm-pay
 
 #Аудит
 audit:
@@ -123,16 +123,6 @@ ms:
   token-checking:
     enabled: ${TOKEN_CHECKING_ENABLED:false}
 
-session-client:
-  clientContainer: ${SESSION_CLIENT_CONTAINER}
-  employeeContainer: ${SESSION_EMPLOYEE_CONTAINER}
-  roleList: ${CHECK_ROLE_REGION}
-  base-url: ${SESSION_URL}
-  query-path: /session
-  retry:
-    count: 3
-    duration: 2000
-
 aclib:
   replication:
     enabled: ${ACLIB_REPLICATION:true}
@@ -170,66 +160,11 @@ logging:
     ru.vtb.msa.rfrm.integration: ${LOG_LEVEL}
     ru.vtb.msa.mdclogging: ${LOG_LEVEL}
 
-
-epa-anti-replay.epa-endpoint: ${ANTI_REPLAY_URL}/passport/jti?{jti}
-
-person-client:
-  url: ${EPA_IG_URL}
-  getPerson: ${GET_PERSON_END_POINT}
-  updatePhone: ${UPDATE_PHONE_END_POINT}
-  headers:
-    X-CSPC-RISCODE: ${X-CSPC-RISCODE_HEADERS}
-    X-CSPC-MDMCODE: ${X-CSPC-MDMCODE_HEADERS}
-    X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
-    X-Initiator-Host:
-    X-Call-ID:
-  retry:
-    count: 3
-    duration: 2000
-
-ssl-config-tyk:
-  enable: true
-  enableHttps: ${ENABLE_HTTPS}
-  keyStore:
-    storeLocation: ${PATH_KEYSTORE}
-    storePassword: ${STORE_PASSWORD}
-  trustStore:
-    storeLocation: ${PATH_TRUSTSTORE}
-    storePassword: ${STORE_PASSWORD}
-
-consent-client:
+product-profile-fl:
   url: ${EPA_IG_URL}
   search: ${SEARCH_END_POINT}
   headers:
     X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
-  retry:
-    count: 3
-    duration: 2000
-
-employee-client:
-  url: ${EPA_IG_URL}
-  get: ${GET_END_POINT}
-  headers:
-    X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
-  retry:
-    count: 3
-    duration: 2000
-
-complex-check:
-  url: ${EPA_IG_URL}
-  check: ${CHECK_END_POINT}
-  headers:
-    X-TYK-API-KEY: ${TYK_API_KEY}
-    X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
-  retry:
-    count: 3
-    duration: 2000
-
-call-arbitration:
-  url: ${EPA_IG_URL}
-  check: /api/rb/rarb/publicnp/v1/create_arbtr_np
-  headers:
-    X-TYK-API-KEY: ${TYK_API_KEY}
   retry:
     count: 3
     duration: 2000

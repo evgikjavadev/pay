@@ -12,6 +12,4 @@ import ru.vtb.msa.rfrm.integration.personcs.client.model.person.response.model.P
 
 public interface PersonClient {
     GetPersonRs getPerson(PcRequest<GetPersonRequest> request);
-    HttpStatus updatePhone(UpdatePhonePcRequest<UpdatePhoneMessageRequest> request);
-    HttpStatus closePhone(ClosePhonePcRequest<ClosePhoneMessageRequest> request);
 }

@@ -28,11 +28,6 @@ import static java.util.UUID.randomUUID;
 @RequiredArgsConstructor
 public class RequestLoggingFilterFunction implements ExchangeFilterFunction {
 
-    private static final int MAX_BYTES_LOGGED = 4_096;
-    private static final String CLIENT_ID = "client_id=";
-    private static final String CLIENT_SECRET = "client_secret=";
-    private static final String GRANT_TYPE = "grant_type=";
-
     private final String className;
 
     @Override
@@ -63,7 +58,7 @@ public class RequestLoggingFilterFunction implements ExchangeFilterFunction {
                             @Override
                             @NonNull
                             public Mono<Void> writeWith(@NonNull Publisher<? extends DataBuffer> body) {
-                                return super.writeWith(Flux.from(body).doOnNext(data -> capturedRequestBody.append(extractBytes(data)))); // number of bytes appended is maxed in real code
+                                return super.writeWith(Flux.from(body).doOnNext(data -> capturedRequestBody.append(body))); // number of bytes appended is maxed in real code
                             }
 
                         }, context);
@@ -72,7 +67,7 @@ public class RequestLoggingFilterFunction implements ExchangeFilterFunction {
                 .doOnNext(response -> requestLog(requestLogged, request, capturedRequestBody))
                 .doOnError(error -> requestErrorLog(requestLogged, className, clientRequestId, request, error))
                 .map(response -> response.mutate().body(transformer -> transformer
-                                .doOnNext(body -> capturedResponseBody.append(extractBytes(body))) // number of bytes appended is maxed in real code
+                                .doOnNext(body -> capturedResponseBody.append(body)) // number of bytes appended is maxed in real code
                                 .doOnTerminate(() -> {
                                     if (stopWatch.isRunning()) {
                                         stopWatch.stop();
@@ -151,19 +146,5 @@ public class RequestLoggingFilterFunction implements ExchangeFilterFunction {
                 .stream()
                 .map(key -> key + "=" + request.headers().asHttpHeaders().get(key))
                 .collect(Collectors.joining(", "));
-    }
-
-    private static String extractBytes(DataBuffer data) {
-        int currentReadPosition = data.readPosition();
-        var numberOfBytesLogged = min(data.readableByteCount(), MAX_BYTES_LOGGED);
-        var bytes = new byte[numberOfBytesLogged];
-        data.read(bytes, 0, numberOfBytesLogged);
-        data.readPosition(currentReadPosition);
-
-        String str =new String(bytes);
-        if (str.indexOf(GRANT_TYPE) != -1 && str.indexOf(CLIENT_ID) != -1 && str.indexOf(CLIENT_SECRET) != -1) {
-          //  str = "grant_type=client_credentialsclient_id=*****client_secret=*****";
-        }
-            return str;
     }
 }

@@ -14,14 +14,14 @@ import ru.vtb.msa.rfrm.integration.util.client.OAuth2ClientConfig;
 import ru.vtb.msa.rfrm.integration.util.client.RequestLoggingFilterFunction;
 
 @Configuration
-@EnableConfigurationProperties(PersonClientProperties.class)
+@EnableConfigurationProperties(ProductProfileFL.class)
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @RequiredArgsConstructor
 public class PersonConfig {
 
     @Bean
     public PersonClient personClient(MdcLoggingWebClientCustomizer customizer,
-                                     PersonClientProperties properties,
+                                     ProductProfileFL properties,
                                      @Qualifier("epaAuthorizedFilter") ServerOAuth2AuthorizedClientExchangeFilterFunction oAuth2Authorized,
                                      OAuth2ClientConfig.ClientHttp clientHttp) {
 

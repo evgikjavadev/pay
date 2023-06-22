@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8085
 
 spring:
   security:
@@ -73,94 +73,14 @@ ms:
 app:
   version: 0.0.0.1
 
-session-client:
-  clientContainer: 'efrmmodork@test.vtb.ru'
-  employeeContainer: 'FPCH_EPAA_TEST@test.vtb.ru'
-  roleList: 'MOBC_TP_SALE,MOBC_DSA'
-  base-url: 'http://localhost:8070'
-  query-path: '/session'
-
-
 epa-anti-replay:
   epa-endpoint: http://localhost:8070/passport/jti?{jti}
 
-person-client:
+product-profile-fl:
   url: http://localhost:8070
-  getPerson: /api/rb/frsvsc/cspc/v1/get
-  updatePhone: /api/rb/frsvsc/cspc/v1/person/update
+  search: /api/rb/frsvsc/cspc/v1/get
   headers:
-    X-CSPC-RISCODE: 1847
-  retry:
-    count: 3
-    duration: 2000
-
-epa-auth-client:
-  epa-auth-token: ""
-  epa-endpoint: http://localhost:8070/epa/oauth2/token
-  config:
-    connection-timeout: 5000
-    read-timeout: 2000
-    sslEnable: false
-
-client-dko:
-  url: http://localhost:8070
-  clientDko: /api/rb/prp/aggregator/v1/client/dko
-  headers:
-    X-TYK-API-KEY: ${TYK_API_KEY}
-    X-Initiator-Service: 'mobc-sim-service'
-    X-MDM-ID:
-  retry:
-    count: 3
-    duration: 2000
-
-consent-client:
-  url: http://localhost:8070
-  search: /api/cross/ascm/v1/consent/search
-  headers:
-    X-API-KEY: 'development-dummy-key'
-    X-TYK-API-KEY: 123321
-  retry:
-    count: 3
-    duration: 2000
-
-
-cross-ref-client:
-  url: http://localhost:8070
-  getCross: /api/rb/frsvsc/cscr/v1/get
-  createCross: /api/rb/frsvsc/cscr/v1/create
-  deleteCross: /api/rb/frsvsc/cscr/v1/delete
-  retry:
-    count: 3
-    duration: 2000
-
-employee-client:
-  url: http://localhost:8070
-  get: /api/cross/bscs/v2/by-login/
-  retry:
-    count: 3
-    duration: 2000
-
-dossier-client:
-  url: http://localhost:8070
-  dossier: /api/cross/dose/dose-DoseManagementService-s-rest/v1/person/product/dossier
-  retry:
-    count: 3
-    duration: 2000
-
-complex-check:
-  url: http://localhost:8070
-  check: /api/cross/cpsl/v2/check
-  headers:
-    X-TYK-API-KEY: 123
-  retry:
-    count: 3
-    duration: 2000
-
-call-arbitration:
-  url: http://localhost:8070
-  check: /api/rb/rarb/publicnp/v1/create_arbtr_np
-  headers:
-    X-TYK-API-KEY: 123
+    X-CSPC-RISCODE:
   retry:
     count: 3
     duration: 2000
@@ -201,17 +121,6 @@ logging:
     ru.vtb.msa.partner: DEBUG
     ru.vtb.msa.rfrm.integration: DEBUG
     ru.vtb.msa.mdclogging: DEBUG
-
-splm:
-  client:
-    url: 'http://localhost:8070'
-    urlPathDeliveryBatchSimSmlp: /api/cross/splm/process-task-for-safe/v1/completeDeliveryBatchSIM
-    urlPathCheckSimStatusSmlp: /api/cross/splm/process-task-for-safe/v1/checkSIMStatus
-    useSmlpCheckStatus: true
-    useSmlpBatchSim: true
-    retry:
-      count: 3
-      duration: 2000
 
 feature.toggle:
   roleModelToggle:

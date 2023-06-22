@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.vtb.msa.rfrm</groupId>
-    <artifactId>rfrm-core</artifactId>
+    <artifactId>rfrm-pay</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
 
@@ -17,14 +17,13 @@
     <properties>
         <revision>0.0.1</revision>
         <java.version>11</java.version>
-        <finalName>rfrm-core</finalName>
+        <finalName>rfrm-pay</finalName>
         <mapstruct.version>1.4.1.Final</mapstruct.version>
         <lombok.version>1.18.22</lombok.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <omni-jwt-common-lib-servlet.version>30.0.0.1</omni-jwt-common-lib-servlet.version>
         <omni-jwt-common-lib.version>20.3.0.2</omni-jwt-common-lib.version>
         <omni-jwt-security-lib-starter.version>20.3.0.2</omni-jwt-security-lib-starter.version>
-        <omni-access-control-lib.version>20.3.0.7</omni-access-control-lib.version>
         <audit.version>30.0.0.1</audit.version>
         <springdoc.version>1.5.6</springdoc.version>
         <logbook.version>2.15.0</logbook.version>
@@ -85,9 +84,8 @@
         <!-- Журналирование логов -->
         <dependency>
             <groupId>ru.vtb.infra.logging</groupId>
-            <artifactId>logback-integration</artifactId>
+            <artifactId>log4j2-integration</artifactId>
             <version>1.6.105</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -112,7 +110,7 @@
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-log4j-appender</artifactId>
             <version>3.0.0</version>
-           <exclusions>
+            <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -168,6 +166,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -194,6 +198,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.security.oauth</groupId>
@@ -223,35 +237,52 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
+
         <dependency>
             <groupId>ru.vtb.omni</groupId>
             <artifactId>omni-jwt-common-lib</artifactId>
             <version>${omni-jwt-common-lib.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>logback-classic</artifactId>
+                    <groupId>ch.qos.logback</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ru.vtb.omni</groupId>
             <artifactId>omni-jwt-common-servlet</artifactId>
             <version>${omni-jwt-common-lib-servlet.version}</version>
         </dependency>
-        <!-- TSRM -->
-        <!-- модуль библиотеки ролевой -->
         <dependency>
             <groupId>ru.vtb.omni</groupId>
-            <artifactId>omni-access-control-lib-servlet</artifactId>
-            <version>${omni-access-control-lib.version}</version>
+            <artifactId>omni-jwt-common-lib-api</artifactId>
+            <version>${omni-jwt-common-lib-servlet.version}</version>
         </dependency>
-        <!-- стартер jwt security -->
-        <dependency>
-            <groupId>ru.vtb.omni</groupId>
-            <artifactId>omni-jwt-security-servlet-starter</artifactId>
-            <version>${omni-jwt-security-lib-starter.version}</version>
-        </dependency>
+
         <!-- Spring Kafka scoped as provided in omni-access-control-lib -->
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
+
+
+  <!--      <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>-->
     </dependencies>
+
     <build>
         <finalName>${finalName}</finalName>
         <plugins>
@@ -306,7 +337,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <!--  <version>3.8.1</version>-->
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

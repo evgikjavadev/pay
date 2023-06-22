@@ -39,10 +39,7 @@ import static org.springframework.security.oauth2.core.ClientAuthenticationMetho
 @EnableConfigurationProperties({OAuth2ClientProperties.class})
 public class OAuth2ClientConfig {
     public static final String EPA_CLIENT = "epa-tyk-client";
-    public static final String EPA_CC = "epa-session-client";
-    private static final String SESSION_CC_AUTHORIZED_FILTER = "sessionCCAuthorizedFilter";
     private static final String EPA_AUTHORIZED_FILTER = "epaAuthorizedFilter";
-
     private final OAuth2ClientProperties oAuth2ClientProperties;
 
     private final ConnectionProvider connProvider = ConnectionProvider
@@ -67,15 +64,6 @@ public class OAuth2ClientConfig {
         return this.authorizedClientFilter(builder.build(), EPA_CLIENT);
     }
 
-    @Bean(SESSION_CC_AUTHORIZED_FILTER)
-    public ServerOAuth2AuthorizedClientExchangeFilterFunction getSessionCCAuthorizedFilter() {
-        ClientHttpConnector httpConnector = this.getClientHttp().getClientHttp(SESSION_CC_AUTHORIZED_FILTER);
-        WebClient.Builder builder = WebClient.builder()
-                .filter(new RequestLoggingSSFilterFunction(SESSION_CC_AUTHORIZED_FILTER))
-                .clientConnector(httpConnector);
-        return this.authorizedClientFilter(builder.build(), EPA_CC);
-    }
-
     private ServerOAuth2AuthorizedClientExchangeFilterFunction authorizedClientFilter(WebClient webClient, String client) {
 
         ReactiveClientRegistrationRepository clientRegistrationRepository = this.reactiveClientRegistrationRepository();
@@ -88,7 +76,6 @@ public class OAuth2ClientConfig {
                     c.accessTokenResponseClient(accessTokenResponseClient);
                 })
                 .build();
-
 
         InMemoryReactiveOAuth2AuthorizedClientService authorizedClientService = new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrationRepository);
         AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager authorizedClientManager = new AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientService);
@@ -126,17 +113,6 @@ public class OAuth2ClientConfig {
     ClientHttp getClientHttp() {
         return new ClientHttp();
     }
-
-
-    private ClientHttpConnector createClientHttp(String nameLogClass) {
-        HttpClient client = HttpClient.create()
-                .create(connProvider)
-                .resolver(DefaultAddressResolverGroup.INSTANCE);
-
-        return new ReactorClientHttpConnector(client);
-    }
-
-
 
     public class ClientHttp {
         @SneakyThrows
