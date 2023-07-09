@@ -11,7 +11,7 @@ import ru.vtb.msa.rfrm.integration.util.client.RetryProperties;
 public class ProductProfileFL {
     private String url;
     private String search;
-    private String updatePhone;
+//    private String updatePhone;
     private MultiValueMap<String, String> headers;
     private RetryProperties retry;
 }

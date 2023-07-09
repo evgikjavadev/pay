@@ -23,13 +23,13 @@ public class ServiceTest {
     @Audit(value = "EXAMPLE_EVENT_CODE")
     //@PreAuthorize("permittedByRole('READ')")
     public void test() {
-          personClient.getPerson(createPersonRequest("1371988972", UUID.randomUUID().toString()));
+          personClient.getPerson(createPersonRequest("1371988972"));
        }
 
-    private PcRequest<GetPersonRequest> createPersonRequest(String partyUId, String messageId) {
+    private PcRequest<GetPersonRequest> createPersonRequest(String partyUId) {
         return PcRequest.<GetPersonRequest>builder()
-                .headerRequest(createHeaders(messageId))
-                .messageRequest(createBodyForRequest(partyUId))
+                //.headerRequest(createHeaders(messageId))
+                .productTypes(createBodyForRequest(partyUId))
                 .build();
     }
 
@@ -41,11 +41,11 @@ public class ServiceTest {
 
     private PcHeaderRequest createHeaders(String messageId) {
         return PcHeaderRequest.builder()
-                .contactName("VTB_MOBILE")
-                .messageID(UUID.randomUUID().toString())
-                .systemFrom("18...")
-                .creationDateTime(Instant.now().toString())
-                .timeout(0)
+                .accounts(Collections.singletonList("ACCOUNT"))
+                //.messageID(UUID.randomUUID().toString())
+                //.systemFrom("18...")
+                //.creationDateTime(Instant.now().toString())
+                //.timeout(0)
                 .build();
     }
 }

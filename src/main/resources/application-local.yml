@@ -78,9 +78,9 @@ epa-anti-replay:
 
 product-profile-fl:
   url: http://localhost:8070
-  search: /api/rb/frsvsc/cspc/v1/get
+  search: /portfolio/portfolio-agregator/portfolio/active
   headers:
-    X-CSPC-RISCODE:
+    X-INITIATOR-SERVICE: rfrm-pay
   retry:
     count: 3
     duration: 2000

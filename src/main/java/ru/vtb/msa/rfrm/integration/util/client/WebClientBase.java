@@ -31,7 +31,6 @@ public abstract class WebClientBase {
     private final MultiValueMap<String, String> headers;
     private final WebClient webClient;
 
-
     public <T, R> R post(Function<UriBuilder, URI> function, T request, Class<R> clazz) {
         try {
             return webClient.post()
@@ -45,93 +44,6 @@ public abstract class WebClientBase {
                     .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
                             .filter(WebClientBase::isRequestTimeout))
                     .block();
-        } catch (WebClientResponseException we) {
-            log.error(we.getMessage());
-            throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());
-        } catch (IllegalStateException exception) {
-            log.error(exception.getMessage(), exception.fillInStackTrace());
-            throw new HttpStatusException(exception.getMessage(), "",
-                    ((WebClientResponseException) exception.getCause()).getStatusCode());
-        }
-    }
-    public <T, R> Disposable post(Function<UriBuilder, URI> function, T request, Class<R> clazz, Consumer<R> consumer, Consumer<Throwable> tConsumer) {
-        try {
-            return webClient.post()
-                    .uri(function)
-                    .body(BodyInserters.fromValue(request))
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .headers(getHttpHeaders(headers))
-                    .accept(MediaType.ALL)
-                    .retrieve()
-                    .bodyToMono(clazz)
-                    .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
-                            .filter(WebClientBase::isRequestTimeout))
-                    .subscribe(consumer, tConsumer);
-        } catch (WebClientResponseException we) {
-            log.error(we.getMessage());
-            throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());
-        } catch (IllegalStateException exception) {
-            log.error(exception.getMessage(), exception.fillInStackTrace());
-            throw new HttpStatusException(exception.getMessage(), "",
-                    ((WebClientResponseException) exception.getCause()).getStatusCode());
-        }
-    }
-
-    public <T, R> R get(Function<UriBuilder, URI> function, T request, Class<R> clazz) {
-        try {
-            return webClient.get()
-                    .uri(function)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .headers(getHttpHeaders(headers))
-                    .accept(MediaType.ALL)
-                    .retrieve()
-                    .bodyToMono(clazz)
-                    .retryWhen(Retry.fixedDelay(3, Duration.ofMillis(200))
-                            .filter(WebClientBase::isRequestTimeout))
-                    .block();
-        } catch (WebClientResponseException we) {
-            log.error(we.getMessage());
-            throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());
-        } catch (IllegalStateException exception) {
-            log.error(exception.getMessage(), exception.fillInStackTrace());
-            throw new HttpStatusException(exception.getMessage(), "", HttpStatus.REQUEST_TIMEOUT);
-        }
-    }
-
-    public <R> Disposable get(Function<UriBuilder, URI> function, Class<R> clazz, Consumer<R> consumer, Consumer<Throwable> tConsumer) {
-        try {
-            return  webClient.get()
-                    .uri(function)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .headers(getHttpHeaders(headers))
-                    .accept(MediaType.ALL)
-                    .retrieve()
-                    .bodyToMono(clazz)
-                    .retryWhen(Retry.fixedDelay(3, Duration.ofMillis(200))
-                           .filter(WebClientBase::isRequestTimeout))
-                    .subscribe(consumer, tConsumer);
-
-        } catch (WebClientResponseException we) {
-            log.error(we.getMessage());
-            throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());
-        } catch (IllegalStateException exception) {
-            log.error(exception.getMessage(), exception.fillInStackTrace());
-            throw new HttpStatusException(exception.getMessage(), "", HttpStatus.REQUEST_TIMEOUT);
-        }
-    }
-
-    public <T> HttpStatus post(Function<UriBuilder, URI> function, T request) {
-        try {
-            return Optional.of(webClient.post()
-                            .uri(function)
-                            .body(BodyInserters.fromValue(request))
-                            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                            .headers(getHttpHeaders(headers))
-                            .accept(MediaType.ALL)
-                            .retrieve()
-                            .toBodilessEntity())
-                    .map(e -> e.block())
-                    .map(ResponseEntity::getStatusCode).orElse(HttpStatus.NOT_EXTENDED);
         } catch (WebClientResponseException we) {
             log.error(we.getMessage());
             throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());

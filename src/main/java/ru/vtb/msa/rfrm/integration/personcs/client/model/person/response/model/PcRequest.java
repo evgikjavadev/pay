@@ -12,13 +12,13 @@ import lombok.Data;
 @Builder
 public class PcRequest<T> {
 
-    /**
-     * Корневой элемент тех. заголовка.
-     */
-    protected PcHeaderRequest headerRequest;
+//    /**
+//     * Корневой элемент тех. заголовка.
+//     */
+//    protected PcHeaderRequest headerRequest;
 
     /**
      * Корневой элемент бизнес заголовка.
      */
-    protected T messageRequest;
+    protected T productTypes;
 }

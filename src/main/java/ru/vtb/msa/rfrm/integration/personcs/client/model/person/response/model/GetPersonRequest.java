@@ -9,11 +9,11 @@ import java.util.List;
 @Data
 @Builder
 public class GetPersonRequest {
-    /**
-     * Идентификатор системы.
-     */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String externalSystemId;
+//    /**
+//     * Идентификатор системы.
+//     */
+//    @JsonInclude(JsonInclude.Include.NON_NULL)
+//    private String externalSystemId;
 
     /**
      * Клиент.
