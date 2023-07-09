@@ -10,7 +10,7 @@ import ru.vtb.msa.rfrm.integration.util.client.RetryProperties;
 @ConfigurationProperties("product-profile-fl")
 public class ProductProfileFL {
     private String url;
-    private String getPerson;
+    private String search;
     private String updatePhone;
     private MultiValueMap<String, String> headers;
     private RetryProperties retry;

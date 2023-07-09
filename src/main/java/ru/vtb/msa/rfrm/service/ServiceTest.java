@@ -21,7 +21,7 @@ public class ServiceTest {
     private final PersonClient personClient;
 
     @Audit(value = "EXAMPLE_EVENT_CODE")
-    @PreAuthorize("permittedByRole('READ')")
+    //@PreAuthorize("permittedByRole('READ')")
     public void test() {
           personClient.getPerson(createPersonRequest("1371988972", UUID.randomUUID().toString()));
        }

@@ -27,7 +27,7 @@ public class PersonClientImpl extends WebClientBase implements PersonClient {
     public GetPersonRs getPerson(PcRequest<GetPersonRequest> request) {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
         properties.getHeaders().set(HEADER_NAME_X_CALL_ID, UUID.randomUUID().toString());
-        GetPersonRs personRs = this.post(uriBuilder -> uriBuilder.path(properties.getGetPerson()).build(),
+        GetPersonRs personRs = this.post(uriBuilder -> uriBuilder.path(properties.getSearch()).build(),
                 request, GetPersonRs.class);
         log.info("Финиш вызова {}", PRODUCT_PROFILE_FL.getValue());
         return personRs;
