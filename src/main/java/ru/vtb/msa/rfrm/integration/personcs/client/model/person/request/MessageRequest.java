@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 public class MessageRequest{
 
-	@ArraySchema(maxItems = 10, minItems = 1, schema = @Schema(implementation = PersonAccounts.class, description = "Информация о ФЛ"))
-	private List<PersonAccounts> personAccounts;
+	@ArraySchema(maxItems = 10, minItems = 1, schema = @Schema(implementation = Person.class, description = "Информация о ФЛ"))
+	private List<Person> personAccounts;
 }
