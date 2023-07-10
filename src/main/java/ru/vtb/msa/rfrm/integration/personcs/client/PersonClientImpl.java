@@ -28,12 +28,19 @@ public class PersonClientImpl extends WebClientBase implements PersonClient {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
 
         properties.getHeaders().set(HEADER_NAME_X_CALL_ID, UUID.randomUUID().toString());
-        String personRs = this.post(uriBuilder -> uriBuilder.path(properties.getSearch()).build(),
+        String personAccountsObject = this.post(uriBuilder -> uriBuilder.path(properties.getSearch()).build(),
                 request, String.class);
 
-        //System.out.println("personRs = " + personRs);
+//        if (!personAccountsObject.isEmpty() & account.entityType="MASTER_ACCOUNT" & account.balance.curency="RUB") {
+//            if (account.isArrested) {
+//                databaseRepository.edit(paymentTask=3)
+//            }
+//        }
+
+
+        //System.out.println("personAccountsObject = " + personAccountsObject);
 
         log.info("Финиш вызова {}", PRODUCT_PROFILE_FL.getValue());
-        return personRs;
+        return personAccountsObject;
     }
 }
