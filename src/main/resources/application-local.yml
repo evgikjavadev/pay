@@ -1,7 +1,6 @@
 server:
   port: 8085
 
-
 spring:
   security:
     oauth2:
@@ -87,9 +86,9 @@ app:
 epa-anti-replay:
   epa-endpoint: http://localhost:8070/passport/jti?{jti}
 
-product-profile-fl:
+product-profile-fl-accounts:
   url: http://localhost:8070
-  search: /portfolio/portfolio-agregator/portfolio/active
+  resource: /portfolio/portfolio-agregator/portfolio/active
   headers:
     X-INITIATOR-SERVICE: rfrm-pay
   retry:
