@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class MessageResponse{
-	private List<Person> personAccounts;
+	private List<Person> accounts;
 }

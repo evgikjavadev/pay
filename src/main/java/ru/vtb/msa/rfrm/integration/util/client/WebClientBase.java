@@ -41,8 +41,8 @@ public abstract class WebClientBase {
                     .accept(MediaType.ALL)
                     .retrieve()
                     .bodyToMono(clazz)
-                    .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
-                            .filter(WebClientBase::isRequestTimeout))
+//                    .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
+//                            .filter(WebClientBase::isRequestTimeout))
                     .block();
         } catch (WebClientResponseException we) {
             log.error(we.getMessage());
