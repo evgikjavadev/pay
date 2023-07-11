@@ -3,10 +3,10 @@ package ru.vtb.msa.rfrm.integration.personaccounts.client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.Response;
 import ru.vtb.msa.rfrm.integration.personaccounts.config.ProductProfileFL;
 import ru.vtb.msa.rfrm.integration.util.client.WebClientBase;
 
-import java.util.List;
 import java.util.UUID;
 
 import static ru.vtb.msa.rfrm.integration.util.client.HeadersConstant.HEADER_NAME_X_CALL_ID;

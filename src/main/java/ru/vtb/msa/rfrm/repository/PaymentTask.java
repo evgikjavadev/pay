@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -21,21 +22,27 @@ public class PaymentTask {
     @Column(name = "reward_id", nullable = false)
     private UUID rewardId;
 
+    @NotNull
     @Column(name = "request_id")
     private UUID requestId;
 
+    @NotNull
     @Column(name = "mdm_id")
     private String mdmId;
 
+    @NotNull
     @Column(name = "recipient_type")
     private Integer recipientType;
 
+    @NotNull
     @Column(name = "amount")
     private Double amount;
 
+    @NotNull
     @Column(name = "status")
     private Integer status;
 
+    @NotNull
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -45,12 +52,19 @@ public class PaymentTask {
     @Column(name = "account")
     private Integer account;
 
+    @NotNull
     @Column(name = "product_id")
     private String product_id;
 
+    @NotNull
     @Column(name = "response_sent")
     private Boolean responseSent;
 
     @OneToMany(mappedBy = "paymentTask")
     private List<TaskStatusHistory> taskStatusHistories;
+
+    @ManyToOne
+    @JoinColumn(name = "task_statuses_status")
+    private TaskStatuses taskStatuses;
+
 }
