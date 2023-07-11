@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.model.ContactRequestModel;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.model.GetPersonRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.model.Object;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
 
 import ru.vtb.omni.audit.lib.api.annotation.Audit;
 
 import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,24 +21,26 @@ public class ServiceTest {
     @Audit(value = "EXAMPLE_EVENT_CODE")
     //@PreAuthorize("permittedByRole('READ')")
     public void test() {
-          personClientAccounts.getPersonAccounts(createPersonRequest("1371988972"));
 
-        //System.out.println("messageResponse = " + messageResponseInterface.getResponse().toString());
+          personClientAccounts.getPersonAccounts(personRequestAccounts(Collections.singletonList("ACCOUNT")));
 
        }
-
-    private Object<GetPersonRequest> createPersonRequest(String partyUId) {
-        return Object.<GetPersonRequest>builder()
-                //.headerRequest(createHeaders(messageId))
-                .productTypes(createBodyForRequest(partyUId))
-                .build();
+    private AccountInfoRequest personRequestAccounts(List<String> str) {
+        return AccountInfoRequest.builder().productTypes(str).build();
     }
 
-    private GetPersonRequest createBodyForRequest(String partyUId) {
-        return GetPersonRequest.builder()
-                .person(Collections.singletonList(ContactRequestModel.builder().partyUId(partyUId).build()))
-                .build();
-    }
+//    private Object<GetPersonRequest> createPersonRequest(String partyUId) {
+//        return Object.<GetPersonRequest>builder()
+//                //.headerRequest(createHeaders(messageId))
+//                .productTypes(createBodyForRequest(partyUId))
+//                .build();
+//    }
+
+//    private GetPersonRequest createBodyForRequest(String partyUId) {
+//        return GetPersonRequest.builder()
+//                .person(Collections.singletonList(ContactRequestModel.builder().partyUId(partyUId).build()))
+//                .build();
+//    }
 
 //    private PcHeaderRequest createHeaders(String messageId) {
 //        return PcHeaderRequest.builder()
