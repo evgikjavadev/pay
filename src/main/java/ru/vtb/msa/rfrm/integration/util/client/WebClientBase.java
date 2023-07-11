@@ -5,15 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
-import reactor.core.Disposable;
 import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
+import ru.vtb.msa.rfrm.repository.PaymentTaskRepository;
+import ru.vtb.msa.rfrm.repository.TaskStatusHistoryRepository;
 
 import java.net.URI;
 import java.time.Duration;
@@ -31,6 +31,8 @@ public abstract class WebClientBase {
     private final MultiValueMap<String, String> headers;
     private final WebClient webClient;
 
+    //private final TaskStatusHistoryRepository repository;
+
     public <T, R> R post(Function<UriBuilder, URI> function, T request, Class<R> clazz) {
         try {
             return webClient.post()
@@ -41,18 +43,29 @@ public abstract class WebClientBase {
                     .accept(MediaType.ALL)
                     .retrieve()
                     .bodyToMono(clazz)
-//                    .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
-//                            .filter(WebClientBase::isRequestTimeout))
+                    .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
+                            .filter(WebClientBase::isRequestTimeout))
                     .block();
         } catch (WebClientResponseException we) {
             log.error(we.getMessage());
+
+            if (we.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+
+                //repository.save()
+            }
+
+
+
             throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());
         } catch (IllegalStateException exception) {
             log.error(exception.getMessage(), exception.fillInStackTrace());
+
             throw new HttpStatusException(exception.getMessage(), "",
                     ((WebClientResponseException) exception.getCause()).getStatusCode());
         }
     }
+
+
 
     private Consumer<HttpHeaders> getHttpHeaders(MultiValueMap<String, String> headers) {
         return httpHeaders -> httpHeaders.addAll(Optional.ofNullable(headers)

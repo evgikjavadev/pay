@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.repository;
+package ru.vtb.msa.rfrm.entitytodatabase;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,19 +13,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class TaskStatuses {
+public class ErrorDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "status")
-    private Integer status;
+    @Column(name = "code")
+    private Integer code;
 
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "taskStatuses")
-    private List<PaymentTask> paymentTasks;
+    @OneToMany
+    @JoinColumn(name = "error_details")
+    private List<TaskStatusHistory> taskStatusHistories;
 
 }

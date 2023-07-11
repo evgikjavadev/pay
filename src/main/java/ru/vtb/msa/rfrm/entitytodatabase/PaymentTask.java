@@ -1,5 +1,6 @@
-package ru.vtb.msa.rfrm.repository;
+package ru.vtb.msa.rfrm.entitytodatabase;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,6 +45,7 @@ public class PaymentTask {
 
     @NotNull
     @Column(name = "created_at")
+    @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Column(name = "account_system")

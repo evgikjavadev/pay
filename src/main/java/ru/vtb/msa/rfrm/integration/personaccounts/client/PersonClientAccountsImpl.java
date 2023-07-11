@@ -2,8 +2,8 @@ package ru.vtb.msa.rfrm.integration.personaccounts.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
+import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.Response;
 import ru.vtb.msa.rfrm.integration.personaccounts.config.ProductProfileFL;
 import ru.vtb.msa.rfrm.integration.util.client.WebClientBase;
 
@@ -17,18 +17,35 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
 
     private final ProductProfileFL properties;
 
+    private HttpStatusException exception;
+
+
     public PersonClientAccountsImpl(WebClient webClient, ProductProfileFL properties) {
         super(properties.getRetry().getCount(), properties.getRetry().getDuration(), properties.getHeaders(), webClient);
         this.properties = properties;
+        //this.httpStatusException = httpStatusException;
     }
 
     @Override
-    public String getPersonAccounts(AccountInfoRequest request) {
+    public String getPersonAccounts(AccountInfoRequest request) throws HttpStatusException {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
 
         properties.getHeaders().set(HEADER_NAME_X_CALL_ID, UUID.randomUUID().toString());
         String accounts = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
                 request, String.class);
+
+        exception.getStatus();
+
+        //JSONPObject json = new JSONPObject()
+
+//        try {
+//            Object myObject = objectMapper.readValue(accounts, Object.class);
+//
+//            System.out.println("myObject = " + myObject);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 //        if (!personAccountsObject.isEmpty() & account.entityType="MASTER_ACCOUNT" & account.balance.curency="RUB") {
 //            if (account.isArrested) {
@@ -42,4 +59,5 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
         log.info("Финиш вызова {}", PRODUCT_PROFILE_FL.getValue());
         return accounts;
     }
+
 }
