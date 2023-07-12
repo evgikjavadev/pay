@@ -11,21 +11,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "4-MASTER_ACCOUNT-40817810001006010797",
-        "4-CURRENT_ACCOUNT-40817810101006012239"
+        "MULTICARTA"
 })
 @Generated("jsonschema2pojo")
-public class Accounts {
+public class PackagesAcc {
 
-    @JsonProperty("4-MASTER_ACCOUNT-40817810001006010797")
+    @JsonProperty("MULTICARTA")
     @Valid
-    public ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response._4MasterAccount40817810001006010797 _4MasterAccount40817810001006010797;
-    @JsonProperty("4-CURRENT_ACCOUNT-40817810101006012239")
-    @Valid
-    public ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response._4CurrentAccount40817810101006012239 _4CurrentAccount40817810101006012239;
+    public Multicarta multicarta;
     @JsonIgnore
     @Valid
     private Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();

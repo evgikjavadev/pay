@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
 import ru.vtb.msa.rfrm.integration.personaccounts.config.ProductProfileFL;
 import ru.vtb.msa.rfrm.integration.util.client.WebClientBase;
 
@@ -14,27 +15,21 @@ import static ru.vtb.msa.rfrm.integration.util.enums.ClientName.PRODUCT_PROFILE_
 
 @Slf4j
 public class PersonClientAccountsImpl extends WebClientBase implements PersonClientAccounts {
-
     private final ProductProfileFL properties;
-
-    private HttpStatusException exception;
-
 
     public PersonClientAccountsImpl(WebClient webClient, ProductProfileFL properties) {
         super(properties.getRetry().getCount(), properties.getRetry().getDuration(), properties.getHeaders(), webClient);
         this.properties = properties;
-        //this.httpStatusException = httpStatusException;
     }
 
     @Override
-    public String getPersonAccounts(AccountInfoRequest request) throws HttpStatusException {
+    public ResponseCommon getPersonAccounts(AccountInfoRequest request) throws HttpStatusException {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
 
         properties.getHeaders().set(HEADER_NAME_X_CALL_ID, UUID.randomUUID().toString());
-        String accounts = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
-                request, String.class);
+        ResponseCommon accounts = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
+                request, ResponseCommon.class);
 
-        exception.getStatus();
 
         //JSONPObject json = new JSONPObject()
 

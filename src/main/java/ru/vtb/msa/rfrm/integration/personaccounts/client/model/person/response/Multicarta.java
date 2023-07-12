@@ -1,6 +1,7 @@
 package ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import javax.validation.Valid;
@@ -11,21 +12,49 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "4-MASTER_ACCOUNT-40817810001006010797",
-        "4-CURRENT_ACCOUNT-40817810101006012239"
+        "id",
+        "name",
+        "status",
+        "startDate",
+        "endDate",
+        "system",
+        "userId",
+        "timeStamp",
+        "balance",
+        "miles",
+        "options",
+        "bonusAmount"
 })
 @Generated("jsonschema2pojo")
-public class Accounts {
+public class Multicarta {
 
-    @JsonProperty("4-MASTER_ACCOUNT-40817810001006010797")
+    @JsonProperty("id")
+    public String id;
+    @JsonProperty("name")
+    public String name;
+    @JsonProperty("status")
+    public Boolean status;
+    @JsonProperty("startDate")
+    public String startDate;
+    @JsonProperty("endDate")
+    public String endDate;
+    @JsonProperty("system")
+    public String system;
+    @JsonProperty("userId")
+    public String userId;
+    @JsonProperty("timeStamp")
+    public String timeStamp;
+    @JsonProperty("balance")
+    public Integer balance;
+    @JsonProperty("miles")
+    public Integer miles;
+    @JsonProperty("options")
     @Valid
-    public ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response._4MasterAccount40817810001006010797 _4MasterAccount40817810001006010797;
-    @JsonProperty("4-CURRENT_ACCOUNT-40817810101006012239")
-    @Valid
-    public ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response._4CurrentAccount40817810101006012239 _4CurrentAccount40817810101006012239;
+    public List<Option> options;
+    @JsonProperty("bonusAmount")
+    public Integer bonusAmount;
     @JsonIgnore
     @Valid
     private Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
