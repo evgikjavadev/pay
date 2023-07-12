@@ -2,15 +2,12 @@ package ru.vtb.msa.rfrm.integration.personaccounts.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
 import ru.vtb.msa.rfrm.integration.personaccounts.config.ProductProfileFL;
 import ru.vtb.msa.rfrm.integration.util.client.WebClientBase;
 
-import java.util.UUID;
-
-import static ru.vtb.msa.rfrm.integration.util.client.HeadersConstant.HEADER_NAME_X_CALL_ID;
+import static ru.vtb.msa.rfrm.integration.util.client.HeadersConstant.HEADER_NAME_X_MDM_ID;
 import static ru.vtb.msa.rfrm.integration.util.enums.ClientName.PRODUCT_PROFILE_FL;
 
 @Slf4j
@@ -23,10 +20,11 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
     }
 
     @Override
-    public ResponseCommon getPersonAccounts(AccountInfoRequest request) throws HttpStatusException {
+    public ResponseCommon getPersonAccounts(AccountInfoRequest request) {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
 
-        properties.getHeaders().set(HEADER_NAME_X_CALL_ID, UUID.randomUUID().toString());
+        properties.getHeaders().set(HEADER_NAME_X_MDM_ID, "5000015297");
+
         ResponseCommon accounts = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
                 request, ResponseCommon.class);
 

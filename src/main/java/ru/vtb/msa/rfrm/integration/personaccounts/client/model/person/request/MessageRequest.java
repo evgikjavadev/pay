@@ -1,14 +1,14 @@
-package ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request;
-
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import java.util.List;
-
-@Data
-public class MessageRequest{
-
-	@ArraySchema(maxItems = 10, minItems = 1, schema = @Schema(implementation = Person.class, description = "Информация о ФЛ"))
-	private List<Person> personAccounts;
-}
+//package ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request;
+//
+//import io.swagger.v3.oas.annotations.media.ArraySchema;
+//import io.swagger.v3.oas.annotations.media.Schema;
+//import lombok.Data;
+//
+//import java.util.List;
+//
+//@Data
+//public class MessageRequest{
+//
+//	@ArraySchema(maxItems = 10, minItems = 1, schema = @Schema(implementation = Person.class, description = "Информация о ФЛ"))
+//	private List<Person> personAccounts;
+//}
