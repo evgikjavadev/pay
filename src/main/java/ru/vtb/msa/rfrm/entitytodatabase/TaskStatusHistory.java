@@ -32,11 +32,11 @@ public class TaskStatusHistory {
 //    @Column(name = "reward_id")
 //    private UUID rewardId;
 
-    @NotNull
+    //@NotNull
     @Column(name = "task_status")
     private Integer taskStatus;
 
-    @NotNull
+    //@NotNull
     @Column(name = "status_updated_at")
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime statusUpdatedAt;

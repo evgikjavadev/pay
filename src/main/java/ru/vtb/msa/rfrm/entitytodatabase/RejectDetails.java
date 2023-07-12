@@ -25,8 +25,8 @@ public class RejectDetails {
     @Column(name = "description")
     private String description;
 
-    @OneToMany
-    @JoinColumn(name = "reject_details")
-    private List<TaskStatusHistory> taskStatusHistories;
+//    @OneToMany
+//    @JoinColumn(name = "reject_details")
+//    private List<TaskStatusHistory> taskStatusHistories;
 
 }

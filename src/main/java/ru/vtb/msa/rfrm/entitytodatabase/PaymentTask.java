@@ -23,27 +23,27 @@ public class PaymentTask {
     @Column(name = "reward_id", nullable = false)
     private UUID rewardId;
 
-    @NotNull
+    //@NotNull
     @Column(name = "request_id")
     private UUID requestId;
 
-    @NotNull
+    //@NotNull
     @Column(name = "mdm_id")
     private String mdmId;
 
-    @NotNull
+    //@NotNull
     @Column(name = "recipient_type")
     private Integer recipientType;
 
-    @NotNull
+    //@NotNull
     @Column(name = "amount")
     private Double amount;
 
-    @NotNull
+    //@NotNull
     @Column(name = "status")
     private Integer status;
 
-    @NotNull
+    //@NotNull
     @Column(name = "created_at")
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
@@ -54,19 +54,19 @@ public class PaymentTask {
     @Column(name = "account")
     private Integer account;
 
-    @NotNull
+    //@NotNull
     @Column(name = "product_id")
     private String product_id;
 
-    @NotNull
+    //@NotNull
     @Column(name = "response_sent")
     private Boolean responseSent;
 
-    @OneToMany(mappedBy = "paymentTask")
-    private List<TaskStatusHistory> taskStatusHistories;
+//    @OneToMany(mappedBy = "paymentTask")
+//    private List<TaskStatusHistory> taskStatusHistories;           //todo
 
-    @ManyToOne
-    @JoinColumn(name = "task_statuses_status")
-    private TaskStatuses taskStatuses;
+//    @ManyToOne
+//    @JoinColumn(name = "task_statuses_status")
+//    private TaskStatuses taskStatuses;
 
 }

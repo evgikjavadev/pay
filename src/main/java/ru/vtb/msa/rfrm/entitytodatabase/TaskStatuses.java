@@ -25,7 +25,7 @@ public class TaskStatuses {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "taskStatuses")
-    private List<PaymentTask> paymentTasks;
+//    @OneToMany(mappedBy = "taskStatuses")
+//    private List<PaymentTask> paymentTasks;
 
 }

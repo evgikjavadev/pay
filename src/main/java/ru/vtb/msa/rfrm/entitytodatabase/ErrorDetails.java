@@ -25,8 +25,8 @@ public class ErrorDetails {
     @Column(name = "description")
     private String description;
 
-    @OneToMany
-    @JoinColumn(name = "error_details")
-    private List<TaskStatusHistory> taskStatusHistories;
+//    @OneToMany
+//    @JoinColumn(name = "error_details")
+//    private List<TaskStatusHistory> taskStatusHistories;
 
 }

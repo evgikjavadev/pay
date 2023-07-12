@@ -36,7 +36,7 @@ public class ServiceTest {
               e.getStatus();
               TaskStatusHistory taskStatusHistory = TaskStatusHistory
                       .builder()
-                      .taskStatus(e.getStatus().value())
+                      //.taskStatus(e.getStatus().value())
                       .errorDetails(101)
                       .statusUpdatedAt(LocalDateTime.now())
                       .build();
