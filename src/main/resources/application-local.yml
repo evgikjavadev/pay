@@ -75,6 +75,8 @@ ru:
       kafka:
         bootstrap-servers: "d5mobc-kfc002lk.corp.dev.vtb:9092"
 
+
+
 ms:
   frame-link: 'gui-vtbmobile.test.vtb.ru'
   token-checking:
