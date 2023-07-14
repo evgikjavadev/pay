@@ -14,9 +14,8 @@ import ru.vtb.msa.rfrm.kafka.model.ObjectRewardReq;
 import java.util.HashMap;
 import java.util.Map;
 
-@EnableKafka
 @Configuration
-public class KafkaConsumerConfig {
+public class KafkaConfigConsumer {
 
     private String bootstrapServerKafka = "localhost:9092";
     private String groupIdConfig = "group_id";

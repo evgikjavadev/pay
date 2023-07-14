@@ -10,11 +10,13 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ObjectRewardReq {
+public class ObjectRewardReq implements Serializable {
     private UUID id;
     private UUID requestId;
     private Integer recipientType;
     private Double money;
-    private Integer mdmId;
+
+    //mdmId приходит из заголовка
+    //private Integer mdmId;
     private String productId;
 }
