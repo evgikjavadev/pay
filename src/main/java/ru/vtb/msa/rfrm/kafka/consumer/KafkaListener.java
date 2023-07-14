@@ -1,8 +1,5 @@
 package ru.vtb.msa.rfrm.kafka.consumer;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.header.Headers;
-import org.springframework.kafka.listener.adapter.ConsumerRecordMetadata;
 import org.springframework.stereotype.Component;
 import ru.vtb.msa.rfrm.kafka.model.ObjectRewardReq;
 

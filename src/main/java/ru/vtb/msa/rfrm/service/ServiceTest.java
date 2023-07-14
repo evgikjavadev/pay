@@ -33,12 +33,10 @@ public class ServiceTest {
               sendObjectToTaskStatusHistory();
           }
 
-
     }
 
     private void sendObjectToTaskStatusHistory() {
         TaskStatusHistory taskStatusHistory = getTaskStatusHistory();
-
         repository.save(taskStatusHistory);
     }
 
