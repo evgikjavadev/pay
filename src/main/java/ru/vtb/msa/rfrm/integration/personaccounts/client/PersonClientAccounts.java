@@ -4,6 +4,6 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.Ac
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
 
 public interface PersonClientAccounts {
-    ResponseCommon getPersonAccounts(AccountInfoRequest request);
+    String getPersonAccounts(AccountInfoRequest request);
 
 }

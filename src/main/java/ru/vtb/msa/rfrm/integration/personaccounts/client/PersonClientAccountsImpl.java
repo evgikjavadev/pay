@@ -2,6 +2,7 @@ package ru.vtb.msa.rfrm.integration.personaccounts.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.reactive.function.client.WebClient;
+import ru.vtb.msa.rfrm.integration.personaccounts.SearchMasterAccount;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
 import ru.vtb.msa.rfrm.integration.personaccounts.config.ProductProfileFL;
@@ -20,25 +21,19 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
     }
 
     @Override
-    public ResponseCommon getPersonAccounts(AccountInfoRequest request) {
+    public String getPersonAccounts(AccountInfoRequest request) {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
 
         properties.getHeaders().set(HEADER_NAME_X_MDM_ID, "5000015297");
 
-        ResponseCommon accounts = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
-                request, ResponseCommon.class);
+        String accounts = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
+                request, String.class);
+
+        //parsing string for define properties
+
+        SearchMasterAccount.getMainStringAccounts(accounts);
 
 
-        //JSONPObject json = new JSONPObject()
-
-//        try {
-//            Object myObject = objectMapper.readValue(accounts, Object.class);
-//
-//            System.out.println("myObject = " + myObject);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
 //        if (!personAccountsObject.isEmpty() & account.entityType="MASTER_ACCOUNT" & account.balance.curency="RUB") {
 //            if (account.isArrested) {
