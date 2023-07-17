@@ -29,20 +29,7 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
         String accounts = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
                 request, String.class);
 
-        //parsing string for define properties
-
         SearchMasterAccount.getMainStringAccounts(accounts);
-
-
-
-//        if (!personAccountsObject.isEmpty() & account.entityType="MASTER_ACCOUNT" & account.balance.curency="RUB") {
-//            if (account.isArrested) {
-//                databaseRepository.edit(paymentTask=3)
-//            }
-//        }
-
-
-        //System.out.println("personAccountsObject = " + personAccountsObject);
 
         log.info("Финиш вызова {}", PRODUCT_PROFILE_FL.getValue());
         return accounts;

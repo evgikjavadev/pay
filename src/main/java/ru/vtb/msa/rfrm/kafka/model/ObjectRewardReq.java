@@ -1,6 +1,7 @@
 package ru.vtb.msa.rfrm.kafka.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ObjectRewardReq {
     private UUID id;
     private UUID requestId;
@@ -17,6 +19,6 @@ public class ObjectRewardReq {
     private Double money;
 
     //mdmId приходит из заголовка
-    //private Integer mdmId;
+    private String mdmId;
     private String productId;
 }
