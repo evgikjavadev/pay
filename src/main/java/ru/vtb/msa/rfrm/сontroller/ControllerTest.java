@@ -3,6 +3,7 @@ package ru.vtb.msa.rfrm.сontroller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class ControllerTest {
     private static final String TOPIC = "RewardReq";
 
     @GetMapping("/hello")
-    public String hello() {
+    public String hello() throws JSONException {
 
         serviceTest.test();
         return "Hello!";
@@ -37,7 +38,7 @@ public class ControllerTest {
     public String publishMessage(@RequestBody ObjectRewardReq rewardReq) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-//        ObjectRewardReq readValue = objectMapper.readValue(rewardReq, ObjectRewardReq.class);
+        //ObjectRewardReq readValue = objectMapper.readValue(rewardReq, ObjectRewardReq.class);
 
         byte[] serialize = rewardSerializer.serialize(TOPIC, rewardReq);
 

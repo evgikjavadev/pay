@@ -2,25 +2,24 @@ package ru.vtb.msa.rfrm.integration.util.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ClientHttpRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
-import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
-import ru.vtb.msa.rfrm.repository.PaymentTaskRepository;
-import ru.vtb.msa.rfrm.repository.TaskStatusHistoryRepository;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.responsenew.ResponseCommonWebClient;
 
 import java.net.URI;
-import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -34,20 +33,31 @@ public abstract class WebClientBase {
     private final int duration;
     private final MultiValueMap<String, String> headers;
     private final WebClient webClient;
+    List<String> mdmIdFromHeader = new ArrayList<>();
+    public <T, R> R post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<R> accountsClass) {
 
-    public <T, R> R post(Function<UriBuilder, URI> function, T request, Class<R> clazz) {
+        Map<String, Map<String, String>> result;
         try {
-            return webClient.post()
+
+
+            R block = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .headers(getHttpHeaders(headers))
                     .accept(MediaType.ALL)
                     .retrieve()
-                    .bodyToMono(clazz)
-                    .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
-                            .filter(WebClientBase::isRequestTimeout))
+                    //.bodyToMono(new ParameterizedTypeReference<ResponseCommonWebClient<ResponseCommonWebClient>>() {
+                    //})
+
+                    .bodyToMono(accountsClass)
+
                     .block();
+
+
+            System.out.println("my6 header = " + mdmIdFromHeader);
+            System.out.println("my7 response = " + block);
+
+            return block;
+
         } catch (WebClientResponseException we) {
             log.error(we.getMessage());
             throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());
@@ -57,6 +67,8 @@ public abstract class WebClientBase {
                     ((WebClientResponseException) exception.getCause()).getStatusCode());
         }
     }
+
+
 
     private Consumer<HttpHeaders> getHttpHeaders(MultiValueMap<String, String> headers) {
         return httpHeaders -> httpHeaders.addAll(Optional.ofNullable(headers)

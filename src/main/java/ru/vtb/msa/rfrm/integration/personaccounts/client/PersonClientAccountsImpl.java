@@ -1,14 +1,13 @@
 package ru.vtb.msa.rfrm.integration.personaccounts.client;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.vtb.msa.rfrm.integration.personaccounts.SearchMasterAccount;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.responsenew.ResponseCommonWebClient;
 import ru.vtb.msa.rfrm.integration.personaccounts.config.ProductProfileFL;
 import ru.vtb.msa.rfrm.integration.util.client.WebClientBase;
 
-import static ru.vtb.msa.rfrm.integration.util.client.HeadersConstant.HEADER_NAME_X_MDM_ID;
 import static ru.vtb.msa.rfrm.integration.util.enums.ClientName.PRODUCT_PROFILE_FL;
 
 @Slf4j
@@ -21,18 +20,21 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
     }
 
     @Override
-    public String getPersonAccounts(AccountInfoRequest request) {
+    public ResponseCommonWebClient getPersonAccounts(AccountInfoRequest request) {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
 
-        properties.getHeaders().set(HEADER_NAME_X_MDM_ID, "5000015297");
-
-        String accounts = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
-                request, String.class);
-
-        SearchMasterAccount.getMainStringAccounts(accounts);
+        ResponseCommonWebClient responseCommonWebClient = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
+                request, ResponseCommonWebClient.class);
 
         log.info("Финиш вызова {}", PRODUCT_PROFILE_FL.getValue());
-        return accounts;
+        return responseCommonWebClient;
     }
+
+//    @Override
+//    public String getHeadersPersonAccount(AccountInfoRequest request) {
+//        String headerMdmId = this.getHeaderMdmId(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
+//                request, String.class);
+//        return headerMdmId;
+//    }
 
 }

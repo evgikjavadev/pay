@@ -11,7 +11,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import ru.vtb.msa.rfrm.kafka.model.ObjectRewardReq;
-import ru.vtb.msa.rfrm.kafka.model.ObjectRewardReqDeser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,18 +22,18 @@ public class KafkaConfigConsumer {
     private String groupIdConfig = "group_id";
 
     @Bean
-    public ConsumerFactory<String, ObjectRewardReqDeser> userConsumerFactory() {
+    public ConsumerFactory<String, ObjectRewardReq> userConsumerFactory() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServerKafka);
         configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
-        return new DefaultKafkaConsumerFactory<>(configs, new StringDeserializer(), new JsonDeserializer<>(ObjectRewardReqDeser.class));
+        return new DefaultKafkaConsumerFactory<>(configs, new StringDeserializer(), new JsonDeserializer<>(ObjectRewardReq.class));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, ObjectRewardReqDeser> userKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, ObjectRewardReqDeser> factory = new ConcurrentKafkaListenerContainerFactory<String, ObjectRewardReqDeser>();
+    public ConcurrentKafkaListenerContainerFactory<String, ObjectRewardReq> userKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, ObjectRewardReq> factory = new ConcurrentKafkaListenerContainerFactory<String, ObjectRewardReq>();
         //factory.setConsumerFactory(userConsumerFactory());
         factory.setMessageConverter(new StringJsonMessageConverter());
         return factory;

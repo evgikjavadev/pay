@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -19,13 +20,20 @@ import java.util.UUID;
 @Entity
 public class PaymentTask {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "reward_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "reward_id")
     private UUID rewardId;
+
+//    @Id
+//    @GeneratedValue(generator="reward_id")
+//    @GenericGenerator(name="reward_id", strategy = "uuid")
+//    private UUID rewardId;
+
+
 
     //@NotNull
     @Column(name = "request_id")
-    private UUID requestId;
+    private String requestId;
 
     //@NotNull
     @Column(name = "mdm_id")

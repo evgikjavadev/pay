@@ -1,6 +1,7 @@
 package ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import javax.validation.Valid;
@@ -13,12 +14,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "4-MASTER_ACCOUNT-40817810001006010797",
-        "4-CURRENT_ACCOUNT-40817810101006012239"
-})
-@Generated("jsonschema2pojo")
+//@JsonPropertyOrder({
+//        "4-MASTER_ACCOUNT-40817810001006010797",
+//        "4-CURRENT_ACCOUNT-40817810101006012239"
+//})
+//@Generated("jsonschema2pojo")
 public class Accounts {
+
+    private Map<String, Object> map;
 
     @JsonProperty("4-MASTER_ACCOUNT-40817810001006010797")
     @Valid

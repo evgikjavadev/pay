@@ -1,9 +1,10 @@
 package ru.vtb.msa.rfrm.integration.personaccounts.client;
 
+import org.springframework.http.ResponseEntity;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.responsenew.ResponseCommonWebClient;
 
 public interface PersonClientAccounts {
-    String getPersonAccounts(AccountInfoRequest request);
+    ResponseCommonWebClient getPersonAccounts(AccountInfoRequest request);
 
 }

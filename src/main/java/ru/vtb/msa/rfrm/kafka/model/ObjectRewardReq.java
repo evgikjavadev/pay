@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 @Data
@@ -13,8 +12,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class ObjectRewardReq {
-    private UUID id;
-    private UUID requestId;
+    private String id;
+    private String requestId;
     private Integer recipientType;
     private Double money;
 
