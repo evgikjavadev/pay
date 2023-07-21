@@ -17,36 +17,33 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class PaymentTask {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+
+    /** ID задачи на оплату (генерируется ядром 2155 rfrm-core) */
     @Column(name = "reward_id")
     private UUID rewardId;
 
-//    @Id
-//    @GeneratedValue(generator="reward_id")
-//    @GenericGenerator(name="reward_id", strategy = "uuid")
-//    private UUID rewardId;
-
-
-
+    /** ID заявки на участие в реферальной программе */
     //@NotNull
-    @Column(name = "request_id")
-    private String requestId;
+    @Column(name = "questionnaire_id")
+    private UUID questionnaireId;
 
+    /** ID получателя вознаграждения в MDM */
     //@NotNull
     @Column(name = "mdm_id")
-    private String mdmId;
+    private UUID mdmId;
 
+    /** Тип получателя вознаграждения */
     //@NotNull
     @Column(name = "recipient_type")
     private Integer recipientType;
 
+    /** Сумма вознаграждения (определяется ядром 2155 rfrm-core) */
     //@NotNull
     @Column(name = "amount")
     private Double amount;
 
+    /** Cтатус задания на оплату */
     //@NotNull
     @Column(name = "status")
     private Integer status;
@@ -56,25 +53,23 @@ public class PaymentTask {
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
 
+    /** Система, в которой расположен счет клиента для оплаты вознаграждения */
     @Column(name = "account_system")
     private String accountSystem;
 
+    /** Счет клиента для оплаты вознаграждения */
     @Column(name = "account")
     private Integer account;
 
-    //@NotNull
-    @Column(name = "product_id")
-    private String product_id;
+    /** ID продукта, по которому должно быть выплачено вознаграждение за участие в реферальной программе */
+    @Column(name = "source_qs")
+    private String sourceQs;
 
+    /** Отметка об отправке финального статуса */
     //@NotNull
     @Column(name = "response_sent")
     private Boolean responseSent;
 
-//    @OneToMany(mappedBy = "paymentTask")
-//    private List<TaskStatusHistory> taskStatusHistories;           //todo
 
-//    @ManyToOne
-//    @JoinColumn(name = "task_statuses_status")
-//    private TaskStatuses taskStatuses;
 
 }

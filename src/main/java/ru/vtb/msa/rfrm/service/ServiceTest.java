@@ -3,6 +3,7 @@ package ru.vtb.msa.rfrm.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import ru.vtb.msa.rfrm.connectionDatabaseJdbc.DatabaseConnection;
 import ru.vtb.msa.rfrm.entitytodatabase.TaskStatusHistory;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.PersonMasterAccount;
@@ -35,7 +36,7 @@ public class ServiceTest {
     private final String personAccounts = "";
     private final String headersPersonAccount = "";
 
-    private final TaskStatusHistoryRepository repository;
+    //private final TaskStatusHistoryRepository repository;
 
     @Audit(value = "EXAMPLE_EVENT_CODE")
     //@PreAuthorize("permittedByRole('READ')")
@@ -58,7 +59,7 @@ public class ServiceTest {
 
         } catch (HttpStatusException e) {
           e.getStatus();
-          sendObjectToTaskStatusHistory();
+          //sendObjectToTaskStatusHistory();
         }
 
         //String requestField = personMasterAccount.getRequestField(new StringBuilder(personAccounts), MAIN_TEMPLATE_MASTER_ACCOUNT);
@@ -67,10 +68,15 @@ public class ServiceTest {
 
     }
 
-    private void sendObjectToTaskStatusHistory() {
-        TaskStatusHistory taskStatusHistory = getTaskStatusHistory();
-        repository.save(taskStatusHistory);
+    public void saveNewTaskToDb() {
+
+
     }
+
+//    private void sendObjectToTaskStatusHistory() {
+//        TaskStatusHistory taskStatusHistory = getTaskStatusHistory();
+//        repository.save(taskStatusHistory);
+//    }
 
     /** Метод собирает объект для сохранения в БД */
     private static TaskStatusHistory getTaskStatusHistory() {

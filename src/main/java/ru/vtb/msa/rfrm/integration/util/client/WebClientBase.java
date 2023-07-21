@@ -6,7 +6,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,13 +13,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.util.UriBuilder;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.responsenew.ResponseCommonWebClient;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -34,9 +29,11 @@ public abstract class WebClientBase {
     private final MultiValueMap<String, String> headers;
     private final WebClient webClient;
     List<String> mdmIdFromHeader = new ArrayList<>();
+    Map<String, Map<String, String>> result;
+
     public <T, R> R post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<R> accountsClass) {
 
-        Map<String, Map<String, String>> result;
+
         try {
 
 
@@ -47,8 +44,10 @@ public abstract class WebClientBase {
                     .retrieve()
                     //.bodyToMono(new ParameterizedTypeReference<ResponseCommonWebClient<ResponseCommonWebClient>>() {
                     //})
-
+//                    .bodyToMono(new ParameterizedTypeReference<String>() {
+//                    })
                     .bodyToMono(accountsClass)
+                    //.map(jsonToMapConverterFunction(""))
 
                     .block();
 
@@ -68,6 +67,11 @@ public abstract class WebClientBase {
         }
     }
 
+    private Map<String, String> jsonToMapConverterFunction(String s) {
+        Map<String, String> map = new HashMap<>();
+        map.put("", "");
+        return result.put(s, map);
+    }
 
 
     private Consumer<HttpHeaders> getHttpHeaders(MultiValueMap<String, String> headers) {

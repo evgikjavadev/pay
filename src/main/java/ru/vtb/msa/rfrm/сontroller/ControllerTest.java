@@ -2,7 +2,6 @@ package ru.vtb.msa.rfrm.сontroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,5 +44,12 @@ public class ControllerTest {
         kafkaTemplate.send(TOPIC, serialize);
         return "Object published in topic successfully!";
     }
+
+    /** Тест сохранения в БД нового задания через JDBC */
+    @GetMapping("/savetask")
+    public void saveNewTask() {
+        serviceTest.saveNewTaskToDb();
+    }
+
 
 }
