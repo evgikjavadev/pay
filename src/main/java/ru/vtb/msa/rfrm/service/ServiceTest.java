@@ -3,7 +3,8 @@ package ru.vtb.msa.rfrm.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.DatabaseConnection;
+import ru.vtb.msa.rfrm.connectionDatabaseJdbc.PaymentTaskActions;
+import ru.vtb.msa.rfrm.entitytodatabase.PayPaymentTask;
 import ru.vtb.msa.rfrm.entitytodatabase.TaskStatusHistory;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.PersonMasterAccount;
@@ -11,30 +12,20 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
 
-import ru.vtb.msa.rfrm.integration.util.client.ResponseObjWebClient;
-import ru.vtb.msa.rfrm.repository.TaskStatusHistoryRepository;
 import ru.vtb.omni.audit.lib.api.annotation.Audit;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ServiceTest {
-
-    private static final String MAIN_TEMPLATE_MASTER_ACCOUNT = "\".*MASTER_ACCOUNT-\\d+.*:\\s*\\s*[\\w{}а-яА-Я\\.\"\\,\\s*:\\_\\d-]+_ACCOUNT-\\d";
-    private static final String TEMPLATE_ENTITY_TYPE = "\"entityType\"\\s*:\\s*\"MASTER_ACCOUNT\"";
-    private static final String TEMPLATE_BALANCE_RUB = "\"balance\"\\s*:\\s*\\{\\s*\"currency\"\\s*:\\s*\"RUB\"";
-    private static final String TEMPLATE_IS_ARRESTED = "\"isArrested\"\\s*:\\s*false";
-    private static final String TEMPLATE_NUMBER = "\"number\"\\s*:\\s*\"(.*?)\"";
-    private static final String TEMPLATE_NUMBER_ACCOUNT = "\\d+";
     private final PersonClientAccounts personClientAccounts;
 
-    private final PersonMasterAccount personMasterAccount;
+    private final PaymentTaskActions paymentTaskActions;
 
-    private final String personAccounts = "";
-    private final String headersPersonAccount = "";
 
     //private final TaskStatusHistoryRepository repository;
 
@@ -70,6 +61,21 @@ public class ServiceTest {
 
     public void saveNewTaskToDb() {
 
+        PayPaymentTask payPaymentTask = PayPaymentTask.builder()
+                .mdmId("675456")
+                .rewardId(UUID.randomUUID())
+                .account(38787798)
+                .accountSystem("system")
+                .recipientType(4)
+                .responseSent(false)
+                .amount(6700.00)
+                .status(2)
+                .createdAt(LocalDateTime.now())
+                .sourceQs("89")
+                .questionnaireId(UUID.randomUUID())
+                .build();
+
+        paymentTaskActions.createPaymentTask(payPaymentTask);
 
     }
 

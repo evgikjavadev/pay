@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class TaskStatusHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

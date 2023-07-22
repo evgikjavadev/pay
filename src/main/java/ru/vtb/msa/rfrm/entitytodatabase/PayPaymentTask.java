@@ -5,19 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentTask {
+public class PayPaymentTask {
 
     /** ID задачи на оплату (генерируется ядром 2155 rfrm-core) */
     @Column(name = "reward_id")
@@ -31,7 +28,7 @@ public class PaymentTask {
     /** ID получателя вознаграждения в MDM */
     //@NotNull
     @Column(name = "mdm_id")
-    private UUID mdmId;
+    private String mdmId;
 
     /** Тип получателя вознаграждения */
     //@NotNull
@@ -71,5 +68,7 @@ public class PaymentTask {
     private Boolean responseSent;
 
 
-
+    public Object getCreatedAt() {
+        return LocalDateTime.now();
+    }
 }

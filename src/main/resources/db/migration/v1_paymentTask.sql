@@ -1,7 +1,7 @@
 CREATE TABLE pay_payment_task (
-                       reward_id uuid PRIMARY KEY,
+                       reward_id uuid,
                        questionnaire_id uuid,
-                       mdm_id uuid,
+                       mdm_id text,
                        recipient_type integer,
                        amount double precision,
                        status integer,

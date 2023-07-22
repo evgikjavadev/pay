@@ -21,16 +21,27 @@ spring:
             token-uri: http://localhost:8070/passport/tech/oauth2/token
           epa-tyk-client:
             token-uri: http://localhost:8070/passport/oauth2/token
-
-  jpa:
-    database: POSTGRESQL
-    hibernate:
-      ddl-auto: create-drop
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: 123
-    driverClassName: org.postgresql.Driver
+    hikari:
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://localhost:5432/postgres
+      username: postgres
+      password: 123
+  jmx:
+    default-domain: some
+
+#  jpa:
+#    database: POSTGRESQL
+#    hibernate:
+#      ddl-auto: create-drop
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/postgres
+#    username: postgres
+#    password: 123
+#    pool-size: 30
+#    driver-class-name: org.postgresql.Driver
+
+
 
 audit:
   local-mode: true

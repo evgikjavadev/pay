@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class ErrorDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
