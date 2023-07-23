@@ -67,7 +67,6 @@ public class PayPaymentTask {
     @Column(name = "response_sent")
     private Boolean responseSent;
 
-
     public Object getCreatedAt() {
         return LocalDateTime.now();
     }

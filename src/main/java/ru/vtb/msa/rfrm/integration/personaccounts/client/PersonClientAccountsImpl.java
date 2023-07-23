@@ -1,10 +1,8 @@
 package ru.vtb.msa.rfrm.integration.personaccounts.client;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.responsenew.ResponseCommonWebClient;
 import ru.vtb.msa.rfrm.integration.personaccounts.config.ProductProfileFL;
 import ru.vtb.msa.rfrm.integration.util.client.WebClientBase;
 
@@ -20,21 +18,14 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
     }
 
     @Override
-    public ResponseCommonWebClient getPersonAccounts(AccountInfoRequest request) {
+    public Object getPersonAccounts(AccountInfoRequest request) {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
 
-        ResponseCommonWebClient responseCommonWebClient = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
-                request, ResponseCommonWebClient.class);
+        Object post = this.post(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
+                request, String.class);
 
         log.info("Финиш вызова {}", PRODUCT_PROFILE_FL.getValue());
-        return responseCommonWebClient;
+        return post;
     }
-
-//    @Override
-//    public String getHeadersPersonAccount(AccountInfoRequest request) {
-//        String headerMdmId = this.getHeaderMdmId(uriBuilder -> uriBuilder.path(properties.getResource()).build(),
-//                request, String.class);
-//        return headerMdmId;
-//    }
 
 }

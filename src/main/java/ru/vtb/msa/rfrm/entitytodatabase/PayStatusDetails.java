@@ -6,17 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class PayStatusDetails {
 
     @Column(name = "code")
     private Integer code;
@@ -24,8 +19,5 @@ public class ErrorDetails {
     @Column(name = "description")
     private String description;
 
-//    @OneToMany
-//    @JoinColumn(name = "error_details")
-//    private List<TaskStatusHistory> taskStatusHistories;
 
 }

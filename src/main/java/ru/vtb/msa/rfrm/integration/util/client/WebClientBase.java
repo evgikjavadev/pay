@@ -2,6 +2,8 @@ package ru.vtb.msa.rfrm.integration.util.client;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,10 +13,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
+import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -31,29 +35,30 @@ public abstract class WebClientBase {
     List<String> mdmIdFromHeader = new ArrayList<>();
     Map<String, Map<String, String>> result;
 
-    public <T, R> R post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<R> accountsClass) {
-
+    public Object post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<String> stringClass) {
 
         try {
 
-
-            R block = webClient.post()
+            String block = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
                     .accept(MediaType.ALL)
                     .retrieve()
-                    //.bodyToMono(new ParameterizedTypeReference<ResponseCommonWebClient<ResponseCommonWebClient>>() {
-                    //})
-//                    .bodyToMono(new ParameterizedTypeReference<String>() {
-//                    })
-                    .bodyToMono(accountsClass)
-                    //.map(jsonToMapConverterFunction(""))
+                    .bodyToMono(new ParameterizedTypeReference<String>() {
+                    })
 
+                    //.bodyToMono(ResponseCommonWebClient.class)
+                    //.map()
+                    .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
+                            .filter(this::isRequestTimeout))
                     .block();
 
 
+            //JSONObject jo = new JSONObject(block);
+
+
             System.out.println("my6 header = " + mdmIdFromHeader);
-            System.out.println("my7 response = " + block);
+            //System.out.println("my7 response = " + jo);
 
             return block;
 
@@ -67,11 +72,7 @@ public abstract class WebClientBase {
         }
     }
 
-    private Map<String, String> jsonToMapConverterFunction(String s) {
-        Map<String, String> map = new HashMap<>();
-        map.put("", "");
-        return result.put(s, map);
-    }
+
 
 
     private Consumer<HttpHeaders> getHttpHeaders(MultiValueMap<String, String> headers) {
@@ -79,7 +80,7 @@ public abstract class WebClientBase {
                 .orElse(new HttpHeaders()));
     }
 
-    public static boolean isRequestTimeout(Throwable throwable) {
+    public boolean isRequestTimeout(Throwable throwable) {
         return throwable instanceof WebClientResponseException &&
                 ((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.REQUEST_TIMEOUT) ||
                 ((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.UNAUTHORIZED) ||

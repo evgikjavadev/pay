@@ -18,5 +18,5 @@ public class ResponseCommonWebClient {
     //private MessageResponse messageResponse;
     //
 
-    private List<Object> accounts;
+    private Object accounts;
 }

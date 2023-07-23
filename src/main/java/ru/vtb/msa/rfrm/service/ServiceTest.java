@@ -5,9 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.PaymentTaskActions;
 import ru.vtb.msa.rfrm.entitytodatabase.PayPaymentTask;
-import ru.vtb.msa.rfrm.entitytodatabase.TaskStatusHistory;
+import ru.vtb.msa.rfrm.entitytodatabase.PayTaskStatusHistory;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
-import ru.vtb.msa.rfrm.integration.personaccounts.PersonMasterAccount;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
@@ -85,15 +84,15 @@ public class ServiceTest {
 //    }
 
     /** Метод собирает объект для сохранения в БД */
-    private static TaskStatusHistory getTaskStatusHistory() {
-        TaskStatusHistory taskStatusHistory = TaskStatusHistory
-                .builder()
-                //.taskStatus(e.getStatus().value())
-                .errorDetails(101)
-                .statusUpdatedAt(LocalDateTime.now())
-                .build();
-        return taskStatusHistory;
-    }
+//    private static PayTaskStatusHistory getTaskStatusHistory() {
+//        PayTaskStatusHistory payTaskStatusHistory = PayTaskStatusHistory
+//                .builder()
+//                //.taskStatus(e.getStatus().value())
+//                .errorDetails(101)
+//                .statusUpdatedAt(LocalDateTime.now())
+//                .build();
+//        return payTaskStatusHistory;
+//    }
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {
         return AccountInfoRequest.builder().productTypes(str).build();
