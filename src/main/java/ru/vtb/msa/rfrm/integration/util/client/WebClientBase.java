@@ -1,5 +1,8 @@
 package ru.vtb.msa.rfrm.integration.util.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -8,15 +11,18 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
+import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.*;
@@ -39,26 +45,37 @@ public abstract class WebClientBase {
 
         try {
 
-            String block = webClient.post()
+            Map<StringBuilder, Map<StringBuilder, StringBuilder>> block = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
                     .accept(MediaType.ALL)
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<String>() {
-                    })
+//                    .bodyToMono(new ParameterizedTypeReference<String>() {
+//                    })
+
+                    .bodyToMono(String.class)
 
                     //.bodyToMono(ResponseCommonWebClient.class)
-                    //.map()
+                    .map(jsonString -> {
+                        //Mono<String> just = Mono.just(jsonString);
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        TypeReference<Map<StringBuilder, Map<StringBuilder, StringBuilder>>> typeReference = new TypeReference<>() {
+                        };
+
+                        try {
+                            return objectMapper.readValue(jsonString, typeReference);
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                    })
                     .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
                             .filter(this::isRequestTimeout))
                     .block();
 
 
-            //JSONObject jo = new JSONObject(block);
-
-
             System.out.println("my6 header = " + mdmIdFromHeader);
-            //System.out.println("my7 response = " + jo);
+            System.out.println("my7 response = " + block);
 
             return block;
 
@@ -72,7 +89,17 @@ public abstract class WebClientBase {
         }
     }
 
-
+    public Mono<Map<String, Map<String, String>>> parseJson(Mono<String> jsonStringMono) {
+        return jsonStringMono.map(jsonString -> {
+            ObjectMapper objectMapper = new ObjectMapper();
+            TypeReference<Map<String, Map<String, String>>> typeReference = new TypeReference<>() {};
+            try {
+                return objectMapper.readValue(jsonString, typeReference);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to parse JSON", e);
+            }
+        });
+    }
 
 
     private Consumer<HttpHeaders> getHttpHeaders(MultiValueMap<String, String> headers) {

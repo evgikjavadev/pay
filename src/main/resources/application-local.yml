@@ -30,6 +30,10 @@ spring:
   jmx:
     default-domain: some
 
+  codec:
+    max-in-memory-size: 20MB
+
+
 #  jpa:
 #    database: POSTGRESQL
 #    hibernate:

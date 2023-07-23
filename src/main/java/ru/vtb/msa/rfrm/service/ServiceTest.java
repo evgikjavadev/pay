@@ -41,20 +41,11 @@ public class ServiceTest {
             // получаем сам объект с данными счета клиента
             personClientAccounts.getPersonAccounts(sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
 
-//            String responseWebClient = responseObjWebClient.getResponseWebClient();
-//            System.out.println("my89 = " + responseWebClient);
-
-
-            //personAccounts.concat(accountObject);
 
         } catch (HttpStatusException e) {
           e.getStatus();
           //sendObjectToTaskStatusHistory();
         }
-
-        //String requestField = personMasterAccount.getRequestField(new StringBuilder(personAccounts), MAIN_TEMPLATE_MASTER_ACCOUNT);
-
-        //System.out.println("my5 = " + requestField);
 
     }
 
