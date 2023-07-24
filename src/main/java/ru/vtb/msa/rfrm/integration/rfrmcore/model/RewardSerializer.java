@@ -1,8 +1,9 @@
-package ru.vtb.msa.rfrm.kafka.model;
+package ru.vtb.msa.rfrm.integration.rfrmcore.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Serializer;
 import org.springframework.stereotype.Component;
+import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
 
 @Component
 public class RewardSerializer implements Serializer<ObjectRewardReq> {

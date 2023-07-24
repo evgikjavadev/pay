@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.entitytodatabase;
+package ru.vtb.msa.rfrm.modeldatabase;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

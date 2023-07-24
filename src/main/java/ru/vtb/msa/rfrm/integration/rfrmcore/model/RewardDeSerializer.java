@@ -1,4 +1,4 @@
-//package ru.vtb.msa.rfrm.kafka.model;
+//package ru.vtb.msa.rfrm.integration.rfrmcore.kafka.model;
 //
 //import com.fasterxml.jackson.core.JsonProcessingException;
 //import com.fasterxml.jackson.databind.ObjectMapper;

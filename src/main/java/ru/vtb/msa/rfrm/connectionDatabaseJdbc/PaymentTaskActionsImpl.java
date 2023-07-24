@@ -2,7 +2,7 @@ package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.vtb.msa.rfrm.entitytodatabase.PayPaymentTask;
+import ru.vtb.msa.rfrm.modeldatabase.PayPaymentTask;
 
 
 @Repository

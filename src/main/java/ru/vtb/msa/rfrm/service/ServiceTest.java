@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.PaymentTaskActions;
-import ru.vtb.msa.rfrm.entitytodatabase.PayPaymentTask;
-import ru.vtb.msa.rfrm.entitytodatabase.PayTaskStatusHistory;
+import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
+import ru.vtb.msa.rfrm.modeldatabase.PayPaymentTask;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 
@@ -24,7 +24,6 @@ public class ServiceTest {
     private final PersonClientAccounts personClientAccounts;
 
     private final PaymentTaskActions paymentTaskActions;
-
 
     //private final TaskStatusHistoryRepository repository;
 
@@ -49,20 +48,33 @@ public class ServiceTest {
 
     }
 
-    public void saveNewTaskToDb() {
+    public void saveNewTaskToPayPaymentTask() {
 
-        PayPaymentTask payPaymentTask = PayPaymentTask.builder()
-                .mdmId("675456")
-                .rewardId(UUID.randomUUID())
-                .account(38787798)
-                .accountSystem("system")
-                .recipientType(4)
-                .responseSent(false)
-                .amount(6700.00)
-                .status(2)
-                .createdAt(LocalDateTime.now())
-                .sourceQs("89")
-                .questionnaireId(UUID.randomUUID())
+        //тестовый объект который получаем из Кафка с заполненными полями
+        ObjectRewardReq objectRewardReq = ObjectRewardReq
+                .builder()
+                .id(UUID.randomUUID())
+                .money(6500.00)
+                .mdmId("12345678")
+                .questionnaire_id(UUID.randomUUID())
+                .recipientType(3)
+                .source_qs("stringSourceQs")
+                .build();
+
+        // обогащаем объект из топика RewardReq полями и создаем новый объект
+        PayPaymentTask payPaymentTask = PayPaymentTask
+                .builder()
+                .rewardId(UUID.randomUUID())                            // из топика кафка RewardReq
+                .questionnaireId(UUID.randomUUID())                    //todo берем из 1642 1642 Платформа анализа и обработки данных (Data Analysis and Processing Platform)
+                .mdmId(objectRewardReq.getMdmId())                     //берем из кафка RewardReq
+                .recipientType(objectRewardReq.getRecipientType())         // берем из кафка RewardReq
+                .amount(objectRewardReq.getMoney())                       // берем из кафка RewardReq
+                .status(10)                                            // автоматически дополняем
+                .createdAt(LocalDateTime.now())                        // автоматически дополняем
+                .responseSent(false)                                  // автоматически дополняем
+                .sourceQs(objectRewardReq.getSource_qs())             // берем из кафка RewardReq
+                .account(38787798)                                   // берем из 1503
+                .accountSystem("1503")                               //todo  узнать что писать в поле как называется система 1503
                 .build();
 
         paymentTaskActions.createPaymentTask(payPaymentTask);

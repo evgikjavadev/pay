@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.entitytodatabase;
+package ru.vtb.msa.rfrm.modeldatabase;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

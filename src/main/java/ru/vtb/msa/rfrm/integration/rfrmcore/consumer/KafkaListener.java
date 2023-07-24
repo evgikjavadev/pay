@@ -1,10 +1,10 @@
-//package ru.vtb.msa.rfrm.kafka.consumer;
+//package ru.vtb.msa.rfrm.integration.rfrmcore.consumer;
 //
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.messaging.handler.annotation.Payload;
 //import org.springframework.stereotype.Component;
 //import ru.vtb.msa.rfrm.entitytodatabase.PayPaymentTask;
-//import ru.vtb.msa.rfrm.kafka.model.ObjectRewardReq;
+//import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
 //import ru.vtb.msa.rfrm.repository.PaymentTaskRepository;
 //
 //import java.io.IOException;

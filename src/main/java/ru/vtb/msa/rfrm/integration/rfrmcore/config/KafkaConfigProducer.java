@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.kafka.config;
+package ru.vtb.msa.rfrm.integration.rfrmcore.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -9,7 +9,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import ru.vtb.msa.rfrm.kafka.model.ObjectRewardReq;
+import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
 
 import java.util.HashMap;
 import java.util.Map;

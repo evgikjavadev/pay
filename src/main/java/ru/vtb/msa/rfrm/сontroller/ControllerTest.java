@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.vtb.msa.rfrm.kafka.model.ObjectRewardReq;
-import ru.vtb.msa.rfrm.kafka.model.RewardSerializer;
+import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
+import ru.vtb.msa.rfrm.integration.rfrmcore.model.RewardSerializer;
 import ru.vtb.msa.rfrm.service.ServiceTest;
 
 import java.io.IOException;
@@ -32,9 +32,10 @@ public class ControllerTest {
 
     private final RewardSerializer rewardSerializer;
 
-    /*** Тест отправки объекта в топик кафка */
+    /*** Тест получения объекта из топика RewardReq кафка */
     @PostMapping("/publish")
     public String publishMessage(@RequestBody ObjectRewardReq rewardReq) throws IOException {
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         //ObjectRewardReq readValue = objectMapper.readValue(rewardReq, ObjectRewardReq.class);
@@ -48,8 +49,7 @@ public class ControllerTest {
     /** Тест сохранения в БД нового задания через JDBC */
     @GetMapping("/savetask")
     public void saveNewTask() {
-        serviceTest.saveNewTaskToDb();
+        serviceTest.saveNewTaskToPayPaymentTask();
     }
-
 
 }

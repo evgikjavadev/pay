@@ -5,13 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,6 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,41 +38,55 @@ public abstract class WebClientBase {
     List<String> mdmIdFromHeader = new ArrayList<>();
     Map<String, Map<String, String>> result;
 
-    public Object post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<String> stringClass) {
+
+    public Map<String, Map<String, String>> post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<ResponseCommon> stringClass) {
 
         try {
 
-            Map<StringBuilder, Map<StringBuilder, StringBuilder>> block = webClient.post()
+            Map<String, Map<String, String>> block = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
                     .accept(MediaType.ALL)
+                    //.exchange()
                     .retrieve()
 //                    .bodyToMono(new ParameterizedTypeReference<String>() {
 //                    })
 
-                    .bodyToMono(String.class)
+                    //.bodyToMono(String.class)
 
-                    //.bodyToMono(ResponseCommonWebClient.class)
+                    .bodyToMono(ResponseCommon.class)
                     .map(jsonString -> {
                         //Mono<String> just = Mono.just(jsonString);
                         ObjectMapper objectMapper = new ObjectMapper();
-                        TypeReference<Map<StringBuilder, Map<StringBuilder, StringBuilder>>> typeReference = new TypeReference<>() {
+                        TypeReference<Map<String, Map<String, String>>> typeReference = new TypeReference<>() {
                         };
 
                         try {
-                            return objectMapper.readValue(jsonString, typeReference);
+                            return objectMapper.readValue(jsonString.toString(), typeReference);
                         } catch (JsonProcessingException e) {
                             throw new RuntimeException(e);
                         }
 
                     })
+
                     .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
                             .filter(this::isRequestTimeout))
                     .block();
 
+            //Mono<Void> voidMono = block.releaseBody();
 
-            System.out.println("my6 header = " + mdmIdFromHeader);
-            System.out.println("my7 response = " + block);
+
+//            String block1 = Mono.just(block)
+//                    .flatMap(a -> a.bodyToMono(String.class))
+//                    .block();
+
+
+//            System.out.println("my7 headers = " + block.headers().asHttpHeaders());
+            System.out.println("my9 = " + block);
+//            //System.out.println("my8  = " + block1.bodyToMono(String.class).block());
+//            System.out.println("my11  = " + voidMono);
+
+
 
             return block;
 

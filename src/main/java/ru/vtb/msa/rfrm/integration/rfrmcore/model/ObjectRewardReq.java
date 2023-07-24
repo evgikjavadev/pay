@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.kafka.model;
+package ru.vtb.msa.rfrm.integration.rfrmcore.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,17 +7,18 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/** Объект который приходит из топика RewardReq */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ObjectRewardReq {
-    private String id;
-    private String requestId;
+    private UUID id;
+    private UUID questionnaire_id;
     private Integer recipientType;
     private Double money;
 
     //mdmId приходит из заголовка
     private String mdmId;
-    private String productId;
+    private String source_qs;
 }
