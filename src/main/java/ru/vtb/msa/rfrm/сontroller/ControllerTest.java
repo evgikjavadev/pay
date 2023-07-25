@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
 import ru.vtb.msa.rfrm.integration.rfrmcore.model.RewardSerializer;
-import ru.vtb.msa.rfrm.service.ServiceTest;
+import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
 import java.io.IOException;
 
@@ -18,16 +18,16 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ControllerTest {
 
-    private final ServiceTest serviceTest;
+    private final ServiceAccounts serviceAccounts;
 
     private final KafkaTemplate<Object, byte[]> kafkaTemplate;
     private static final String TOPIC = "RewardReq";
 
-    @GetMapping("/hello")
+    @GetMapping("/getaccounts")
     public String hello() throws JSONException {
 
-        serviceTest.test();
-        return "Hello!";
+        serviceAccounts.getClientAccounts();
+        return "Accounts for clients are received !";
     }
 
     private final RewardSerializer rewardSerializer;
@@ -49,7 +49,7 @@ public class ControllerTest {
     /** Тест сохранения в БД нового задания через JDBC */
     @GetMapping("/savetask")
     public void saveNewTask() {
-        serviceTest.saveNewTaskToPayPaymentTask();
+        serviceAccounts.saveNewTaskToPayPaymentTask();
     }
 
 }

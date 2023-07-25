@@ -16,8 +16,8 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.ResponseCommon;
 
 import java.io.IOException;
 import java.net.URI;
@@ -39,11 +39,11 @@ public abstract class WebClientBase {
     Map<String, Map<String, String>> result;
 
 
-    public Map<String, Map<String, String>> post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<ResponseCommon> stringClass) {
+    public String post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<ResponseCommon> stringClass) {
 
         try {
 
-            Map<String, Map<String, String>> block = webClient.post()
+            String block = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
                     .accept(MediaType.ALL)
@@ -54,20 +54,20 @@ public abstract class WebClientBase {
 
                     //.bodyToMono(String.class)
 
-                    .bodyToMono(ResponseCommon.class)
-                    .map(jsonString -> {
-                        //Mono<String> just = Mono.just(jsonString);
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        TypeReference<Map<String, Map<String, String>>> typeReference = new TypeReference<>() {
-                        };
-
-                        try {
-                            return objectMapper.readValue(jsonString.toString(), typeReference);
-                        } catch (JsonProcessingException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                    })
+                    .bodyToMono(String.class)
+//                    .map(jsonString -> {
+//                        //Mono<String> just = Mono.just(jsonString);
+//                        ObjectMapper objectMapper = new ObjectMapper();
+//                        TypeReference<String> typeReference = new TypeReference<>() {
+//                        };
+//
+//                        try {
+//                            return objectMapper.readValue(jsonString.toString(), typeReference);
+//                        } catch (JsonProcessingException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//
+//                    })
 
                     .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
                             .filter(this::isRequestTimeout))

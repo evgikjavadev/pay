@@ -1,10 +1,9 @@
 package ru.vtb.msa.rfrm.integration.personaccounts.client;
 
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.request.AccountInfoRequest;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
 
-import java.util.Map;
 
 public interface PersonClientAccounts {
-    Map<String, Map<String, String>> getPersonAccounts(AccountInfoRequest request);
+    String getPersonAccounts(AccountInfoRequest request);
 
 }
