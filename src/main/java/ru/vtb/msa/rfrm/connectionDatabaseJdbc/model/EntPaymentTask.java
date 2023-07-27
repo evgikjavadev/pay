@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.modeldatabase;
+package ru.vtb.msa.rfrm.connectionDatabaseJdbc.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PayPaymentTask {
+public class EntPaymentTask {
 
     /** ID задачи на оплату (генерируется ядром 2155 rfrm-core) */
     @Column(name = "reward_id")
@@ -67,7 +67,7 @@ public class PayPaymentTask {
     @Column(name = "response_sent")
     private Boolean responseSent;
 
-    public Object getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return LocalDateTime.now();
     }
 }

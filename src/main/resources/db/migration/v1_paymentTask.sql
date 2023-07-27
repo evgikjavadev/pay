@@ -1,4 +1,4 @@
-CREATE TABLE pay_payment_task (
+CREATE TABLE IF NOT EXISTS ent_payment_task (
                        reward_id uuid PRIMARY KEY,
                        questionnaire_id uuid,
                        mdm_id text,
@@ -12,36 +12,38 @@ CREATE TABLE pay_payment_task (
                        response_sent boolean
 );
 
-CREATE TABLE pay_task_status_history (
-                                  id uuid PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS ent_task_status_history (
+                                  status_history_id uuid PRIMARY KEY,
                                   task_id uuid,
-                                  status_details integer,
+                                  status_details_code integer,
                                   task_status integer,
                                   status_updated_at timestamp
 );
 
-CREATE TABLE pay_task_statuses (
+CREATE TABLE IF NOT EXISTS dct_task_statuses (
                                  status integer PRIMARY KEY,
-                                 description text
+                                 status_business_description text,
+                                 status_system_name text
 );
 
-CREATE TABLE pay_status_details (
-                                    code integer PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS dct_status_details (
+                                    status_details_code integer PRIMARY KEY,
+                                    related_status integer,
                                     description text
 );
 
-INSERT INTO pay_task_statuses (status, description) VALUES (10, 'New');
-INSERT INTO pay_task_statuses (status, description) VALUES (20, 'Payed');
-INSERT INTO pay_task_statuses (status, description) VALUES (30, 'Rejected');
-INSERT INTO pay_task_statuses (status, description) VALUES (40, 'Manual processing');
-INSERT INTO pay_task_statuses (status, description) VALUES (50, 'Ready for payment');
+INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (10, 'Новое', 'New');
+INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (20, 'Выплачено', 'Payed');
+INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (30, 'Отклонено', 'Rejected');
+INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (40, 'Ручной разбор', 'Manual processing');
+INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (50, 'К выплате', 'Ready for payment');
 
 
-INSERT INTO pay_status_details (code, description) VALUES (101, 'Продуктовый Профиль ФЛ: клиент не найден в МДМ');
-INSERT INTO pay_status_details (code, description) VALUES (103, 'Продуктовый Профиль ФЛ: некорректный запрос к сервису');
-INSERT INTO pay_status_details (code, description) VALUES (004, 'Продуктовый Профиль ФЛ: ошибка доступа');
-INSERT INTO pay_status_details (code, description) VALUES (201, 'Продуктовый Профиль ФЛ: Мастер-счет не найден');
-INSERT INTO pay_status_details (code, description) VALUES (202, 'Продуктовый Профиль ФЛ: Мастер-счет арестован');
+INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (101, 4, 'Продуктовый Профиль ФЛ: клиент не найден в МДМ');
+INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (103, 4, 'Продуктовый Профиль ФЛ: некорректный запрос к сервису');
+INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (104, 4, 'Продуктовый Профиль ФЛ: ошибка доступа');
+INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (201, 3, 'Продуктовый Профиль ФЛ: Мастер-счет не найден');
+INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (202, 3, 'Продуктовый Профиль ФЛ: Мастер-счет арестован');
 
 
 

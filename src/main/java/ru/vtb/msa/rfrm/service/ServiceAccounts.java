@@ -3,9 +3,11 @@ package ru.vtb.msa.rfrm.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import ru.vtb.msa.rfrm.connectionDatabaseJdbc.PayTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.PaymentTaskActionsDb;
+import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntTaskStatusHistory;
+import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
-import ru.vtb.msa.rfrm.modeldatabase.PayPaymentTask;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
@@ -21,8 +23,16 @@ import java.util.UUID;
 public class ServiceAccounts {
     private final PersonClientAccounts personClientAccounts;
     private final PaymentTaskActionsDb paymentTaskActionsDb;
+    private final PayTaskStatusHistoryActions payTaskStatusHistoryActions;
 
-    //private final TaskStatusHistoryRepository repository;
+    // ------------------------------------------------------------------
+    // получаем некоторые данные из ответа из объекта 1503
+    Integer personAccountNumber = 1234567567;               //todo сделать поиск данных из объекта
+    String currency = "RUB";
+    String accountSystem = "OPENWAY";
+    String mdmId = "12345678";
+    Boolean isArrested = true;
+    // -------------------------------------------------------------------
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
@@ -40,30 +50,52 @@ public class ServiceAccounts {
           //sendObjectToTaskStatusHistory();
         }
 
-        // ------------------------------------------------------------------
-        // получаем некоторые данные из ответа из объекта 1503
-        Integer personAccountNumber = 1234567890;               //todo сделать поиск номера счета из объекта
-        String accountSystem = "OPENWAY";
-        String mdmId = "12345678";
-        // -------------------------------------------------------------------
+        handlerObjectPersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested);
 
-        // делаем запрос в БД с mdmId который пришел из 1503
-        PayPaymentTask paymentTaskByMdmId = paymentTaskActionsDb.getPaymentTaskByMdmId(mdmId);
+    }
 
-        // проверяем есть ли уже в БД такой клиент с mdmId который пришел из 1503
-        if (paymentTaskByMdmId.getMdmId().equals(mdmId)) {
-            // обновляем данные полей account и accountSystem данными из 1503
-            paymentTaskActionsDb.updateAccountNumber(personAccountNumber, accountSystem);
-        } else {
-            throw new Exception("Клиент с mdmId нет в БД");   //todo    hand exceptions
+    private void handlerObjectPersonAccounts(Integer personAccountNumber, String currency, String accountSystem, String mdmId, Boolean isArrested) {
+
+        if (personAccountNumber != null
+                && currency.equals("RUB")
+                && isArrested.equals(false)) {
+
+            // получаем из БД объекты с mdmId который пришел из 1503
+            List<EntPaymentTask> listTasks = paymentTaskActionsDb.getPaymentTaskByMdmId(mdmId);
+
+            if (listTasks.size() == 1) {
+                paymentTaskActionsDb.updateAccountNumber(personAccountNumber, accountSystem, mdmId);
+            } else  {
+                //todo   проработать с аналитиком этот вариант
+            }
         }
 
+        if (personAccountNumber != null
+                && currency.equals("RUB")
+                && isArrested.equals(true)) {
 
-        if (!personAccountNumber.equals(0)) {
+            //записать в БД для данного задания paymentTask.status=30
+            Integer status = 30;
+            paymentTaskActionsDb.updateStatus(mdmId, status);
+
+            // формируем данные для сохранения в БД ent_task_status_history
+            EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
+                    .builder()
+                    .statusHistoryId(UUID.randomUUID())
+                    .statusDetailsCode(202)                        // хард код: 202
+                    .taskId(getPayPaymentTask().getRewardId())
+                    .taskStatus(status)
+                    .statusUpdatedAt(getPayPaymentTask().getCreatedAt())
+                    .build();
+
+            // создать новую запись в таблице taskStatusHistory
+            payTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+            //Записать в топик Rewards-Res сообщение, содержащее id задания, status=30, status_details_code=202
+
+            //Завершить обработку задания
 
         }
-
-
     }
 
     // собираем тестовый объект который пришел из кафка топика RewardReq
@@ -81,18 +113,14 @@ public class ServiceAccounts {
     }
 
 
-
-
     public void saveNewTaskToPayPaymentTask() {
-
         paymentTaskActionsDb.insertPaymentTaskInDB(getPayPaymentTask());
-
     }
 
     // создаем тестовый объект PayPaymentTask
-    private PayPaymentTask getPayPaymentTask() {
+    private EntPaymentTask getPayPaymentTask() {
         // обогащаем объект из топика RewardReq полями и создаем новый объект
-        PayPaymentTask payPaymentTask = PayPaymentTask
+        EntPaymentTask entPaymentTask = EntPaymentTask
                 .builder()
                 .rewardId(UUID.randomUUID())                            // из топика кафка RewardReq
                 .questionnaireId(UUID.randomUUID())                    //todo берем из 1642 1642 Платформа анализа и обработки данных (Data Analysis and Processing Platform)
@@ -106,24 +134,8 @@ public class ServiceAccounts {
                 .account(38787798)                                      // берем из 1503
                 .accountSystem("OPENWAY")                               // берем из 1503
                 .build();
-        return payPaymentTask;
+        return entPaymentTask;
     }
-
-//    private void sendObjectToTaskStatusHistory() {
-//        TaskStatusHistory taskStatusHistory = getTaskStatusHistory();
-//        repository.save(taskStatusHistory);
-//    }
-
-    /** Метод собирает объект для сохранения в БД */
-//    private static PayTaskStatusHistory getTaskStatusHistory() {
-//        PayTaskStatusHistory payTaskStatusHistory = PayTaskStatusHistory
-//                .builder()
-//                //.taskStatus(e.getStatus().value())
-//                .errorDetails(101)
-//                .statusUpdatedAt(LocalDateTime.now())
-//                .build();
-//        return payTaskStatusHistory;
-//    }
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {
         return AccountInfoRequest.builder().productTypes(str).build();

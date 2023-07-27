@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.modeldatabase;
+package ru.vtb.msa.rfrm.connectionDatabaseJdbc.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

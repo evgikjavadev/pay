@@ -1,13 +1,17 @@
 package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
 
-import ru.vtb.msa.rfrm.modeldatabase.PayPaymentTask;
+import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
+
+import java.util.List;
 
 public interface PaymentTaskActionsDb {
-    int insertPaymentTaskInDB(PayPaymentTask payPaymentTask);
+    int insertPaymentTaskInDB(EntPaymentTask entPaymentTask);
 
-    PayPaymentTask getPaymentTaskByMdmId(String mdmId);
+    List<EntPaymentTask> getPaymentTaskByMdmId(String mdmId);
 
-    void updateAccountNumber(Integer accountNumber, String accountSystem);
+    void updateAccountNumber(Integer accountNumber, String accountSystem, String mdmId);
+
+    void updateStatus(String mdmId, Integer status);
 
 
 }

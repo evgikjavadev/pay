@@ -24,7 +24,7 @@ public class ControllerTest {
     private static final String TOPIC = "RewardReq";
 
     @GetMapping("/getaccounts")
-    public String hello() throws JSONException {
+    public String getAccounts() throws JSONException {
 
         serviceAccounts.getClientAccounts();
         return "Accounts for clients are received !";
