@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
 import ru.vtb.msa.rfrm.integration.rfrmcore.model.RewardSerializer;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
+import ru.vtb.omni.jwt.servlet.service.ServletJwtService;
 
 import java.io.IOException;
 
@@ -20,11 +21,15 @@ public class ControllerTest {
 
     private final ServiceAccounts serviceAccounts;
 
+    private final ServletJwtService servletJwtService;
+
     private final KafkaTemplate<Object, byte[]> kafkaTemplate;
     private static final String TOPIC = "RewardReq";
 
     @GetMapping("/getaccounts")
     public String getAccounts() throws JSONException {
+
+        servletJwtService.extractTokenPayloadDto();
 
         serviceAccounts.getClientAccounts();
         return "Accounts for clients are received !";

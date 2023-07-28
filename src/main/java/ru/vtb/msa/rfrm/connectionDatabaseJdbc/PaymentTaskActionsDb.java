@@ -9,7 +9,7 @@ public interface PaymentTaskActionsDb {
 
     List<EntPaymentTask> getPaymentTaskByMdmId(String mdmId);
 
-    void updateAccountNumber(Integer accountNumber, String accountSystem, String mdmId);
+    void updateAccountNumber(Integer accountNumber, String accountSystem, String mdmId, Integer status);
 
     void updateStatus(String mdmId, Integer status);
 

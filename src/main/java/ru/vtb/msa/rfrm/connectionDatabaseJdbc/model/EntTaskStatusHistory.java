@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -19,9 +20,10 @@ import java.util.UUID;
 public class EntTaskStatusHistory {
 
     /** id события (ключ) */
+    @Id
     @NotBlank
     @Column(name = "status_history_id")
-    private UUID statusHistoryId;
+    private BigInteger statusHistoryId;
 
     /** id задания, по которому изменился статус соответствует reward_id */
     @NotBlank

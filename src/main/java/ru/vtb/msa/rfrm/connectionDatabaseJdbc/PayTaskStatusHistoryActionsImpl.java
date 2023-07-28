@@ -13,11 +13,10 @@ public class PayTaskStatusHistoryActionsImpl implements PayTaskStatusHistoryActi
     @Override
     public int insertEntTaskStatusHistoryInDb(EntTaskStatusHistory entTaskStatusHistory) {
         String sql = "INSERT INTO ent_task_status_history " +
-                "(status_history_id, status_details_code, task_id, task_status, status_updated_at) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                "(status_details_code, task_id, task_status, status_updated_at) " +
+                "VALUES (?, ?, ?, ?)";
 
         return jdbcTemplate.update(sql,
-                entTaskStatusHistory.getStatusHistoryId(),
                 entTaskStatusHistory.getStatusDetailsCode(),
                 entTaskStatusHistory.getTaskId(),
                 entTaskStatusHistory.getTaskStatus(),

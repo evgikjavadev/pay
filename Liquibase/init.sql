@@ -7,13 +7,13 @@ CREATE TABLE IF NOT EXISTS ent_payment_task (
                        status integer,
                        created_at timestamp,
                        account_system text,
-                       account integer,
+                       account text,
                        source_qs text,
                        response_sent boolean
 );
 
 CREATE TABLE IF NOT EXISTS ent_task_status_history (
-                                  status_history_id uuid PRIMARY KEY,
+                                  status_history_id BIGSERIAL PRIMARY KEY,
                                   task_id uuid,
                                   status_details_code integer,
                                   task_status integer,

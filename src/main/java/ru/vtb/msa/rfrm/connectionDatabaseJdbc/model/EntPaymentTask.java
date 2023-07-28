@@ -56,7 +56,7 @@ public class EntPaymentTask {
 
     /** Счет клиента для оплаты вознаграждения */
     @Column(name = "account")
-    private Integer account;
+    private String account;
 
     /** ID продукта, по которому должно быть выплачено вознаграждение за участие в реферальной программе */
     @Column(name = "source_qs")
