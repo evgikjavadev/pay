@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -17,35 +19,36 @@ import java.util.UUID;
 public class EntPaymentTask {
 
     /** ID задачи на оплату (генерируется ядром 2155 rfrm-core) */
+    @NotBlank
     @Column(name = "reward_id")
     private UUID rewardId;
 
     /** ID заявки на участие в реферальной программе */
-    //@NotNull
+    @NotBlank
     @Column(name = "questionnaire_id")
     private UUID questionnaireId;
 
     /** ID получателя вознаграждения в MDM */
-    //@NotNull
+    @NotBlank
     @Column(name = "mdm_id")
     private String mdmId;
 
     /** Тип получателя вознаграждения */
-    //@NotNull
+    @NotBlank
     @Column(name = "recipient_type")
     private Integer recipientType;
 
     /** Сумма вознаграждения (определяется ядром 2155 rfrm-core) */
-    //@NotNull
+    @NotBlank
     @Column(name = "amount")
     private Double amount;
 
     /** Cтатус задания на оплату */
-    //@NotNull
+    @NotBlank
     @Column(name = "status")
     private Integer status;
 
-    //@NotNull
+    @NotBlank
     @Column(name = "created_at")
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
@@ -59,13 +62,9 @@ public class EntPaymentTask {
     private String account;
 
     /** ID продукта, по которому должно быть выплачено вознаграждение за участие в реферальной программе */
+    @NotBlank
     @Column(name = "source_qs")
     private String sourceQs;
-
-    /** Отметка об отправке финального статуса */
-    //@NotNull
-    @Column(name = "response_sent")
-    private Boolean responseSent;
 
     public LocalDateTime getCreatedAt() {
         return LocalDateTime.now();

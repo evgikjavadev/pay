@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jmx.support.RegistrationPolicy;
 
 @Configuration
-@EnableMBeanExport(registration= RegistrationPolicy.IGNORE_EXISTING)
+@EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)
 public class DatasourceConfig {
 
     @Bean

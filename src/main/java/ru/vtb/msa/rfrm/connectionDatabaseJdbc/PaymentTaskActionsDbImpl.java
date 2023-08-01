@@ -1,5 +1,7 @@
 package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,11 +19,13 @@ public class PaymentTaskActionsDbImpl implements PaymentTaskActionsDb {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final HikariDataSource hikariDataSource;
+
 
     @Override
     public int insertPaymentTaskInDB(EntPaymentTask entPaymentTask) {
-        String sql = "INSERT INTO pay_payment_task " +
-                "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs, response_sent) " +
+        String sql = "INSERT INTO ent_payment_task " +
+                "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         return jdbcTemplate.update(sql,
@@ -34,8 +38,7 @@ public class PaymentTaskActionsDbImpl implements PaymentTaskActionsDb {
                 entPaymentTask.getCreatedAt(),
                 entPaymentTask.getAccountSystem(),
                 entPaymentTask.getAccount(),
-                entPaymentTask.getSourceQs(),
-                entPaymentTask.getResponseSent()
+                entPaymentTask.getSourceQs()
         );
     }
 
@@ -56,14 +59,14 @@ public class PaymentTaskActionsDbImpl implements PaymentTaskActionsDb {
     }
 
     @Override
-    public void updateAccountNumber(Integer accountNumber, String accountSystem, String mdmId) {
-        String sql = "UPDATE pay_payment_task SET account = ?, account_system = ? WHERE mdm_id = ?";
+    public void updateAccountNumber(Integer accountNumber, String accountSystem, String mdmId, Integer status) {
+        String sql = "UPDATE ent_payment_task SET account = ?, account_system = ? WHERE mdm_id = ?";
         jdbcTemplate.update(sql, accountNumber, accountSystem, mdmId);
     }
 
     @Override
     public void updateStatus(String mdmId, Integer status) {
-        String sql = "UPDATE pay_payment_task SET status = ? WHERE mdm_id = ?";
+        String sql = "UPDATE ent_payment_task SET status = ? WHERE mdm_id = ?";
         jdbcTemplate.update(sql, status, mdmId);
     }
 

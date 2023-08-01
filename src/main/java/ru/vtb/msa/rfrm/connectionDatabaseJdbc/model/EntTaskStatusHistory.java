@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,8 +26,8 @@ public class EntTaskStatusHistory {
 
     /** id задания, по которому изменился статус соответствует reward_id */
     @NotBlank
-    @Column(name = "task_id")
-    private UUID taskId;
+    @Column(name = "reward_id")
+    private UUID rewardId;
 
     /** Код комментария к статусу заявки */
     @Column(name = "status_details_code")

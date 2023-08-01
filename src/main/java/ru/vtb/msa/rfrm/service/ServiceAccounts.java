@@ -122,20 +122,19 @@ public class ServiceAccounts {
     }
 
     private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode) {
-        EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
+        return EntTaskStatusHistory
                 .builder()
+                .rewardId(createPayPaymentTask().getRewardId())
                 .statusDetailsCode(statusDetailsCode)
-                .taskId(createPayPaymentTask().getRewardId())
                 .taskStatus(taskStatus)
                 .statusUpdatedAt(createPayPaymentTask().getCreatedAt())
                 .build();
-        return entTaskStatusHistory;
     }
 
 
     // собираем тестовый объект который пришел из кафка топика RewardReq
     public ObjectRewardReq getObjectRewardReqFromKafka() {
-        ObjectRewardReq objectRewardReq = ObjectRewardReq
+        return ObjectRewardReq
                 .builder()
                 .id(UUID.randomUUID())
                 .money(6500.00)
@@ -144,7 +143,6 @@ public class ServiceAccounts {
                 .recipientType(3)
                 .source_qs("stringSourceQs")
                 .build();
-        return objectRewardReq;
     }
 
 
@@ -160,14 +158,13 @@ public class ServiceAccounts {
                 .rewardId(UUID.randomUUID())                            // из топика кафка RewardReq
                 .questionnaireId(UUID.randomUUID())                    //todo берем из 1642 1642 Платформа анализа и обработки данных (Data Analysis and Processing Platform)
                 .mdmId(getObjectRewardReqFromKafka().getMdmId())                     //берем из кафка RewardReq
-                .recipientType(getObjectRewardReqFromKafka().getRecipientType())         // берем из кафка RewardReq
-                .amount(getObjectRewardReqFromKafka().getMoney())                       // берем из кафка RewardReq
-                .status(10)                                            // автоматически дополняем
-                .createdAt(LocalDateTime.now())                        // автоматически дополняем
-                .responseSent(false)                                  // автоматически дополняем
+                .recipientType(getObjectRewardReqFromKafka().getRecipientType())      // берем из кафка RewardReq
+                .amount(getObjectRewardReqFromKafka().getMoney())                     // берем из кафка RewardReq
+                .status(10)                                                         // автоматически дополняем
+                .createdAt(LocalDateTime.now())                                     // автоматически дополняем
                 .sourceQs(getObjectRewardReqFromKafka().getSource_qs())             // берем из кафка RewardReq
-                .account(String.valueOf(38787798))                                      // берем из 1503
-                .accountSystem("OPENWAY")                               // берем из 1503
+                .account(String.valueOf(38787798))                               // берем из 1503
+                .accountSystem("OPENWAY")                                           // берем из 1503
                 .build();
         return entPaymentTask;
     }
