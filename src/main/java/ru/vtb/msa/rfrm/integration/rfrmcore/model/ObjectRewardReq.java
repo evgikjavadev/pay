@@ -17,8 +17,6 @@ public class ObjectRewardReq {
     private UUID questionnaire_id;
     private Integer recipientType;
     private Double money;
-
-    //mdmId приходит из заголовка
-    private String mdmId;
+    private String mdmId;   //todo   mdmId приходит из заголовка
     private String source_qs;
 }

@@ -15,19 +15,15 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
-
     private final JdbcTemplate jdbcTemplate;
 
-    private final HikariDataSource hikariDataSource;
-
-
     @Override
-    public int insertPaymentTaskInDB(EntPaymentTask entPaymentTask) {
+    public void insertPaymentTaskInDB(EntPaymentTask entPaymentTask) {
         String sql = "INSERT INTO ent_payment_task " +
                 "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        return jdbcTemplate.update(sql,
+        jdbcTemplate.update(sql,
                 entPaymentTask.getRewardId(),
                 entPaymentTask.getQuestionnaireId(),
                 entPaymentTask.getMdmId(),

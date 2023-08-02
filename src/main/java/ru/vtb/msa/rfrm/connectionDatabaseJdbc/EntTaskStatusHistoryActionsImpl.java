@@ -11,12 +11,12 @@ public class EntTaskStatusHistoryActionsImpl implements EntTaskStatusHistoryActi
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public int insertEntTaskStatusHistoryInDb(EntTaskStatusHistory entTaskStatusHistory) {
+    public void insertEntTaskStatusHistoryInDb(EntTaskStatusHistory entTaskStatusHistory) {
         String sql = "INSERT INTO ent_task_status_history " +
                 "(reward_id, status_details_code, task_status, status_updated_at) " +
                 "VALUES (?, ?, ?, ?)";
 
-        return jdbcTemplate.update(
+        jdbcTemplate.update(
                 sql,
                 entTaskStatusHistory.getRewardId(),
                 entTaskStatusHistory.getStatusDetailsCode(),

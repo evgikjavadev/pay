@@ -5,7 +5,7 @@ import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
 import java.util.List;
 
 public interface EntPaymentTaskActions {
-    int insertPaymentTaskInDB(EntPaymentTask entPaymentTask);
+    void insertPaymentTaskInDB(EntPaymentTask entPaymentTask);
 
     List<EntPaymentTask> getPaymentTaskByMdmId(String mdmId);
 
