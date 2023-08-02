@@ -1,6 +1,5 @@
 package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,7 +14,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class PaymentTaskActionsDbImpl implements PaymentTaskActionsDb {
+public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -26,7 +25,7 @@ public class PaymentTaskActionsDbImpl implements PaymentTaskActionsDb {
     public int insertPaymentTaskInDB(EntPaymentTask entPaymentTask) {
         String sql = "INSERT INTO ent_payment_task " +
                 "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         return jdbcTemplate.update(sql,
                 entPaymentTask.getRewardId(),
@@ -59,7 +58,7 @@ public class PaymentTaskActionsDbImpl implements PaymentTaskActionsDb {
     }
 
     @Override
-    public void updateAccountNumber(Integer accountNumber, String accountSystem, String mdmId, Integer status) {
+    public void updateAccountNumber(String accountNumber, String accountSystem, String mdmId, Integer status) {
         String sql = "UPDATE ent_payment_task SET account = ?, account_system = ? WHERE mdm_id = ?";
         jdbcTemplate.update(sql, accountNumber, accountSystem, mdmId);
     }

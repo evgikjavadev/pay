@@ -7,13 +7,13 @@ import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntTaskStatusHistory;
 
 @Repository
 @RequiredArgsConstructor
-public class PayTaskStatusHistoryActionsImpl implements PayTaskStatusHistoryActions {
+public class EntTaskStatusHistoryActionsImpl implements EntTaskStatusHistoryActions {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public int insertEntTaskStatusHistoryInDb(EntTaskStatusHistory entTaskStatusHistory) {
         String sql = "INSERT INTO ent_task_status_history " +
-                "(rewardId, status_details_code, task_status, status_updated_at) " +
+                "(reward_id, status_details_code, task_status, status_updated_at) " +
                 "VALUES (?, ?, ?, ?)";
 
         return jdbcTemplate.update(

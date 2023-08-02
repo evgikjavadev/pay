@@ -4,12 +4,12 @@ import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
 
 import java.util.List;
 
-public interface PaymentTaskActionsDb {
+public interface EntPaymentTaskActions {
     int insertPaymentTaskInDB(EntPaymentTask entPaymentTask);
 
     List<EntPaymentTask> getPaymentTaskByMdmId(String mdmId);
 
-    void updateAccountNumber(Integer accountNumber, String accountSystem, String mdmId, Integer status);
+    void updateAccountNumber(String accountNumber, String accountSystem, String mdmId, Integer status);
 
     void updateStatus(String mdmId, Integer status);
 
