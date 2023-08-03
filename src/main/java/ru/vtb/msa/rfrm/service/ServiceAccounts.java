@@ -46,7 +46,7 @@ public class ServiceAccounts {
     private final String sourceQs = "sourceQsExample";
     private final Double sumReward = 6500.00;
     private final Integer recipientType = 3;
-    private final UUID questionnareId = UUID.randomUUID();
+    private final UUID questionnaireId = UUID.randomUUID();
     // -------------------------------------------------------------------
 
     @SneakyThrows
@@ -208,7 +208,7 @@ public class ServiceAccounts {
                 .id(uuidFromKafka)
                 .money(sumReward)
                 .mdmId(mdmIdFromKafka)
-                .questionnaire_id(questionnareId)
+                .questionnaire_id(questionnaireId)
                 .recipientType(recipientType)
                 .source_qs(sourceQs)
                 .build();
