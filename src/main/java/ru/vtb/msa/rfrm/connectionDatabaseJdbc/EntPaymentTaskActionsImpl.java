@@ -10,6 +10,7 @@ import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 
 @Repository
@@ -63,6 +64,22 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     public void updateStatus(String mdmId, Integer status) {
         String sql = "UPDATE ent_payment_task SET status = ? WHERE mdm_id = ?";
         jdbcTemplate.update(sql, status, mdmId);
+    }
+
+    @Override
+    public List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId) {
+        String sql = "SELECT * FROM ent_payment_task WHERE reward_id = ?";
+        List<EntPaymentTask> listPaymentTasks = jdbcTemplate.query(
+                sql,
+                new Object[] {rewardId},
+                new RowMapper<EntPaymentTask>() {
+                    public EntPaymentTask mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        EntPaymentTask task = new EntPaymentTask();
+                        task.setRewardId(rs.getObject(1, UUID.class));
+                        return task;
+                    }
+                });
+        return listPaymentTasks;
     }
 
 }

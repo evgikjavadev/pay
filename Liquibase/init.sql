@@ -57,3 +57,16 @@ INSERT INTO dct_status_details (status_details_code, related_status, description
 INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (201, 30, 'Продуктовый Профиль ФЛ: Мастер-счет не найден');
 INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (202, 30, 'Продуктовый Профиль ФЛ: Мастер-счет арестован');
 
+CREATE OR REPLACE FUNCTION update_created_at_and_processed()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.created_at := now();
+    NEW.processed := false;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_created_at_and_processed
+    BEFORE INSERT ON ent_payed_list
+    FOR EACH ROW
+EXECUTE FUNCTION update_created_at_and_processed();

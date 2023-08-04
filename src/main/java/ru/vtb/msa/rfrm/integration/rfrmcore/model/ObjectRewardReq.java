@@ -13,10 +13,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class ObjectRewardReq {
-    private UUID id;
-    private UUID questionnaire_id;
+    private UUID rewardId;
+    private UUID questionnaireId;
     private Integer recipientType;
-    private Double money;
-    private String mdmId;   //todo   mdmId приходит из заголовка
+    private Double amount;
+    private String mdmId;
     private String source_qs;
+
 }

@@ -205,10 +205,10 @@ public class ServiceAccounts {
     public ObjectRewardReq getObjectRewardReqFromKafka() {
         return ObjectRewardReq
                 .builder()
-                .id(uuidFromKafka)
-                .money(sumReward)
+                .rewardId(uuidFromKafka)
+                .amount(sumReward)
                 .mdmId(mdmIdFromKafka)
-                .questionnaire_id(questionnaireId)
+                .questionnaireId(questionnaireId)
                 .recipientType(recipientType)
                 .source_qs(sourceQs)
                 .build();
@@ -223,16 +223,16 @@ public class ServiceAccounts {
         // обогащаем объект из топика RewardReq полями и создаем новый объект
         EntPaymentTask entPaymentTask = EntPaymentTask
                 .builder()
-                .rewardId(uuidFromKafka)                            // из топика кафка RewardReq
+                .rewardId(uuidFromKafka)                                // из топика кафка RewardReq
                 .questionnaireId(UUID.randomUUID())                    //todo берем из 1642 1642 Платформа анализа и обработки данных (Data Analysis and Processing Platform)
                 .mdmId(getObjectRewardReqFromKafka().getMdmId())                     //берем из кафка RewardReq
                 .recipientType(getObjectRewardReqFromKafka().getRecipientType())      // берем из кафка RewardReq
-                .amount(getObjectRewardReqFromKafka().getMoney())                     // берем из кафка RewardReq
+                .amount(getObjectRewardReqFromKafka().getAmount())                     // берем из кафка RewardReq
                 .status(10)                                                         // автоматически дополняем
                 .createdAt(LocalDateTime.now())                                     // автоматически дополняем
                 .sourceQs(getObjectRewardReqFromKafka().getSource_qs())             // берем из кафка RewardReq
-                .account(String.valueOf(38787798))                               // берем из 1503
-                .accountSystem("OPENWAY")                                           // берем из 1503
+                .account(null)                                                      // начальное заполнение
+                .accountSystem(null)                                               // начальное заполнение
                 .build();
         return entPaymentTask;
     }
