@@ -1,16 +1,19 @@
 package ru.vtb.msa.rfrm.connectionDatabaseJdbc.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 public enum DctTaskStatuses {
 
-    STATUS_NEW(10, "Новое", "New"),
+    STATUS_NEW(10, "", ""),
     STATUS_PAYED(20, "Выплачено", "Payed"),
     STATUS_REJECTED(30, "Отклонено", "Rejected"),
     STATUS_MANUAL_PROCESSING(40, "Ручной разбор", "Manual processing"),
     STATUS_READY_FOR_PAYMENT(50, "К выплате", "Ready for payment");
 
-    private final Integer status;
-    private final String statusBusinessDescription;
-    private final String statusSystemName;
+    private Integer status;
+    private String statusBusinessDescription;
+    private String statusSystemName;
     DctTaskStatuses(Integer status, String statusBusinessDescription, String statusSystemName) {
         this.status = status;
         this.statusBusinessDescription = statusBusinessDescription;
@@ -29,6 +32,19 @@ public enum DctTaskStatuses {
         return statusSystemName;
     }
 
+    public Integer setStatus(Integer status) {
+        return status;
+    }
 
+    public String setStatusBusinessDescription() {
+        return statusBusinessDescription;
+    }
+
+    public String setStatusSystemName() {
+        return statusSystemName;
+    }
+
+    DctTaskStatuses() {
+    };
 
 }

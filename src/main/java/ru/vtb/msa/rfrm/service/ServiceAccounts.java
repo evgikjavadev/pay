@@ -56,13 +56,13 @@ public class ServiceAccounts {
 
         try {
             // получаем весь объект с данными счета клиента из 1503
-            String personAccountsObject = personClientAccounts
+            personClientAccounts
                     .getPersonAccounts(sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
-            personAccounts.concat(personAccountsObject);
+            //personAccounts.concat(personAccountsObject);
 
         } catch (HttpStatusException e) {
           e.getStatus();
-          //sendObjectToTaskStatusHistory();   //todo    обраюотать exception
+          //sendObjectToTaskStatusHistory();   //todo    обработать exception
         }
 
         handlerObjectPersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested);

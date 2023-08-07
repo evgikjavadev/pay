@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,7 +18,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.ResponseCommon;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.responsenew.CommonResponse;
 
 import java.io.IOException;
 import java.net.URI;
@@ -39,22 +40,21 @@ public abstract class WebClientBase {
     Map<String, Map<String, String>> result;
 
 
-    public String post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<ResponseCommon> stringClass) {
+    public Map<String, Object> post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<CommonResponse> stringClass) {
 
         try {
 
-            String block = webClient.post()
+            Map<String, Object> block = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
                     .accept(MediaType.ALL)
                     //.exchange()
                     .retrieve()
-//                    .bodyToMono(new ParameterizedTypeReference<String>() {
-//                    })
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                    })
 
-                    //.bodyToMono(String.class)
 
-                    .bodyToMono(String.class)
+                    //.bodyToMono(CommonResponse.class)
 //                    .map(jsonString -> {
 //                        //Mono<String> just = Mono.just(jsonString);
 //                        ObjectMapper objectMapper = new ObjectMapper();
@@ -84,9 +84,6 @@ public abstract class WebClientBase {
 //            System.out.println("my7 headers = " + block.headers().asHttpHeaders());
             System.out.println("my9 = " + block);
 //            //System.out.println("my8  = " + block1.bodyToMono(String.class).block());
-//            System.out.println("my11  = " + voidMono);
-
-
 
             return block;
 

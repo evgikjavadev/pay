@@ -21,15 +21,11 @@ public class ControllerTest {
 
     private final ServiceAccounts serviceAccounts;
 
-    private final ServletJwtService servletJwtService;
-
     private final KafkaTemplate<Object, byte[]> kafkaTemplate;
     private static final String TOPIC = "RewardReq";
 
     @GetMapping("/getaccounts")
     public String getAccounts() throws JSONException {
-
-        servletJwtService.extractTokenPayloadDto();
 
         serviceAccounts.getClientAccounts();
         return "Accounts for clients are received !";
