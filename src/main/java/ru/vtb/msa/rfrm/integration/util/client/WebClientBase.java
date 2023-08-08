@@ -1,26 +1,21 @@
 package ru.vtb.msa.rfrm.integration.util.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
-import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.responsenew.CommonResponse;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.CommonResponseAccounts;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
 
-import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
 import java.util.*;
@@ -36,56 +31,24 @@ public abstract class WebClientBase {
     private final int duration;
     private final MultiValueMap<String, String> headers;
     private final WebClient webClient;
-    List<String> mdmIdFromHeader = new ArrayList<>();
-    Map<String, Map<String, String>> result;
 
-
-    public Map<String, Object> post(Function<UriBuilder, URI> function, AccountInfoRequest request, Class<CommonResponse> stringClass) {
-
+    public <T, R extends CommonResponseAccounts<Object>> Response<?> post(Function<UriBuilder, URI> function, T request, Class<R> clazz) {
         try {
-
-            Map<String, Object> block = webClient.post()
+            ResponseEntity<R> response = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .headers(getHttpHeaders(headers))
                     .accept(MediaType.ALL)
-                    //.exchange()
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                    })
-
-
-                    //.bodyToMono(CommonResponse.class)
-//                    .map(jsonString -> {
-//                        //Mono<String> just = Mono.just(jsonString);
-//                        ObjectMapper objectMapper = new ObjectMapper();
-//                        TypeReference<String> typeReference = new TypeReference<>() {
-//                        };
-//
-//                        try {
-//                            return objectMapper.readValue(jsonString.toString(), typeReference);
-//                        } catch (JsonProcessingException e) {
-//                            throw new RuntimeException(e);
-//                        }
-//
-//                    })
-
+                    .toEntity(clazz)
                     .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
-                            .filter(this::isRequestTimeout))
+                            .filter(WebClientBase::isRequestTimeout))
                     .block();
-
-            //Mono<Void> voidMono = block.releaseBody();
-
-
-//            String block1 = Mono.just(block)
-//                    .flatMap(a -> a.bodyToMono(String.class))
-//                    .block();
-
-
-//            System.out.println("my7 headers = " + block.headers().asHttpHeaders());
-            System.out.println("my9 = " + block);
-//            //System.out.println("my8  = " + block1.bodyToMono(String.class).block());
-
-            return block;
+            return Response.builder()
+                    .headers(response.getHeaders())
+                    .body(response.getBody())
+                    .build();
 
         } catch (WebClientResponseException we) {
             log.error(we.getMessage());
@@ -97,29 +60,16 @@ public abstract class WebClientBase {
         }
     }
 
-    public Mono<Map<String, Map<String, String>>> parseJson(Mono<String> jsonStringMono) {
-        return jsonStringMono.map(jsonString -> {
-            ObjectMapper objectMapper = new ObjectMapper();
-            TypeReference<Map<String, Map<String, String>>> typeReference = new TypeReference<>() {};
-            try {
-                return objectMapper.readValue(jsonString, typeReference);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to parse JSON", e);
-            }
-        });
-    }
-
-
     private Consumer<HttpHeaders> getHttpHeaders(MultiValueMap<String, String> headers) {
         return httpHeaders -> httpHeaders.addAll(Optional.ofNullable(headers)
                 .orElse(new HttpHeaders()));
     }
 
-    public boolean isRequestTimeout(Throwable throwable) {
+    public static boolean isRequestTimeout(Throwable throwable) {
         return throwable instanceof WebClientResponseException &&
-                ((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.REQUEST_TIMEOUT) ||
-                ((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.UNAUTHORIZED) ||
-                isForbiddenKeNotAuthorized(throwable);
+                (((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.REQUEST_TIMEOUT) ||
+                        ((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.UNAUTHORIZED) ||
+                        isForbiddenKeNotAuthorized(throwable));
     }
 
     public static boolean isForbiddenKeNotAuthorized(Throwable throwable) {
