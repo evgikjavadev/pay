@@ -54,7 +54,7 @@ public class KafkaListener {
                 + testObjectRewardreq.getAmount() + ", "
                 + testObjectRewardreq.getRecipientType() + ", "
             );
-            throw new Exception("В задании на оплату не заполнены обязательные поля: [список полей]");
+
 
         }
 

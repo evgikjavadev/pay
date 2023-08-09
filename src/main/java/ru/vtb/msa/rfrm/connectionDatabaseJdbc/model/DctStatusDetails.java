@@ -7,7 +7,8 @@ public enum DctStatusDetails {
     NOT_CORRECT_REQUEST(103, 4, "Продуктовый Профиль ФЛ: некорректный запрос к сервису"),
     ERROR_ACCESS(104, 4, "Продуктовый Профиль ФЛ: ошибка доступа"),
     MASTER_ACCOUNT_NOT_FOUND(201, 3, "Продуктовый Профиль ФЛ: Мастер-счет не найден"),
-    MASTER_ACCOUNT_ARRESTED(202, 3, "Продуктовый Профиль ФЛ: Мастер-счет арестован");
+    MASTER_ACCOUNT_ARRESTED(202, 3, "Продуктовый Профиль ФЛ: Мастер-счет арестован"),
+    ERR_REQUIREMENTS(203, 3, "Продуктовый Профиль ФЛ: Не соблюдены требования к участию в акции");
 
     private final Integer statusDetailsCode;
     private final Integer relatedStatus;

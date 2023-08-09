@@ -3,6 +3,7 @@ package ru.vtb.msa.rfrm.service;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.EntPaymentTaskActions;
@@ -29,6 +30,7 @@ public class ServiceAccounts {
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
     private final HikariDataSource hikariDataSource;
+    private final KafkaTemplate kafkaTemplate;
 
     // получаем данные из топика кафка
     private final UUID rewardUuidFromKafka = UUID.randomUUID();  //todo    get from kafka
@@ -194,11 +196,13 @@ public class ServiceAccounts {
                 }
             }
 
-            //Записать в топик Rewards-Res сообщение, содержащее id задания, status=30, status_details_code=202   //todo
+            //Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания, status=30, status_details_code=202   //todo
 
         }
 
         if (personAccountNumber == null
+                || personAccountNumber.equals("")
+                || personAccountNumber.isEmpty()
                 && result.equals("ok")) {
 
             try {
@@ -209,8 +213,12 @@ public class ServiceAccounts {
                 entPaymentTaskActions.updateStatus(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
 
                 //  создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details=201
-                EntTaskStatusHistory entTaskStatusHistory = createEntTaskStatusHistory(DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                        DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode(), rewardUuidFromKafka);
+                EntTaskStatusHistory entTaskStatusHistory =
+                        createEntTaskStatusHistory(
+                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
+                            DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode(),
+                            rewardUuidFromKafka
+                        );
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
                 connection.commit();
@@ -225,7 +233,12 @@ public class ServiceAccounts {
                 }
             }
 
-            // Записать в топик Rewards-Res сообщение, содержащее id задания и status=30, status_details_code=201   //todo
+            List<String> obj = new ArrayList<>();
+            obj.add("bla bla");
+
+            // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201   //todo
+            kafkaTemplate.send("rfrm_pay_result_reward", obj);
+
 
         }
 
