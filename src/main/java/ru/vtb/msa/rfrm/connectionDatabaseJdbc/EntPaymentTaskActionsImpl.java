@@ -41,7 +41,8 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     @Override
     public List<EntPaymentTask> getPaymentTaskByMdmId(String mdmId) {
         String sql = "SELECT * FROM ent_payment_task WHERE mdm_id = ?";
-        List<EntPaymentTask> listPaymentTasks = jdbcTemplate.query(
+
+        return jdbcTemplate.query(
                 sql,
                 new Object[] {mdmId},
                 new RowMapper<EntPaymentTask>() {
@@ -51,7 +52,6 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                         return task;
                     }
                 });
-        return listPaymentTasks;
     }
 
     @Override

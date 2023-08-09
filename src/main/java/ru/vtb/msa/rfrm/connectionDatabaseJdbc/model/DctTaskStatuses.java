@@ -40,7 +40,7 @@ public enum DctTaskStatuses {
         return statusBusinessDescription;
     }
 
-    public String setStatusSystemName() {
+    public String setStatusSystemName(String statusSystemName) {
         return statusSystemName;
     }
 

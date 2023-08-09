@@ -29,23 +29,8 @@ spring:
       password: 123
   jmx:
     default-domain: some
-
   codec:
-    max-in-memory-size: 20MB
-
-
-#  jpa:
-#    database: POSTGRESQL
-#    hibernate:
-#      ddl-auto: create-drop
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/postgres
-#    username: postgres
-#    password: 123
-#    pool-size: 30
-#    driver-class-name: org.postgresql.Driver
-
-
+    max-in-memory-size: 5MB
 
 audit:
   local-mode: true
@@ -89,8 +74,6 @@ ru:
         enabled: false
       kafka:
         bootstrap-servers: "d5mobc-kfc002lk.corp.dev.vtb:9092"
-
-
 
 ms:
   frame-link: 'gui-vtbmobile.test.vtb.ru'

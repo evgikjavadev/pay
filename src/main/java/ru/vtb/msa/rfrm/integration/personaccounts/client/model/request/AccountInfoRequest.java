@@ -8,9 +8,5 @@ import java.util.List;
 @Data
 @Builder
 public class AccountInfoRequest {
-
-	//private HeaderRequest headerRequest;
-	//private MessageRequest productTypes;
-
 	private List<String> productTypes;
 }

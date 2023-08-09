@@ -10,8 +10,9 @@ import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.DctStatusDetails;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.DctTaskStatuses;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntTaskStatusHistory;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Account;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
 import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
-import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
 import ru.vtb.omni.audit.lib.api.annotation.Audit;
@@ -19,9 +20,7 @@ import ru.vtb.omni.audit.lib.api.annotation.Audit;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,20 +28,11 @@ public class ServiceAccounts {
     private final PersonClientAccounts personClientAccounts;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
-    String personAccounts = "";
     private final HikariDataSource hikariDataSource;
 
-    // получаем некоторые данные из ответа из объекта 1503        //todo сделать поиск данных из объекта
-    String personAccountNumber = "1234567567";
-    String currency = "RUB";
-    String accountSystem = "OPENWAY";
-    String mdmId = "12345678";
-    Boolean isArrested = false;
-    String result = "ok";
-
     // получаем данные из топика кафка
-    private final UUID uuidFromKafka = UUID.randomUUID();
-    private final String mdmIdFromKafka = "12345678";
+    private final UUID rewardUuidFromKafka = UUID.randomUUID();  //todo    get from kafka
+    private final String mdmIdFromKafka = "5000015297";
     private final String sourceQs = "sourceQsExample";
     private final Double sumReward = 6500.00;
     private final Integer recipientType = 3;
@@ -51,26 +41,78 @@ public class ServiceAccounts {
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
-    //@PreAuthorize("permittedByRole('READ')")
+    //@PreAuthorize("permittedByRole('READ')")    //todo
     public void getClientAccounts() {
 
-        try {
-            // получаем весь объект с данными счета клиента из 1503
-            personClientAccounts
-                    .getPersonAccounts(sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
-            //personAccounts.concat(personAccountsObject);
+        // получаем весь объект с данными счета клиента из 1503
+        Response<?> personAccounts = personClientAccounts
+                .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
 
-        } catch (HttpStatusException e) {
-          e.getStatus();
-          //sendObjectToTaskStatusHistory();   //todo    обработать exception
-        }
+        // получаем номер счета в ответе от 1503
+        String personAccountNumber = personAccounts
+                .getBody()
+                .getAccounts()
+                .values()
+                .stream()
+                .map(Account::getNumber)
+                .findFirst()
+                .get();
 
-        handlerObjectPersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested);
+        // получаем currency в ответе от 1503
+        String currency = personAccounts
+                .getBody()
+                .getAccounts()
+                .values()
+                .stream()
+                .map(a -> a.getBalance().getCurrency())
+                .findFirst()
+                .get();
+
+        // ищем accountSystem (getEntitySubSystems) в ответе от 1503
+        String accountSystem = personAccounts
+                .getBody()
+                .getAccounts()
+                .values()
+                .stream()
+                .map(Account::getEntitySubSystems)
+                .findFirst()
+                .get();
+
+        // получаем isArrested в ответе от 1503
+        Boolean isArrested = personAccounts
+                .getBody()
+                .getAccounts()
+                .values()
+                .stream()
+                .map(Account::getIsArrested)
+                .findFirst()
+                .get();
+
+        // получаем значение result
+        String result = personAccounts.getBody().getResult();
+
+        // получаем mdmId из заголовков ответа от 1503
+        String mdmId = personAccounts
+                .getHeaders()
+                .entrySet()
+                .stream()
+                .filter(a -> a.getKey().equals("X-Mdm-Id"))
+                .findFirst()
+                .orElseThrow()
+                .getValue()
+                .get(0);
+
+        handlerObjectPersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested, result);
 
     }
 
     @SneakyThrows
-    private void handlerObjectPersonAccounts(String personAccountNumber, String currency, String accountSystem, String mdmId, Boolean isArrested) {
+    private void handlerObjectPersonAccounts(String personAccountNumber,
+                                             String currency,
+                                             String accountSystem,
+                                             String mdmId,
+                                             Boolean isArrested,
+                                             String result) {
         Connection connection = null;
         if (personAccountNumber != null
                 && currency.equals("RUB")
@@ -83,7 +125,6 @@ public class ServiceAccounts {
 
                 try {
                     connection = hikariDataSource.getConnection();
-
                     connection.setAutoCommit(false);
 
                     // Записать в БД для данного задания paymentTask.status=50
@@ -97,7 +138,7 @@ public class ServiceAccounts {
 
                     // формируем объект для записи в табл. taskStatusHistory
                     EntTaskStatusHistory entTaskStatusHistory =
-                            createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null);
+                            createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null, rewardUuidFromKafka);
 
                     // создать новую запись в таблице taskStatusHistory
                     entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
@@ -126,7 +167,6 @@ public class ServiceAccounts {
 
             try {
                 connection = hikariDataSource.getConnection();
-
                 connection.setAutoCommit(false);
 
                 //обновляем в БД для данного задания paymentTask.status=30
@@ -135,7 +175,8 @@ public class ServiceAccounts {
                 // формируем данные для сохранения в БД ent_task_status_history
                 EntTaskStatusHistory entTaskStatusHistory = createEntTaskStatusHistory(
                         DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                        DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getStatusDetailsCode()
+                        DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getStatusDetailsCode(),
+                        rewardUuidFromKafka
                 );
 
                 // создать новую запись в таблице taskStatusHistory
@@ -157,11 +198,11 @@ public class ServiceAccounts {
 
         }
 
-        if (personAccountNumber == null && result.equals("ok")) {
+        if (personAccountNumber == null
+                && result.equals("ok")) {
 
             try {
                 connection = hikariDataSource.getConnection();
-
                 connection.setAutoCommit(false);
 
                 // Записать в БД для данного задания paymentTask.status=30,
@@ -169,7 +210,7 @@ public class ServiceAccounts {
 
                 //  создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details=201
                 EntTaskStatusHistory entTaskStatusHistory = createEntTaskStatusHistory(DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                        DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode());
+                        DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode(), rewardUuidFromKafka);
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
                 connection.commit();
@@ -190,22 +231,21 @@ public class ServiceAccounts {
 
     }
 
-    private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode) {
+    private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode, UUID rewardId) {
         return EntTaskStatusHistory
                 .builder()
-                .rewardId(createPayPaymentTask().getRewardId())
-                .statusDetailsCode(statusDetailsCode)
-                .taskStatus(taskStatus)
-                .statusUpdatedAt(createPayPaymentTask().getCreatedAt())
+                    .rewardId(rewardId)
+                    .statusDetailsCode(statusDetailsCode)
+                    .taskStatus(taskStatus)
+                    .statusUpdatedAt(createPayPaymentTask().getCreatedAt())
                 .build();
     }
-
 
     // собираем тестовый объект который пришел из кафка топика RewardReq
     public ObjectRewardReq getObjectRewardReqFromKafka() {
         return ObjectRewardReq
                 .builder()
-                .rewardId(uuidFromKafka)
+                .rewardId(rewardUuidFromKafka)
                 .amount(sumReward)
                 .mdmId(mdmIdFromKafka)
                 .questionnaireId(questionnaireId)
@@ -214,25 +254,30 @@ public class ServiceAccounts {
                 .build();
     }
 
+    // метод сохраняет объект в БД если совпадений по rewardId не найдено
     public void saveNewTaskToPayPaymentTask() {
-        entPaymentTaskActions.insertPaymentTaskInDB(createPayPaymentTask());
+
+        if (entPaymentTaskActions.getPaymentTaskByRewardId(rewardUuidFromKafka).size() == 0) {
+            entPaymentTaskActions.insertPaymentTaskInDB(createPayPaymentTask());
+        }
+
     }
 
-    // создаем тестовый объект PayPaymentTask
+    // создаем объект PayPaymentTask
     private EntPaymentTask createPayPaymentTask() {
         // обогащаем объект из топика RewardReq полями и создаем новый объект
         EntPaymentTask entPaymentTask = EntPaymentTask
                 .builder()
-                .rewardId(uuidFromKafka)                                // из топика кафка RewardReq
-                .questionnaireId(UUID.randomUUID())                    //todo берем из 1642 1642 Платформа анализа и обработки данных (Data Analysis and Processing Platform)
+                .rewardId(rewardUuidFromKafka)                                      // берем из кафка RewardReq
+                .questionnaireId(questionnaireId)                                   // берем из кафка RewardReq
                 .mdmId(getObjectRewardReqFromKafka().getMdmId())                     //берем из кафка RewardReq
-                .recipientType(getObjectRewardReqFromKafka().getRecipientType())      // берем из кафка RewardReq
-                .amount(getObjectRewardReqFromKafka().getAmount())                     // берем из кафка RewardReq
+                .recipientType(getObjectRewardReqFromKafka().getRecipientType())     // берем из кафка RewardReq
+                .amount(getObjectRewardReqFromKafka().getAmount())                   // берем из кафка RewardReq
                 .status(10)                                                         // автоматически дополняем
                 .createdAt(LocalDateTime.now())                                     // автоматически дополняем
                 .sourceQs(getObjectRewardReqFromKafka().getSource_qs())             // берем из кафка RewardReq
-                .account(null)                                                      // начальное заполнение
-                .accountSystem(null)                                               // начальное заполнение
+                .account(null)                                                      // автоматически дополняем
+                .accountSystem(null)                                                // автоматически дополняем
                 .build();
         return entPaymentTask;
     }

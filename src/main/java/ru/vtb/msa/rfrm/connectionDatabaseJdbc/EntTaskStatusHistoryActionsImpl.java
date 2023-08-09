@@ -16,9 +16,12 @@ public class EntTaskStatusHistoryActionsImpl implements EntTaskStatusHistoryActi
     @Override
     public void insertEntTaskStatusHistoryInDb(EntTaskStatusHistory entTaskStatusHistory) {
 
+        Integer taskStatusHistoryTaskStatus = entTaskStatusHistory.getTaskStatus();
 
-        changeStatusInfoLog.updateEnumStatuses(10);
-        //log.info("Изменился StatusSystemName на {}, StatusDetailsDescription на {} ", );   //todo
+        // получаем поле status_system_name из табл dct_task_statuses
+        String statusSystemName = changeStatusInfoLog.getStatusSystemName(taskStatusHistoryTaskStatus);
+
+        log.info("Значение task_status: {}, значение StatusSystemName: {}", taskStatusHistoryTaskStatus, statusSystemName);
 
         String sql = "INSERT INTO ent_task_status_history " +
                 "(reward_id, status_details_code, task_status, status_updated_at) " +
@@ -27,7 +30,7 @@ public class EntTaskStatusHistoryActionsImpl implements EntTaskStatusHistoryActi
         jdbcTemplate.update(
                 sql,
                 entTaskStatusHistory.getRewardId(),
-                entTaskStatusHistory.getStatusDetailsCode(),
+                taskStatusHistoryTaskStatus,
                 entTaskStatusHistory.getTaskStatus(),
                 entTaskStatusHistory.getStatusUpdatedAt()
         );

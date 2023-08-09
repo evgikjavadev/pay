@@ -18,9 +18,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 public class ControllerTest {
-
     private final ServiceAccounts serviceAccounts;
-
     private final KafkaTemplate<Object, byte[]> kafkaTemplate;
     private static final String TOPIC = "RewardReq";
 
@@ -37,8 +35,7 @@ public class ControllerTest {
     @PostMapping("/publish")
     public String publishMessage(@RequestBody ObjectRewardReq rewardReq) throws IOException {
 
-
-        ObjectMapper objectMapper = new ObjectMapper();
+        //ObjectMapper objectMapper = new ObjectMapper();
         //ObjectRewardReq readValue = objectMapper.readValue(rewardReq, ObjectRewardReq.class);
 
         byte[] serialize = rewardSerializer.serialize(TOPIC, rewardReq);
