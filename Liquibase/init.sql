@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS ent_payment_task (
                        created_at timestamp NOT NULL,
                        account_system VARCHAR(255),
                        account VARCHAR(255),
-                       source_qs VARCHAR(255) NOT NULL
+                       source_qs VARCHAR(255) NOT NULL,
+                       processed boolean
 );
 COMMIT;
 
@@ -37,20 +38,23 @@ COMMIT;
 BEGIN;
 CREATE TABLE IF NOT EXISTS dct_status_details (
                         status_details_code integer PRIMARY KEY NOT NULL,
-                        related_status integer NOT NULL,
                         description VARCHAR(255) NOT NULL
 );
 COMMIT;
 
+BEGIN;
 INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (10, 'Новое', 'New');
 INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (20, 'Выплачено', 'Payed');
 INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (30, 'Отклонено', 'Rejected');
 INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (40, 'Ручной разбор', 'Manual processing');
 INSERT INTO dct_task_statuses (status, status_business_description, status_system_name) VALUES (50, 'К выплате', 'Ready for payment');
+COMMIT;
 
-INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (101, 40, 'Продуктовый Профиль ФЛ: клиент не найден в МДМ');
-INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (103, 40, 'Продуктовый Профиль ФЛ: некорректный запрос к сервису');
-INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (104, 40, 'Продуктовый Профиль ФЛ: ошибка доступа');
-INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (201, 30, 'Продуктовый Профиль ФЛ: Мастер-счет не найден');
-INSERT INTO dct_status_details (status_details_code, related_status, description) VALUES (202, 30, 'Продуктовый Профиль ФЛ: Мастер-счет арестован');
-
+BEGIN;
+INSERT INTO dct_status_details (status_details_code, description) VALUES (101, 'Продуктовый Профиль ФЛ: клиент не найден в МДМ');
+INSERT INTO dct_status_details (status_details_code, description) VALUES (103, 'Продуктовый Профиль ФЛ: некорректный запрос к сервису');
+INSERT INTO dct_status_details (status_details_code, description) VALUES (104, 'Продуктовый Профиль ФЛ: ошибка доступа');
+INSERT INTO dct_status_details (status_details_code, description) VALUES (201, 'Продуктовый Профиль ФЛ: Мастер-счет не найден');
+INSERT INTO dct_status_details (status_details_code, description) VALUES (202, 'Продуктовый Профиль ФЛ: Мастер-счет арестован');
+INSERT INTO dct_status_details (status_details_code, description) VALUES (203, 'Продуктовый Профиль ФЛ: Не соблюдены требования к участию в акции');
+COMMIT;

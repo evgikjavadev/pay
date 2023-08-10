@@ -13,7 +13,6 @@ import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntTaskStatusHistory;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Account;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
-import ru.vtb.msa.rfrm.integration.rfrmcore.model.ObjectRewardReq;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
 import ru.vtb.omni.audit.lib.api.annotation.Audit;
@@ -237,7 +236,7 @@ public class ServiceAccounts {
             obj.add("bla bla");
 
             // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201   //todo
-            kafkaTemplate.send("rfrm_pay_result_reward", obj);
+            //kafkaTemplate.send("rfrm_pay_result_reward", obj);
 
 
         }
@@ -250,50 +249,18 @@ public class ServiceAccounts {
                     .rewardId(rewardId)
                     .statusDetailsCode(statusDetailsCode)
                     .taskStatus(taskStatus)
-                    .statusUpdatedAt(createPayPaymentTask().getCreatedAt())
-                .build();
-    }
-
-    // собираем тестовый объект который пришел из кафка топика RewardReq
-    public ObjectRewardReq getObjectRewardReqFromKafka() {
-        return ObjectRewardReq
-                .builder()
-                .rewardId(rewardUuidFromKafka)
-                .amount(sumReward)
-                .mdmId(mdmIdFromKafka)
-                .questionnaireId(questionnaireId)
-                .recipientType(recipientType)
-                .source_qs(sourceQs)
+                    .statusUpdatedAt(LocalDateTime.now())
                 .build();
     }
 
     // метод сохраняет объект в БД если совпадений по rewardId не найдено
-    public void saveNewTaskToPayPaymentTask() {
-
-        if (entPaymentTaskActions.getPaymentTaskByRewardId(rewardUuidFromKafka).size() == 0) {
-            entPaymentTaskActions.insertPaymentTaskInDB(createPayPaymentTask());
-        }
-
-    }
-
-    // создаем объект PayPaymentTask
-    private EntPaymentTask createPayPaymentTask() {
-        // обогащаем объект из топика RewardReq полями и создаем новый объект
-        EntPaymentTask entPaymentTask = EntPaymentTask
-                .builder()
-                .rewardId(rewardUuidFromKafka)                                      // берем из кафка RewardReq
-                .questionnaireId(questionnaireId)                                   // берем из кафка RewardReq
-                .mdmId(getObjectRewardReqFromKafka().getMdmId())                     //берем из кафка RewardReq
-                .recipientType(getObjectRewardReqFromKafka().getRecipientType())     // берем из кафка RewardReq
-                .amount(getObjectRewardReqFromKafka().getAmount())                   // берем из кафка RewardReq
-                .status(10)                                                         // автоматически дополняем
-                .createdAt(LocalDateTime.now())                                     // автоматически дополняем
-                .sourceQs(getObjectRewardReqFromKafka().getSource_qs())             // берем из кафка RewardReq
-                .account(null)                                                      // автоматически дополняем
-                .accountSystem(null)                                                // автоматически дополняем
-                .build();
-        return entPaymentTask;
-    }
+//    public void saveNewTaskToPayPaymentTask() {
+//
+//        if (entPaymentTaskActions.getPaymentTaskByRewardId(rewardUuidFromKafka).size() == 0) {
+//            entPaymentTaskActions.insertPaymentTaskInDB(createPayPaymentTask());
+//        }
+//
+//    }
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {
         return AccountInfoRequest.builder().productTypes(str).build();

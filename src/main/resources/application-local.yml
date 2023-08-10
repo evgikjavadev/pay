@@ -137,3 +137,52 @@ feature.toggle:
     roleOn: false
   asynToggle:
     asynOn: true
+
+
+#1642 Платформа анализа и обработки данных;
+process.platform:
+  kafka:
+    bootstrap:
+      server: "localhost:9092"
+    consumer:
+      group-id: "core"
+    topic:
+      questionnaires: "rewardReq"
+    max.poll.records: 10
+    security:
+      protocol: PLAINTEXT
+    ssl:
+      enabled: false
+      truststore:
+        location: ""
+        password: ""
+      keystore:
+        location: ""
+        password: ""
+      key:
+        password: ""
+      truststore-type: 'JKS'
+      keystore-type: 'JKS'
+
+#фоновый процесс
+data.event:
+  enable: false
+  kafka:
+    servers: kafka-service:9092
+    security:
+      protocol: PLAINTEXT
+    ssl:
+      # обязательные, если установлен параметр: security.protocol: SSL
+      truststore:
+        location: ""
+        password: ""
+        type: 'JKS'
+      keystore:
+        location: ""
+        password: ""
+        type: 'JKS'
+      key:
+        password: ""
+      endpoint:
+        identification:
+          algorithm: ""
