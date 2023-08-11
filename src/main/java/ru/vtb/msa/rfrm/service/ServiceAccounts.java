@@ -35,18 +35,16 @@ public class ServiceAccounts {
     @Audit(value = "EXAMPLE_EVENT_CODE")
     //@PreAuthorize("permittedByRole('READ')")              //todo
     public void getClientAccounts(String mdmIdFromKafka) {
-        Response<?> personAccounts;
+
         try {
             // получаем весь объект с данными счета клиента из 1503
-            personAccounts = personClientAccounts
+            Response<?> personAccounts = personClientAccounts
                     .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
             handleResponseAccounts(personAccounts);
 
         } catch (HttpStatusException e) {
-
             HttpStatus status = e.getStatus();
             handleResponseHttpStatuses(status, mdmIdFromKafka);
-
         }
 
     }
@@ -61,7 +59,6 @@ public class ServiceAccounts {
 
 
         if (status.value() == 404) {
-            entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(rewardId, DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus());
 
             // формируем объект для табл. taskStatusHistory
             EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
@@ -72,8 +69,27 @@ public class ServiceAccounts {
                     .statusUpdatedAt(LocalDateTime.now())
                     .build();
 
-            // создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details_code=101
-            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+            Connection connection = null;
+
+            try {
+                connection = hikariDataSource.getConnection();
+                connection.setAutoCommit(false);
+
+                // обновляем табл. ent_payment_task
+                entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(rewardId, DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus());
+
+                // создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details_code=101
+                entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                try {
+                    assert connection != null;
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
 
             // отправить сообщение об ошибке, требующей ручного разбора, в мониторинг
             //todo  отправить сообщение об ошибке, требующей ручного разбора, в мониторинг
@@ -91,7 +107,6 @@ public class ServiceAccounts {
                 .map(Account::getNumber)
                 .findFirst()
                 .orElse("");
-
 
         // получаем currency в ответе от 1503
         String currency = personAccounts
@@ -121,7 +136,7 @@ public class ServiceAccounts {
                 .stream()
                 .map(Account::getIsArrested)
                 .findFirst()
-                .get();
+                .orElse(null);
 
         // получаем значение result в ответе от 1503
         String result = personAccounts.getBody().getResult();
@@ -159,23 +174,21 @@ public class ServiceAccounts {
                 && isArrested.equals(false)) {
 
             if (listTasks.size() == 1) {
+                // формируем объект для записи в табл. taskStatusHistory
+                EntTaskStatusHistory entTaskStatusHistory =
+                        createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null, rewardId);
 
                 try {
                     connection = hikariDataSource.getConnection();
                     connection.setAutoCommit(false);
 
                     // Записать в БД для данного задания paymentTask.status=50
-                    entPaymentTaskActions
-                            .updateAccountNumber(
+                    entPaymentTaskActions.updateAccountNumber(
                                     personAccountNumber,
                                     accountSystem,
                                     mdmId,
                                     DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus()
                             );
-
-                    // формируем объект для записи в табл. taskStatusHistory
-                    EntTaskStatusHistory entTaskStatusHistory =
-                            createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null, rewardId);
 
                     // создать новую запись в таблице taskStatusHistory
                     entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
@@ -195,6 +208,9 @@ public class ServiceAccounts {
         }
 
         if (personAccountNumber == null || personAccountNumber.isEmpty()) {
+            // формируем объект для записи в табл. taskStatusHistory
+            EntTaskStatusHistory entTaskStatusHistory =
+                    createEntTaskStatusHistory(DctTaskStatuses.STATUS_REJECTED.getStatus(), null, rewardId);
 
                 try {
                     connection = hikariDataSource.getConnection();
@@ -208,10 +224,6 @@ public class ServiceAccounts {
                                     mdmId,
                                     DctTaskStatuses.STATUS_REJECTED.getStatus()
                             );
-
-                    // формируем объект для записи в табл. taskStatusHistory
-                    EntTaskStatusHistory entTaskStatusHistory =
-                            createEntTaskStatusHistory(DctTaskStatuses.STATUS_REJECTED.getStatus(), null, rewardId);
 
                     // создать новую запись в таблице taskStatusHistory
                     entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
@@ -233,19 +245,19 @@ public class ServiceAccounts {
                 && currency.equals("RUB")
                 && isArrested.equals(true)) {
 
+            // формируем данные для сохранения в БД ent_task_status_history
+            EntTaskStatusHistory entTaskStatusHistory = createEntTaskStatusHistory(
+                    DctTaskStatuses.STATUS_REJECTED.getStatus(),
+                    DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getStatusDetailsCode(),
+                    rewardId
+            );
+
             try {
                 connection = hikariDataSource.getConnection();
                 connection.setAutoCommit(false);
 
                 //обновляем в БД для данного задания paymentTask.status=30
                 entPaymentTaskActions.updateStatusEntPaymentTaskByMdmId(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
-
-                // формируем данные для сохранения в БД ent_task_status_history
-                EntTaskStatusHistory entTaskStatusHistory = createEntTaskStatusHistory(
-                        DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                        DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getStatusDetailsCode(),
-                        rewardId
-                );
 
                 // создать новую запись в таблице taskStatusHistory
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
@@ -271,20 +283,21 @@ public class ServiceAccounts {
                 || personAccountNumber.isEmpty()
                 && result.equals("ok")) {
 
+            //  создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details=201
+            EntTaskStatusHistory entTaskStatusHistory =
+                    createEntTaskStatusHistory(
+                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
+                            DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode(),
+                            rewardId
+                    );
+
             try {
                 connection = hikariDataSource.getConnection();
                 connection.setAutoCommit(false);
 
                 // Записать в БД для данного задания paymentTask.status=30,
                 entPaymentTaskActions.updateStatusEntPaymentTaskByMdmId(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
-
-                //  создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details=201
-                EntTaskStatusHistory entTaskStatusHistory =
-                        createEntTaskStatusHistory(
-                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                            DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode(),
-                            rewardId
-                        );
+                //создать новую запись в таблице taskStatusHistory
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
                 connection.commit();
@@ -317,7 +330,7 @@ public class ServiceAccounts {
     }
 
     // метод сохраняет объект в БД если совпадений по rewardId не найдено
-    public void saveNewTaskToPayPaymentTask(EntPaymentTask entPaymentTask) {
+    public void insertNewTaskToEntPaymentTask(EntPaymentTask entPaymentTask) {
 
         if (entPaymentTaskActions.getPaymentTaskByRewardId(entPaymentTask.getRewardId()).size() == 0) {
             entPaymentTaskActions.insertPaymentTaskInDB(entPaymentTask);
