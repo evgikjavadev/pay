@@ -12,7 +12,8 @@ public interface EntPaymentTaskActions {
 
     void updateAccountNumber(String accountNumber, String accountSystem, String mdmId, Integer status);
 
-    void updateStatus(String mdmId, Integer status);
+    void updateStatusEntPaymentTaskByMdmId(String mdmId, Integer status);
+    void updateStatusEntPaymentTaskByRewardId(UUID rewardId, Integer status);
 
     List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId);
 

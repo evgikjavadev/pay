@@ -30,7 +30,7 @@ public class EntTaskStatusHistoryActionsImpl implements EntTaskStatusHistoryActi
         jdbcTemplate.update(
                 sql,
                 entTaskStatusHistory.getRewardId(),
-                taskStatusHistoryTaskStatus,
+                entTaskStatusHistory.getStatusDetailsCode(),
                 entTaskStatusHistory.getTaskStatus(),
                 entTaskStatusHistory.getStatusUpdatedAt()
         );

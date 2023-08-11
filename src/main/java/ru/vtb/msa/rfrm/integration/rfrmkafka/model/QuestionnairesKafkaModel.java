@@ -4,7 +4,7 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Getter
+@Data
 @Builder
 @ToString
 @NoArgsConstructor
@@ -16,4 +16,5 @@ public class QuestionnairesKafkaModel {
     private Integer recipientType;
     private Double amount;
     private String source_qs;
+
 }

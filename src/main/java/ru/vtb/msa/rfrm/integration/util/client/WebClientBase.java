@@ -42,6 +42,7 @@ public abstract class WebClientBase {
                     .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
                             .filter(WebClientBase::isRequestTimeout))
                     .block();
+            assert response != null;
             return Response.builder()
                     .headers(response.getHeaders())
                     .body(response.getBody())
@@ -50,6 +51,7 @@ public abstract class WebClientBase {
         } catch (WebClientResponseException we) {
             log.error(we.getMessage());
             throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());
+
         } catch (IllegalStateException exception) {
             log.error(exception.getMessage(), exception.fillInStackTrace());
             throw new HttpStatusException(exception.getMessage(), "",

@@ -3,7 +3,7 @@ package ru.vtb.msa.rfrm.service;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.EntPaymentTaskActions;
@@ -11,6 +11,7 @@ import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.DctStatusDetails;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.DctTaskStatuses;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntTaskStatusHistory;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
+import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Account;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
@@ -32,13 +33,55 @@ public class ServiceAccounts {
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
-    //@PreAuthorize("permittedByRole('READ')")    //todo
+    //@PreAuthorize("permittedByRole('READ')")              //todo
     public void getClientAccounts(String mdmIdFromKafka) {
+        Response<?> personAccounts;
+        try {
+            // получаем весь объект с данными счета клиента из 1503
+            personAccounts = personClientAccounts
+                    .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
+            handleResponseAccounts(personAccounts);
 
-        // получаем весь объект с данными счета клиента из 1503
-        Response<?> personAccounts = personClientAccounts
-                .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
+        } catch (HttpStatusException e) {
 
+            HttpStatus status = e.getStatus();
+            handleResponseHttpStatuses(status, mdmIdFromKafka);
+
+        }
+
+    }
+
+    private void handleResponseHttpStatuses(HttpStatus status, String mdmIdFromKafka) {
+
+        // найдем в табл. ent_payment_task rewardId по mdmId
+        UUID rewardId = entPaymentTaskActions.
+                getPaymentTaskByMdmId(mdmIdFromKafka)
+                .get(0)
+                .getRewardId();
+
+
+        if (status.value() == 404) {
+            entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(rewardId, DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus());
+
+            // формируем объект для табл. taskStatusHistory
+            EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
+                    .builder()
+                    .rewardId(rewardId)
+                    .statusDetailsCode(DctStatusDetails.CLIENT_NOT_FOUND_IN_MDM.getStatusDetailsCode())
+                    .taskStatus(DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus())
+                    .statusUpdatedAt(LocalDateTime.now())
+                    .build();
+
+            // создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details_code=101
+            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+            // отправить сообщение об ошибке, требующей ручного разбора, в мониторинг
+            //todo  отправить сообщение об ошибке, требующей ручного разбора, в мониторинг
+
+        }
+    }
+
+    private void handleResponseAccounts(Response<?> personAccounts) {
         // получаем номер счета в ответе от 1503
         String personAccountNumber = personAccounts
                 .getBody()
@@ -47,7 +90,8 @@ public class ServiceAccounts {
                 .stream()
                 .map(Account::getNumber)
                 .findFirst()
-                .get();
+                .orElse("");
+
 
         // получаем currency в ответе от 1503
         String currency = personAccounts
@@ -57,7 +101,7 @@ public class ServiceAccounts {
                 .stream()
                 .map(a -> a.getBalance().getCurrency())
                 .findFirst()
-                .get();
+                .orElse("");
 
         // ищем accountSystem (getEntitySubSystems) в ответе от 1503
         String accountSystem = personAccounts
@@ -67,7 +111,7 @@ public class ServiceAccounts {
                 .stream()
                 .map(Account::getEntitySubSystems)
                 .findFirst()
-                .get();
+                .orElse("");
 
         // получаем isArrested в ответе от 1503
         Boolean isArrested = personAccounts
@@ -79,7 +123,7 @@ public class ServiceAccounts {
                 .findFirst()
                 .get();
 
-        // получаем значение result
+        // получаем значение result в ответе от 1503
         String result = personAccounts.getBody().getResult();
 
         // получаем mdmId из заголовков ответа от 1503
@@ -94,7 +138,6 @@ public class ServiceAccounts {
                 .get(0);
 
         handlerObjectPersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested, result);
-
     }
 
     @SneakyThrows
@@ -195,7 +238,7 @@ public class ServiceAccounts {
                 connection.setAutoCommit(false);
 
                 //обновляем в БД для данного задания paymentTask.status=30
-                entPaymentTaskActions.updateStatus(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
+                entPaymentTaskActions.updateStatusEntPaymentTaskByMdmId(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
 
                 // формируем данные для сохранения в БД ent_task_status_history
                 EntTaskStatusHistory entTaskStatusHistory = createEntTaskStatusHistory(
@@ -233,7 +276,7 @@ public class ServiceAccounts {
                 connection.setAutoCommit(false);
 
                 // Записать в БД для данного задания paymentTask.status=30,
-                entPaymentTaskActions.updateStatus(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
+                entPaymentTaskActions.updateStatusEntPaymentTaskByMdmId(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
 
                 //  создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details=201
                 EntTaskStatusHistory entTaskStatusHistory =
@@ -249,7 +292,6 @@ public class ServiceAccounts {
             } catch (SQLException e) {
                 e.printStackTrace();
                 try {
-                    assert connection != null;
                     connection.rollback();
                 } catch (SQLException ex) {
                     ex.printStackTrace();

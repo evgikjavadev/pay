@@ -2,12 +2,9 @@ package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,13 +43,11 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
         return jdbcTemplate.query(
                 sql,
                 new Object[] {mdmId},
-                new RowMapper<EntPaymentTask>() {
-                    public EntPaymentTask mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        EntPaymentTask task = new EntPaymentTask();
-                        task.setRewardId(rs.getObject(1, UUID.class));
-                        task.setMdmId(rs.getObject(3, String.class));
-                        return task;
-                    }
+                (rs, rowNum) -> {
+                    EntPaymentTask task = new EntPaymentTask();
+                    task.setRewardId(rs.getObject(1, UUID.class));
+                    task.setMdmId(rs.getObject(3, String.class));
+                    return task;
                 });
     }
 
@@ -63,25 +58,30 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
-    public void updateStatus(String mdmId, Integer status) {
+    public void updateStatusEntPaymentTaskByMdmId(String mdmId, Integer status) {
         String sql = "UPDATE ent_payment_task SET status = ? WHERE mdm_id = ?";
         jdbcTemplate.update(sql, status, mdmId);
     }
 
     @Override
+    public void updateStatusEntPaymentTaskByRewardId(UUID rewardId, Integer status) {
+        String sql = "UPDATE ent_payment_task SET status = ? WHERE reward_id = ?";
+        jdbcTemplate.update(sql, status, rewardId);
+    }
+
+    @Override
     public List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId) {
         String sql = "SELECT * FROM ent_payment_task WHERE reward_id = ?";
-        List<EntPaymentTask> listPaymentTasks = jdbcTemplate.query(
+        return jdbcTemplate.query(
                 sql,
                 new Object[] {rewardId},
-                new RowMapper<EntPaymentTask>() {
-                    public EntPaymentTask mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        EntPaymentTask task = new EntPaymentTask();
-                        task.setRewardId(rs.getObject(1, UUID.class));
-                        return task;
-                    }
+                (rs, rowNum) -> {
+                    EntPaymentTask task = new EntPaymentTask();
+                    task.setRewardId(rs.getObject(1, UUID.class));
+                    return task;
                 });
-        return listPaymentTasks;
     }
+
+
 
 }
