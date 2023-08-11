@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.сontroller;
+package ru.vtb.msa.rfrm.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +74,7 @@ public class ControllerTest {
     }
 
     private static QuestionnairesKafkaModel getTestQuestionnairesKafkaModel() {
-        UUID rewardId = UUID.randomUUID();
+        UUID rewardId = UUID.fromString("5f286023-f0ee-4fec-a51c-a16ea4912c5c");
         return QuestionnairesKafkaModel
                 .builder()
                     .rewardId(rewardId)
