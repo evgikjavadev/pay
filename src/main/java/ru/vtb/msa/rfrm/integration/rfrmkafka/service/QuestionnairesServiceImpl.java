@@ -26,8 +26,8 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
             // если поля в входящем объекте ок, то обогащаем объект дополнит. полями
             EntPaymentTask entPaymentTask = mapper.quesKafkaToQuesModel(model);
 
-            // сохраняем объект в БД
-            entPaymentTaskActions.insertPaymentTaskInDB(entPaymentTask);
+            // проверяем есть ли в pay_payment_task объект с таким rewardId и сохраняем его
+            insertNewTaskToEntPaymentTask(entPaymentTask);
 
         }
     }
@@ -40,6 +40,15 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
             return false;
         }
         return true;
+    }
+
+    // метод сохраняет объект в pay_payment_task если совпадений по rewardId не найдено
+    private void insertNewTaskToEntPaymentTask(EntPaymentTask entPaymentTask) {
+
+        if (entPaymentTaskActions.getPaymentTaskByRewardId(entPaymentTask.getRewardId()).size() == 0) {
+            entPaymentTaskActions.insertPaymentTaskInDB(entPaymentTask);
+        }
+
     }
 
 }

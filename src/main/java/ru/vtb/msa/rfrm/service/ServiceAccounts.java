@@ -314,7 +314,6 @@ public class ServiceAccounts {
             // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201   //todo
             //kafkaTemplate.send("rfrm_pay_result_reward", obj);
 
-
         }
 
     }
@@ -327,15 +326,6 @@ public class ServiceAccounts {
                     .taskStatus(taskStatus)
                     .statusUpdatedAt(LocalDateTime.now())
                 .build();
-    }
-
-    // метод сохраняет объект в БД если совпадений по rewardId не найдено
-    public void insertNewTaskToEntPaymentTask(EntPaymentTask entPaymentTask) {
-
-        if (entPaymentTaskActions.getPaymentTaskByRewardId(entPaymentTask.getRewardId()).size() == 0) {
-            entPaymentTaskActions.insertPaymentTaskInDB(entPaymentTask);
-        }
-
     }
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {

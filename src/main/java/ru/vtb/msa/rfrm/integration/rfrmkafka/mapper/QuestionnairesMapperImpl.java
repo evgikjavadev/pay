@@ -12,7 +12,7 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
     public EntPaymentTask quesKafkaToQuesModel(QuestionnairesKafkaModel model) {
 
         //создадим объект с дозаполненными полями
-        EntPaymentTask entPaymentTask = EntPaymentTask
+        return EntPaymentTask
                 .builder()
                     .rewardId(model.getRewardId())
                     .mdmId(model.getMdmId())
@@ -25,7 +25,5 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
                     .account(null)
                     .createdAt(LocalDateTime.now())
                 .build();
-
-        return entPaymentTask;
     }
 }

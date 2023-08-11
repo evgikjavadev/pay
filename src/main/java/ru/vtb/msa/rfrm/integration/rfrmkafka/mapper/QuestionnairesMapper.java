@@ -8,5 +8,4 @@ public interface QuestionnairesMapper {
 
     EntPaymentTask quesKafkaToQuesModel(QuestionnairesKafkaModel model);
 
-    //ApplicationTempEntity quesModelToApplication(QuestionnairesModel model);
 }

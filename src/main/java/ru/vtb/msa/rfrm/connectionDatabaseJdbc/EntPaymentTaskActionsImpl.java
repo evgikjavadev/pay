@@ -13,7 +13,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     private final JdbcTemplate jdbcTemplate;
-
     @Override
     public void insertPaymentTaskInDB(EntPaymentTask entPaymentTask) {
         String sql = "INSERT INTO ent_payment_task " +
@@ -33,7 +32,6 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                 entPaymentTask.getSourceQs(),
                 entPaymentTask.getProcessed()
         );
-
     }
 
     @Override
@@ -81,7 +79,5 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                     return task;
                 });
     }
-
-
 
 }
