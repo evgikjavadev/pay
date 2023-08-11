@@ -1,11 +1,9 @@
 package ru.vtb.msa.rfrm.connectionDatabaseJdbc.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 public enum DctTaskStatuses {
 
-    STATUS_NEW(10, "", ""),
+    STATUS_NEW(10, "Новое", "New"),
     STATUS_PAYED(20, "Выплачено", "Payed"),
     STATUS_REJECTED(30, "Отклонено", "Rejected"),
     STATUS_MANUAL_PROCESSING(40, "Ручной разбор", "Manual processing"),

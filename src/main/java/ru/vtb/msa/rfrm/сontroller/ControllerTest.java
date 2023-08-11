@@ -6,11 +6,9 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
@@ -23,33 +21,31 @@ import java.util.UUID;
 @Slf4j
 public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
-    //private final KafkaTemplate<Object, byte[]> kafkaTemplate;
-    private static final String TOPIC = "RewardReq";
+
+    @Value("${process.platform.kafka.topic.questionnaires}")
+    private String topic;
+    @Value("${process.platform.kafka.bootstrap.server}")
+    private String bootstrapServers;
+
+    private static final UUID questionnaireId = UUID.randomUUID();
+
 
     @GetMapping("/getaccounts")
-    public String getAccounts() throws JSONException {
-
-        serviceAccounts.getClientAccounts();
+    public String getAccounts() {
+        //todo   решить по какому событию тащим номер счета клиента
+        serviceAccounts.getClientAccounts("5000015297");
         return "Accounts for clients are received !";
     }
 
-//    private final RewardSerializer rewardSerializer;
 
-    /*** Тест получения объекта из топика RewardReq кафка */
-    @PostMapping("/publish")
+    /***
+     * Тест отправки объекта в топика RewardReq кафка
+     * */
+    @GetMapping("/publish")
     public String publishMessage() {
 
-        QuestionnairesKafkaModel questionnairesKafkaModel = QuestionnairesKafkaModel
-                .builder()
-                .rewardId(UUID.randomUUID())
-                .mdmId("5000015297")
-                .questionnaireId(UUID.randomUUID())
-                .recipientType(3)
-                .source_qs("sourceQS")
-                .amount(690.00)
-                .build();
-
-        String bootstrapServers = "127.0.0.1:9092";
+        // создадим тестовый объект-заглушку кот приходит из кафка топика rewardreq
+        QuestionnairesKafkaModel testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
 
         // create Producer properties
         Properties properties = new Properties();
@@ -59,14 +55,13 @@ public class ControllerTest {
 
         KafkaProducer<String, QuestionnairesKafkaModel> producer = new KafkaProducer<>(properties);
 
-        for (int i = 0; i < 50; i++) {
-            ProducerRecord<String, QuestionnairesKafkaModel> producerRecord;
-
-            producerRecord = new ProducerRecord<>(TOPIC, questionnairesKafkaModel);
-
-            log.info("sent i = " + i);
+        for (int i = 0; i < 1; i++) {
+            ProducerRecord<String, QuestionnairesKafkaModel> producerRecord =
+                    new ProducerRecord<>(topic, testQuestionnairesKafkaModel);
+            log.info("sent i = " + i + " " + producerRecord.value());
             // send data - asynchronous
             producer.send(producerRecord);
+
         }
 
         // flush data - synchronous
@@ -78,10 +73,23 @@ public class ControllerTest {
         return "Object published in topic successfully!";
     }
 
+    private static QuestionnairesKafkaModel getTestQuestionnairesKafkaModel() {
+        UUID rewardId = UUID.randomUUID();
+        return QuestionnairesKafkaModel
+                .builder()
+                    .rewardId(rewardId)
+                    .mdmId("5000015297")
+                    .questionnaireId(questionnaireId)
+                    .recipientType(3)
+                    .source_qs("sourceQS")
+                    .amount(69000.00)
+                .build();
+    }
+
     /** Тест сохранения в БД нового задания через JDBC */
 //    @GetMapping("/savetask")
 //    public void saveNewTask() {
-//        serviceAccounts.saveNewTaskToPayPaymentTask();
+//        serviceAccounts.saveNewTaskToPayPaymentTask(EntPaymentTask.builder().rewardId(UUID.randomUUID()).build());
 //    }
 
 }

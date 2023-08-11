@@ -1,6 +1,5 @@
 package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,8 +20,8 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     @Override
     public void insertPaymentTaskInDB(EntPaymentTask entPaymentTask) {
         String sql = "INSERT INTO ent_payment_task " +
-                "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs, processed) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 entPaymentTask.getRewardId(),
@@ -34,8 +33,10 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                 entPaymentTask.getCreatedAt(),
                 entPaymentTask.getAccountSystem(),
                 entPaymentTask.getAccount(),
-                entPaymentTask.getSourceQs()
+                entPaymentTask.getSourceQs(),
+                entPaymentTask.getProcessed()
         );
+
     }
 
     @Override
@@ -48,6 +49,7 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                 new RowMapper<EntPaymentTask>() {
                     public EntPaymentTask mapRow(ResultSet rs, int rowNum) throws SQLException {
                         EntPaymentTask task = new EntPaymentTask();
+                        task.setRewardId(rs.getObject(1, UUID.class));
                         task.setMdmId(rs.getObject(3, String.class));
                         return task;
                     }

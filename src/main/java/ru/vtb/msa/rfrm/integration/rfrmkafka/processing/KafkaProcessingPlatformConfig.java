@@ -16,7 +16,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.util.StringUtils;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.service.FirstProcessQuestionnairesService;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.service.ProcessQuestionnairesService;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 
 
@@ -89,7 +89,7 @@ public class KafkaProcessingPlatformConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        //props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.service.model.questionnaires.QuestionnairesKafkaModel");
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeout);
         props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, maxPartitionFetchBytes);
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
@@ -121,7 +121,7 @@ public class KafkaProcessingPlatformConfig {
     }
 
     @Bean
-    KafkaProcessingPlatformClient client(FirstProcessQuestionnairesService service) {
+    KafkaProcessingPlatformClient client(ProcessQuestionnairesService service) {
         QuestionnairesMapper mapper = Mappers.getMapper(QuestionnairesMapper.class);
         return new KafkaProcessingPlatformClient(service, mapper);
     }

@@ -29,21 +29,11 @@ public class ServiceAccounts {
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
     private final HikariDataSource hikariDataSource;
-    private final KafkaTemplate kafkaTemplate;
-
-    // получаем данные из топика кафка
-    private final UUID rewardUuidFromKafka = UUID.randomUUID();  //todo    get from kafka
-    private final String mdmIdFromKafka = "5000015297";
-    private final String sourceQs = "sourceQsExample";
-    private final Double sumReward = 6500.00;
-    private final Integer recipientType = 3;
-    private final UUID questionnaireId = UUID.randomUUID();
-    // -------------------------------------------------------------------
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
     //@PreAuthorize("permittedByRole('READ')")    //todo
-    public void getClientAccounts() {
+    public void getClientAccounts(String mdmIdFromKafka) {
 
         // получаем весь объект с данными счета клиента из 1503
         Response<?> personAccounts = personClientAccounts
@@ -114,13 +104,16 @@ public class ServiceAccounts {
                                              String mdmId,
                                              Boolean isArrested,
                                              String result) {
+
+        // получаем из БД объекты с mdmId который пришел из 1503 и уже сохранен в БД
+        List<EntPaymentTask> listTasks = entPaymentTaskActions.getPaymentTaskByMdmId(mdmId);
+        UUID rewardId = listTasks.get(0).getRewardId();
+
         Connection connection = null;
+
         if (personAccountNumber != null
                 && currency.equals("RUB")
                 && isArrested.equals(false)) {
-
-            // получаем из БД объекты с mdmId который пришел из 1503 и уже сохранен в БД
-            List<EntPaymentTask> listTasks = entPaymentTaskActions.getPaymentTaskByMdmId(mdmId);
 
             if (listTasks.size() == 1) {
 
@@ -139,7 +132,7 @@ public class ServiceAccounts {
 
                     // формируем объект для записи в табл. taskStatusHistory
                     EntTaskStatusHistory entTaskStatusHistory =
-                            createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null, rewardUuidFromKafka);
+                            createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null, rewardId);
 
                     // создать новую запись в таблице taskStatusHistory
                     entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
@@ -155,11 +148,42 @@ public class ServiceAccounts {
                         ex.printStackTrace();
                     }
                 }
-
-            } else  {
-                //todo   проработать с аналитиком, он сказал что не может быть 2 задания
             }
+        }
 
+        if (personAccountNumber == null || personAccountNumber.isEmpty()) {
+
+                try {
+                    connection = hikariDataSource.getConnection();
+                    connection.setAutoCommit(false);
+
+                    // изменяем статус задания на "отклонено" (paymentTask.status=30)
+                    entPaymentTaskActions
+                            .updateAccountNumber(
+                                    personAccountNumber,
+                                    accountSystem,
+                                    mdmId,
+                                    DctTaskStatuses.STATUS_REJECTED.getStatus()
+                            );
+
+                    // формируем объект для записи в табл. taskStatusHistory
+                    EntTaskStatusHistory entTaskStatusHistory =
+                            createEntTaskStatusHistory(DctTaskStatuses.STATUS_REJECTED.getStatus(), null, rewardId);
+
+                    // создать новую запись в таблице taskStatusHistory
+                    entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+                    connection.commit();
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    try {
+                        assert connection != null;
+                        connection.rollback();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
         }
 
         if (personAccountNumber != null
@@ -177,7 +201,7 @@ public class ServiceAccounts {
                 EntTaskStatusHistory entTaskStatusHistory = createEntTaskStatusHistory(
                         DctTaskStatuses.STATUS_REJECTED.getStatus(),
                         DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getStatusDetailsCode(),
-                        rewardUuidFromKafka
+                        rewardId
                 );
 
                 // создать новую запись в таблице taskStatusHistory
@@ -216,7 +240,7 @@ public class ServiceAccounts {
                         createEntTaskStatusHistory(
                             DctTaskStatuses.STATUS_REJECTED.getStatus(),
                             DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode(),
-                            rewardUuidFromKafka
+                            rewardId
                         );
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
@@ -231,9 +255,6 @@ public class ServiceAccounts {
                     ex.printStackTrace();
                 }
             }
-
-            List<String> obj = new ArrayList<>();
-            obj.add("bla bla");
 
             // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201   //todo
             //kafkaTemplate.send("rfrm_pay_result_reward", obj);
@@ -254,13 +275,13 @@ public class ServiceAccounts {
     }
 
     // метод сохраняет объект в БД если совпадений по rewardId не найдено
-//    public void saveNewTaskToPayPaymentTask() {
-//
-//        if (entPaymentTaskActions.getPaymentTaskByRewardId(rewardUuidFromKafka).size() == 0) {
-//            entPaymentTaskActions.insertPaymentTaskInDB(createPayPaymentTask());
-//        }
-//
-//    }
+    public void saveNewTaskToPayPaymentTask(EntPaymentTask entPaymentTask) {
+
+        if (entPaymentTaskActions.getPaymentTaskByRewardId(entPaymentTask.getRewardId()).size() == 0) {
+            entPaymentTaskActions.insertPaymentTaskInDB(entPaymentTask);
+        }
+
+    }
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {
         return AccountInfoRequest.builder().productTypes(str).build();

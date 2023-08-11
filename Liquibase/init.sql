@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS ent_payment_task (
                        account_system VARCHAR(255),
                        account VARCHAR(255),
                        source_qs VARCHAR(255) NOT NULL,
-                       processed boolean
+                       processed BOOLEAN
 );
 COMMIT;
 

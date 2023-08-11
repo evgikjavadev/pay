@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.kafka.common.protocol.types.Field;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -65,6 +66,9 @@ public class EntPaymentTask {
     @NotBlank
     @Column(name = "source_qs")
     private String sourceQs;
+
+    @Column(name = "processed")
+    private Boolean processed;
 
     public LocalDateTime getCreatedAt() {
         return LocalDateTime.now();

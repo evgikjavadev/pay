@@ -24,7 +24,7 @@ spring:
   datasource:
     hikari:
       driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://localhost:5432/postgres
+      jdbc-url: jdbc:postgresql://localhost:5432/postgres1
       username: postgres
       password: 123
   jmx:
@@ -143,11 +143,11 @@ feature.toggle:
 process.platform:
   kafka:
     bootstrap:
-      server: "localhost:9092"
+      server: localhost:9092
     consumer:
-      group-id: "core"
+      group-id: pay
     topic:
-      questionnaires: "rewardReq"
+      questionnaires: rewardreq
     max.poll.records: 10
     security:
       protocol: PLAINTEXT
@@ -163,6 +163,16 @@ process.platform:
         password: ""
       truststore-type: 'JKS'
       keystore-type: 'JKS'
+
+
+#      consumer:
+#        properties:
+#          spring.json.trusted.packages: "ru.vtb."
+
+#      auto:
+#        create:
+#          topics:
+#            enable: true
 
 #фоновый процесс
 data.event:

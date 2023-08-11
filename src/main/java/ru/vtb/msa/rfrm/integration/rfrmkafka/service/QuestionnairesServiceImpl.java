@@ -13,26 +13,22 @@ import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class QuestionnairesServiceImpl implements FirstProcessQuestionnairesService {
+public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
 
-    //private final ApplicationsTempRepository repository;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final QuestionnairesMapper mapper;
 
     @Override
-    public void firstProcessQuestionnaires(QuestionnairesKafkaModel model) {
+    public void validateFieldsAndSaveTaskToDB(QuestionnairesKafkaModel model) {
 
         if(requiredFields(model)) {
-            //ApplicationTempEntity entity = mapper.quesModelToApplication(model);
 
-            //todo
-            /// если поля в входящем объекте ок, то обогащаем объект
+            // если поля в входящем объекте ок, то обогащаем объект дополнит. полями
             EntPaymentTask entPaymentTask = mapper.quesKafkaToQuesModel(model);
 
             // сохраняем объект в БД
             entPaymentTaskActions.insertPaymentTaskInDB(entPaymentTask);
 
-            //repository.saveAndFlush(entity);
         }
     }
 
@@ -46,9 +42,4 @@ public class QuestionnairesServiceImpl implements FirstProcessQuestionnairesServ
         return true;
     }
 
-
-//    @Override
-//    public void secondProcessQuestionnaires(QuestionnairesModel kafkaModel) {
-//
-//    }
 }
