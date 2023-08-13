@@ -8,6 +8,8 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.support.serializer.JsonSerializer;
@@ -41,18 +43,18 @@ public class ServiceAccounts {
     private final HikariDataSource hikariDataSource;
     @Value("${process.platform.kafka.bootstrap.server}")
     private String bootstrapServers;
-    private String topicResult = "rfrm_pay_result_reward";
+    private final String topicResult = "rfrm_pay_result_reward";
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
-    //@PreAuthorize("permittedByRole('READ')")              //todo
+    //@PreAuthorize("permittedByRole('READ')")              //todo убрать по необходимости
     public void getClientAccounts(String mdmIdFromKafka) {
 
         try {
             // получаем весь объект с данными счета клиента из 1503
             Response<?> personAccounts = personClientAccounts
                     .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
-            getResponseParam(personAccounts);
+            getAndPassParameters(personAccounts);
 
         } catch (HttpStatusException e) {
             HttpStatus status = e.getStatus();
@@ -68,7 +70,6 @@ public class ServiceAccounts {
                 getPaymentTaskByMdmId(mdmIdFromKafka)
                 .get(0)
                 .getRewardId();
-
 
         if (status.value() == 404) {
 
@@ -109,60 +110,25 @@ public class ServiceAccounts {
         }
     }
 
-    private void getResponseParam(Response<?> personAccounts) {
+    // в методе бполучаем нужные параметры и передаем их в обработку счета
+    private void getAndPassParameters(Response<?> personAccounts) {
         // получаем номер счета в ответе от 1503
-        String personAccountNumber = personAccounts
-                .getBody()
-                .getAccounts()
-                .values()
-                .stream()
-                .map(Account::getNumber)
-                .findFirst()
-                .orElse("");
+        String personAccountNumber = getAccountNumber(personAccounts);
 
         // получаем currency в ответе от 1503
-        String currency = personAccounts
-                .getBody()
-                .getAccounts()
-                .values()
-                .stream()
-                .map(a -> a.getBalance().getCurrency())
-                .findFirst()
-                .orElse("");
+        String currency = getCurrency(personAccounts);
 
         // ищем accountSystem (getEntitySubSystems) в ответе от 1503
-        String accountSystem = personAccounts
-                .getBody()
-                .getAccounts()
-                .values()
-                .stream()
-                .map(Account::getEntitySubSystems)
-                .findFirst()
-                .orElse("");
+        String accountSystem = getAccountSystem(personAccounts);
 
         // получаем isArrested в ответе от 1503
-        Boolean isArrested = personAccounts
-                .getBody()
-                .getAccounts()
-                .values()
-                .stream()
-                .map(Account::getIsArrested)
-                .findFirst()
-                .orElse(null);
+        Boolean isArrested = getArrested(personAccounts);
 
         // получаем значение result в ответе от 1503
         String result = personAccounts.getBody().getResult();
 
         // получаем mdmId из заголовков ответа от 1503
-        String mdmId = personAccounts
-                .getHeaders()
-                .entrySet()
-                .stream()
-                .filter(a -> a.getKey().equals("X-Mdm-Id"))
-                .findFirst()
-                .orElseThrow()
-                .getValue()
-                .get(0);
+        String mdmId = getMdmId(personAccounts);
 
         handlePersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested, result);
     }
@@ -335,7 +301,7 @@ public class ServiceAccounts {
 
     }
 
-    private void sendResultToKafka(PayResultReward payResultReward) {
+    private void sendResultToKafka(PayResultReward payResultReward) {                         //todo  сделать нормальный producer
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -358,7 +324,6 @@ public class ServiceAccounts {
                 .status(status)
                 .statusDescription(description)
                 .build();
-
     }
 
     private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode, UUID rewardId) {
@@ -373,6 +338,71 @@ public class ServiceAccounts {
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {
         return AccountInfoRequest.builder().productTypes(str).build();
+    }
+
+    @NotNull
+    private static String getAccountNumber(Response<?> personAccounts) {
+
+        return personAccounts
+                .getBody()
+                .getAccounts()
+                .values()
+                .stream()
+                .map(Account::getNumber)
+                .findFirst()
+                .orElse("");
+    }
+
+    @NotNull
+    private static String getAccountSystem(Response<?> personAccounts) {
+
+        return personAccounts
+                .getBody()
+                .getAccounts()
+                .values()
+                .stream()
+                .map(Account::getEntitySubSystems)
+                .findFirst()
+                .orElse("");
+    }
+
+    private static String getMdmId(Response<?> personAccounts) {
+
+        return personAccounts
+                .getHeaders()
+                .entrySet()
+                .stream()
+                .filter(a -> a.getKey().equals("X-Mdm-Id"))
+                .findFirst()
+                .orElseThrow()
+                .getValue()
+                .get(0);
+    }
+
+    @Nullable
+    private static Boolean getArrested(Response<?> personAccounts) {
+
+        return personAccounts
+                .getBody()
+                .getAccounts()
+                .values()
+                .stream()
+                .map(Account::getIsArrested)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @NotNull
+    private static String getCurrency(Response<?> personAccounts) {
+
+        return personAccounts
+                .getBody()
+                .getAccounts()
+                .values()
+                .stream()
+                .map(a -> a.getBalance().getCurrency())
+                .findFirst()
+                .orElse("");
     }
     
 }
