@@ -33,11 +33,11 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
     }
 
     @Override
-    public Response<?> getPersonAccounts(String mdmIdFromKafka, AccountInfoRequest request) {
+    public Response<?> getPersonAccounts(String mdmId, AccountInfoRequest request) {
         log.info("Старт вызова {}", PRODUCT_PROFILE_FL.getValue());
 
         Response<?> post = this.post(
-                mdmIdFromKafka,
+                mdmId,
                 uriBuilder -> uriBuilder.path(properties.getResource()).build(),
                 request,
                 CommonResponseAccounts.class);

@@ -86,10 +86,4 @@ public class ControllerTest {
                 .build();
     }
 
-    /** Тест сохранения в БД нового задания через JDBC */
-//    @GetMapping("/savetask")
-//    public void saveNewTask() {
-//        serviceAccounts.saveNewTaskToPayPaymentTask(EntPaymentTask.builder().rewardId(UUID.randomUUID()).build());
-//    }
-
 }

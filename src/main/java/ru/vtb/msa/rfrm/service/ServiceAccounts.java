@@ -3,7 +3,14 @@ package ru.vtb.msa.rfrm.service;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.connectionDatabaseJdbc.EntPaymentTaskActions;
@@ -16,6 +23,7 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Account;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayResultReward;
 import ru.vtb.omni.audit.lib.api.annotation.Audit;
 
 import java.sql.Connection;
@@ -25,11 +33,15 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ServiceAccounts {
     private final PersonClientAccounts personClientAccounts;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
     private final HikariDataSource hikariDataSource;
+    @Value("${process.platform.kafka.bootstrap.server}")
+    private String bootstrapServers;
+    private String topicResult = "rfrm_pay_result_reward";
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
@@ -40,7 +52,7 @@ public class ServiceAccounts {
             // получаем весь объект с данными счета клиента из 1503
             Response<?> personAccounts = personClientAccounts
                     .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
-            handleResponseAccounts(personAccounts);
+            getResponseParam(personAccounts);
 
         } catch (HttpStatusException e) {
             HttpStatus status = e.getStatus();
@@ -97,7 +109,7 @@ public class ServiceAccounts {
         }
     }
 
-    private void handleResponseAccounts(Response<?> personAccounts) {
+    private void getResponseParam(Response<?> personAccounts) {
         // получаем номер счета в ответе от 1503
         String personAccountNumber = personAccounts
                 .getBody()
@@ -152,16 +164,16 @@ public class ServiceAccounts {
                 .getValue()
                 .get(0);
 
-        handlerObjectPersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested, result);
+        handlePersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested, result);
     }
 
     @SneakyThrows
-    private void handlerObjectPersonAccounts(String personAccountNumber,
-                                             String currency,
-                                             String accountSystem,
-                                             String mdmId,
-                                             Boolean isArrested,
-                                             String result) {
+    private void handlePersonAccounts(String personAccountNumber,
+                                      String currency,
+                                      String accountSystem,
+                                      String mdmId,
+                                      Boolean isArrested,
+                                      String result) {
 
         // получаем из БД объекты с mdmId который пришел из 1503 и уже сохранен в БД
         List<EntPaymentTask> listTasks = entPaymentTaskActions.getPaymentTaskByMdmId(mdmId);
@@ -274,8 +286,6 @@ public class ServiceAccounts {
                 }
             }
 
-            //Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания, status=30, status_details_code=202   //todo
-
         }
 
         if (personAccountNumber == null
@@ -311,10 +321,43 @@ public class ServiceAccounts {
                 }
             }
 
-            // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201   //todo
-            //kafkaTemplate.send("rfrm_pay_result_reward", obj);
+            // собираем объект для отправки в топик содержащее id задания, status=30, status_description если 30
+            PayResultReward payResultReward =
+                    createResultMessage(rewardId,
+                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
+                            DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getDescription()
+                    );
+
+            //Записать в топик rfrm_pay_result_reward сообщение
+            sendResultToKafka(payResultReward);
 
         }
+
+    }
+
+    private void sendResultToKafka(PayResultReward payResultReward) {
+        Properties properties = new Properties();
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
+
+        KafkaProducer<Object, PayResultReward> kafkaProducer = new KafkaProducer<>(properties);
+
+        ProducerRecord<Object, PayResultReward> producerRecord = new ProducerRecord<>(topicResult, payResultReward);
+
+        kafkaProducer.send(producerRecord);
+        kafkaProducer.flush();
+        kafkaProducer.close();
+    }
+
+    private PayResultReward createResultMessage(UUID rewardId, Integer status, String description) {
+
+        return PayResultReward
+                .builder()
+                .rewardId(rewardId)
+                .status(status)
+                .statusDescription(description)
+                .build();
 
     }
 
