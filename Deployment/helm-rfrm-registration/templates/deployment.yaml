@@ -1,0 +1,93 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: '10'
+    meta.helm.sh/release-name: rfrm-registration
+  name: rfrm-registration
+  labels:
+    app: rfrm-registration
+    app.kubernetes.io/part-of: RFRM
+    app.kubernetes.io/instance: rfrm-registration
+    app.kubernetes.io/version: 0.0.1-SNAPSHOT
+    app.kubernetes.io/name: rfrm-registration
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: rfrm-registration
+      app.kubernetes.io/name: rfrm-registration
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: rfrm-registration
+        app.kubernetes.io/part-of: RFRM
+        app.kubernetes.io/instance: rfrm-registration
+        app.kubernetes.io/version: 0.0.1-SNAPSHOT
+        app.kubernetes.io/name: rfrm-registration
+      annotations:
+    spec:
+      containers:
+        - resources:
+            limits:
+              cpu: '1'
+              memory: 2Gi
+            requests:
+              cpu: 300m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            timeoutSeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 15
+          terminationMessagePath: /dev/termination-log
+          name: rfrm-registration
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            timeoutSeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 5
+          env:
+            - name: TZ
+              value: Europe/Moscow
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: Always
+
+          terminationMessagePolicy: File
+
+          image: >-
+            nexus-ci.corp.dev.vtb/rfrm-docker-snapshot/rfrm-registration:0.0.1
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: nexus-ci
+      securityContext: {}
+      schedulerName: default-scheduler
+      enableServiceLinks: false
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 600
+

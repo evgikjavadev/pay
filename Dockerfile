@@ -6,7 +6,7 @@ RUN rm -f /etc/localtime && ln -s /usr/share/zoneinfo/Europe/Moscow /etc/localti
 ENV LANG="en_US.UTF-8"
 
 WORKDIR /app
-COPY rfrm-pay/target/rfrm-pay*.jar rfrm-pay.jar
+COPY target/rfrm-pay*.jar rfrm-pay.jar
 RUN chown -R jboss:jboss /app/*
 USER jboss
 ENTRYPOINT ["java", "-jar", "rfrm-pay.jar"]
