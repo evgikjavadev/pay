@@ -23,11 +23,11 @@ spring:
             token-uri: http://localhost:8070/passport/oauth2/token
 
 
-  #datasource:
-    #url: jdbc:postgresql://localhost:5432/postgres
-    #username: postgres
-    #password: 123
-    #driverClassName: org.postgresql.Driver
+  datasource:
+    url: jdbc:postgresql://d5rfrm-pgc001lk.corp.dev.vtb:5432/rfrm_pay?currentSchema=rfrm_pay
+    username: rfrm_pay_admin
+    password: 7gEmkEBv3o7YID7baeMRlFo0R0YyHzlwW3U7p_F
+    driverClassName: org.postgresql.Driver
 
 audit:
   local-mode: true
