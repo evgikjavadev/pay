@@ -92,31 +92,6 @@ product-profile-fl-accounts:
     count: 3
     duration: 2000
 
-aclib:
-  replication:
-    enabled: false
-  ac:
-    token:
-    service-name: kafka-astra-0388
-  kafka:
-    bootstrap-servers: localhost:9092
-    security:
-      protocol: PLAINTEXT
-    ssl:
-      enabled: false
-      truststore:
-        # при локальном запуске в режиме ssl необходимо указать абсолютный путь
-        location: ''
-        password: ''
-      keystore:
-        # при локальном запуске в режиме ssl необходимо указать абсолютный путь
-        location: ''
-        password: ''
-      key:
-        password:
-      truststore-type: 'JKS'
-      keystore-type: 'JKS'
-
 logging:
   level:
     ROOT: INFO
