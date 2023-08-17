@@ -100,15 +100,14 @@ logging:
     ru.vtb.msa.rfrm.integration: ${LOG_LEVEL}
     ru.vtb.msa.mdclogging: ${LOG_LEVEL}
 
-product-profile-fl:
+product-profile-fl-accounts:
   url: ${EPA_IG_URL}
-  search: ${SEARCH_END_POINT}
+  resource:  ${GET_RESOURCE} /portfolio/portfolio-agregator/portfolio/active
   headers:
-    X-Initiator-Service: ${X-INITIATOR-SERVICE_HEADERS}
+    X-INITIATOR-SERVICE: rfrm-pay
   retry:
     count: 3
     duration: 2000
-
 
 audit-events:
   auditEventCodeMetadataInfoList:
