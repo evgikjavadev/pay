@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app_value.name }}
+  labels:
+    app: {{ .Values.app_value.name }}
+    ver: {{ .Values.image.app.tag | default .Chart.AppVersion}}
+spec:
+  replicas: {{ .Values.app_value.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app_value.name }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app_value.name }}
+        uniq: {{ randAlphaNum 5 | quote }}
+      annotations:
+        sidecar.istio.io/inject: {{ .Values.istio.inject | quote }}
+        sidecar.istio.io/rewriteAppHTTPProbers: {{ .Values.istio.probers | quote }}
+        sidecar.istio.io/proxyCPU: {{ .Values.istio.requestCpu }}
+        sidecar.istio.io/proxyMemory: {{ .Values.istio.requestMemory }}
+        sidecar.istio.io/proxyCPULimit: {{ .Values.istio.limitCpu }}
+        sidecar.istio.io/proxyMemoryLimit: {{ .Values.istio.limitMemory }}
+        traffic.sidecar.istio.io/excludeOutboundPorts: {{ .Values.istio.excludePorts }}
+        traffic.sidecar.istio.io/excludeOutboundIPRanges: {{ .Values.istio.excludeip }}
+        proxy.istio.io/config: >-
+          { "holdApplicationUntilProxyStarts": true,
+          "proxyMetadata":{"ISTIO_META_DNS_AUTO_ALLOCATE":"false","ISTIO_META_DNS_CAPTURE":"false"}
+          }
+    spec:
+      volumes:
+        - name: {{ .Values.app_value.name }}-secret-volume
+          secret:
+            secretName: {{ .Values.app_value.name }}-secret
+            defaultMode: 420
+        - name: log4j2-config-volume
+          configMap:
+            name: {{ .Values.app_value.name }}-config
+            items:
+              - key: log4j2.xml
+                path: log4j2.xml
+        - name: logdir-volume
+          emptyDir: {}
+        - name: fluent-bit-db-volume
+          emptyDir: {}
+      imagePullSecrets:
+      - name: {{ .Values.app_value.imagePullSecrets }}
+      containers:
+      - name: {{ .Values.app_value.name }}
+        image: "{{ .Values.image.app.registry }}/{{ .Values.image.app.repository }}/{{ .Values.app_value.name }}:{{ .Values.image.app.tag | default .Chart.AppVersion}}"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: {{ .Values.app_value.containerPort }}
+        livenessProbe:
+          failureThreshold: 25
+          httpGet:
+            path: {{ .Values.app_value.livenessProbe.path }}
+            port: {{ .Values.app_value.containerPort }}
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          successThreshold: 1
+          timeoutSeconds: 30
+        readinessProbe:
+          failureThreshold: 25
+          httpGet:
+            path: {{ .Values.app_value.readinessProbe.path }}
+            port: {{ .Values.app_value.containerPort }}
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 30
+        resources:
+          requests:
+            memory: {{ .Values.app_value.requests.memory }}
+            cpu: {{ .Values.app_value.requests.cpu }}
+          limits:
+            memory: {{ .Values.app_value.limits.memory }}
+            cpu: {{ .Values.app_value.limits.cpu }}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        env:
+          - name: TZ
+            value: Europe/Moscow
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.app_value.name }}-config
+          - secretRef:
+              name: {{ .Values.app_value.name }}-secret
+        volumeMounts:
+          - name: log4j2-config-volume
+            mountPath: /config
+          - name: logdir-volume
+            mountPath: /usr/app/logs
+
+      dnsConfig:
+        options:
+          - name: single-request
+      restartPolicy: Always

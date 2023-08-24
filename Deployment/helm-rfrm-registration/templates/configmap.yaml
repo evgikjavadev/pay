@@ -1,8 +1,0 @@
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pay-config
-data:
-    SHORT_LINK_REDIRECT_URL: registration
-  
