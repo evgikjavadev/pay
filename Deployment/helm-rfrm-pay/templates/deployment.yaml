@@ -49,6 +49,16 @@ spec:
           emptyDir: {}
         - name: fluent-bit-db-volume
           emptyDir: {}
+        - name: logging-pki-client-volume
+          secret:
+            secretName: rfrm-fluent-bit-secret
+            items:
+              - key: ca-kafka-cert.pem
+                path: ca-kafka-cert.pem
+              - key: client-kafka-cert-key.pem
+                path: client-kafka-cert-key.pem
+              - key: client-kafka-cert.pem
+                path: client-kafka-cert.pem
       imagePullSecrets:
       - name: {{ .Values.app_value.imagePullSecrets }}
       containers:
