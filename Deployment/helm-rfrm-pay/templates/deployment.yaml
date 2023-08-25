@@ -99,7 +99,64 @@ spec:
             mountPath: /config
           - name: logdir-volume
             mountPath: /usr/app/logs
-
+      # Fluent-bit
+      - name: fluent-bit
+        image: "{{ .Values.image.fluentbit.registry }}/{{ .Values.image.fluentbit.repository }}/{{ .Values.image.fluentbit.imageName }}:{{ .Values.image.fluentbit.tag }}"
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 2020
+            scheme: HTTP
+          initialDelaySeconds: 40
+          timeoutSeconds: 5
+          periodSeconds: 15
+          failureThreshold: 10
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 2020
+            scheme: HTTP
+          initialDelaySeconds: 40
+          timeoutSeconds: 5
+          periodSeconds: 15
+          failureThreshold: 10
+        envFrom:
+          - configMapRef:
+              name: rfrm-fluent-bit-config
+          - secretRef:
+              name: rfrm-fluent-bit-secret
+        env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        volumeMounts:
+          - name: logdir-volume
+            mountPath: /usr/app/logs
+          - name: fluent-bit-db-volume
+            mountPath: /var/local/fluent-bit
+          - name: logging-pki-client-volume
+            mountPath: /fluent-bit/etc/cert
+        resources:
+          requests:
+            memory: {{ .Values.fluentbit.requests.memory }}
+            cpu: {{ .Values.fluentbit.requests.cpu }}
+          limits:
+            memory: {{ .Values.fluentbit.limits.memory }}
+            cpu: {{ .Values.fluentbit.limits.cpu }}
       dnsConfig:
         options:
           - name: single-request
