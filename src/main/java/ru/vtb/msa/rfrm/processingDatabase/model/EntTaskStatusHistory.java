@@ -1,12 +1,13 @@
-package ru.vtb.msa.rfrm.connectionDatabaseJdbc.model;
+package ru.vtb.msa.rfrm.processingDatabase.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -16,32 +17,32 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table("ent_task_status_history")
 public class EntTaskStatusHistory {
 
     /** id события (ключ) */
     @Id
     @NotBlank
-    @Column(name = "status_history_id")
+    @Column("status_history_id")
     private BigInteger statusHistoryId;
 
     /** id задания, по которому изменился статус соответствует reward_id */
     @NotBlank
-    @Column(name = "reward_id")
+    @Column("reward_id")
     private UUID rewardId;
 
     /** Код комментария к статусу заявки */
-    @Column(name = "status_details_code")
+    @Column("status_details_code")
     private Integer statusDetailsCode;
 
     /** Статус, присвоенный заданию */
     @NotBlank
-    @Column(name = "task_status")
+    @Column("task_status")
     private Integer taskStatus;
 
     /** status_updated_at */
     @NotBlank
-    @Column(name = "status_updated_at")
-    @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
+    @Column("status_updated_at")
     private LocalDateTime statusUpdatedAt;
 
 }

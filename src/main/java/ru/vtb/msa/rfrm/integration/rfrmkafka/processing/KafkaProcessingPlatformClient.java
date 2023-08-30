@@ -11,7 +11,6 @@ import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.service.ProcessQuestionnairesService;
 
-
 import java.sql.SQLException;
 import java.util.List;
 

@@ -1,9 +1,9 @@
-package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
+package ru.vtb.msa.rfrm.processingDatabase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
+import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 
 import java.util.List;
 import java.util.UUID;
@@ -78,6 +78,25 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                     task.setRewardId(rs.getObject(1, UUID.class));
                     return task;
                 });
+    }
+
+    @Override
+    public List<UUID> getEntPaymentTaskByProcessed(Boolean b) {
+        String sql = "SELECT reward_id FROM ent_payment_task WHERE b = ?";
+        return jdbcTemplate.query(
+                sql,
+                new Object[] {b},
+                (rs, rowNum) -> {
+                    EntPaymentTask task = new EntPaymentTask();
+                    task.setRewardId(rs.getObject(11, UUID.class));
+                    return task.getRewardId();
+                });
+    }
+
+    @Override
+    public void updateProcessedBPaymentTaskByRewardId(UUID rewardId) {
+        String sql = "UPDATE ent_payment_task SET processed = ? WHERE b = ?";
+        jdbcTemplate.update(sql, true, false);
     }
 
 }

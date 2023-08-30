@@ -1,7 +1,7 @@
 package ru.vtb.msa.rfrm.integration.rfrmkafka.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
+import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 
 import java.time.LocalDateTime;

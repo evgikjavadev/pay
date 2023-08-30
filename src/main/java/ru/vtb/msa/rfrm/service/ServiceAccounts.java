@@ -14,18 +14,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.EntTaskStatusHistoryActions;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.EntPaymentTaskActions;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.DctStatusDetails;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.DctTaskStatuses;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntTaskStatusHistory;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntPaymentTask;
+import ru.vtb.msa.rfrm.processingDatabase.EntTaskStatusHistoryActions;
+import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
+import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
+import ru.vtb.msa.rfrm.processingDatabase.model.DctTaskStatuses;
+import ru.vtb.msa.rfrm.processingDatabase.model.EntTaskStatusHistory;
+import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Account;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayResultReward;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreLinkModel;
 import ru.vtb.omni.audit.lib.api.annotation.Audit;
 
 import java.sql.Connection;
@@ -47,7 +47,6 @@ public class ServiceAccounts {
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
-    //@PreAuthorize("permittedByRole('READ')")              //todo убрать по необходимости
     public void getClientAccounts(String mdmIdFromKafka) {
 
         try {
@@ -251,7 +250,6 @@ public class ServiceAccounts {
                     ex.printStackTrace();
                 }
             }
-
         }
 
         if (personAccountNumber == null
@@ -288,37 +286,37 @@ public class ServiceAccounts {
             }
 
             // собираем объект для отправки в топик содержащее id задания, status=30, status_description если 30
-            PayResultReward payResultReward =
+            PayCoreLinkModel payCoreLinkModel =
                     createResultMessage(rewardId,
                             DctTaskStatuses.STATUS_REJECTED.getStatus(),
                             DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getDescription()
                     );
 
             //Записать в топик rfrm_pay_result_reward сообщение
-            sendResultToKafka(payResultReward);
+            sendResultToKafka(payCoreLinkModel);
 
         }
 
     }
 
-    private void sendResultToKafka(PayResultReward payResultReward) {                         //todo  сделать нормальный producer
+    private void sendResultToKafka(PayCoreLinkModel payCoreLinkModel) {                         //todo  сделать нормальный producer
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
 
-        KafkaProducer<Object, PayResultReward> kafkaProducer = new KafkaProducer<>(properties);
+        KafkaProducer<Object, PayCoreLinkModel> kafkaProducer = new KafkaProducer<>(properties);
 
-        ProducerRecord<Object, PayResultReward> producerRecord = new ProducerRecord<>(topicResult, payResultReward);
+        ProducerRecord<Object, PayCoreLinkModel> producerRecord = new ProducerRecord<>(topicResult, payCoreLinkModel);
 
         kafkaProducer.send(producerRecord);
         kafkaProducer.flush();
         kafkaProducer.close();
     }
 
-    private PayResultReward createResultMessage(UUID rewardId, Integer status, String description) {
+    private PayCoreLinkModel createResultMessage(UUID rewardId, Integer status, String description) {
 
-        return PayResultReward
+        return PayCoreLinkModel
                 .builder()
                 .rewardId(rewardId)
                 .status(status)

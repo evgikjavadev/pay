@@ -1,15 +1,14 @@
-package ru.vtb.msa.rfrm.connectionDatabaseJdbc.model;
+package ru.vtb.msa.rfrm.processingDatabase.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.kafka.common.protocol.types.Field;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -17,57 +16,58 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table("ent_payment_task")
 public class EntPaymentTask {
 
     /** ID задачи на оплату (генерируется ядром 2155 rfrm-core) */
     @NotBlank
-    @Column(name = "reward_id")
+    @Column("reward_id")
     private UUID rewardId;
 
     /** ID заявки на участие в реферальной программе */
     @NotBlank
-    @Column(name = "questionnaire_id")
+    @Column("questionnaire_id")
     private UUID questionnaireId;
 
     /** ID получателя вознаграждения в MDM */
     @NotBlank
-    @Column(name = "mdm_id")
+    @Column("mdm_id")
     private String mdmId;
 
     /** Тип получателя вознаграждения */
     @NotBlank
-    @Column(name = "recipient_type")
+    @Column("recipient_type")
     private Integer recipientType;
 
     /** Сумма вознаграждения (определяется ядром 2155 rfrm-core) */
     @NotBlank
-    @Column(name = "amount")
+    @Column("amount")
     private Double amount;
 
     /** Cтатус задания на оплату */
     @NotBlank
-    @Column(name = "status")
+    @Column("status")
     private Integer status;
 
     @NotBlank
-    @Column(name = "created_at")
+    @Column("created_at")
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
 
     /** Система, в которой расположен счет клиента для оплаты вознаграждения */
-    @Column(name = "account_system")
+    @Column("account_system")
     private String accountSystem;
 
     /** Счет клиента для оплаты вознаграждения */
-    @Column(name = "account")
+    @Column("account")
     private String account;
 
     /** ID продукта, по которому должно быть выплачено вознаграждение за участие в реферальной программе */
     @NotBlank
-    @Column(name = "source_qs")
+    @Column("source_qs")
     private String sourceQs;
 
-    @Column(name = "processed")
+    @Column("processed")
     private Boolean processed;
 
     public LocalDateTime getCreatedAt() {

@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.connectionDatabaseJdbc.model;
+package ru.vtb.msa.rfrm.processingDatabase.model;
 
 
 public enum DctStatusDetails {
@@ -20,7 +20,6 @@ public enum DctStatusDetails {
     public Integer getStatusDetailsCode() {
         return statusDetailsCode;
     }
-
 
     public String getDescription() {
         return description;

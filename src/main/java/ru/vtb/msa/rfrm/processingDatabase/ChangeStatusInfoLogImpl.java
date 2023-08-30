@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
+package ru.vtb.msa.rfrm.processingDatabase;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

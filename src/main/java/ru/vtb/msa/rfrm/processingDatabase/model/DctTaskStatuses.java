@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.connectionDatabaseJdbc.model;
+package ru.vtb.msa.rfrm.processingDatabase.model;
 
 
 public enum DctTaskStatuses {

@@ -1,10 +1,10 @@
-package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
+package ru.vtb.msa.rfrm.processingDatabase;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.vtb.msa.rfrm.connectionDatabaseJdbc.model.EntTaskStatusHistory;
+import ru.vtb.msa.rfrm.processingDatabase.model.EntTaskStatusHistory;
 
 @Repository
 @RequiredArgsConstructor

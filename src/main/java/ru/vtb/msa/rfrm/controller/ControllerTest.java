@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessing;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
@@ -22,10 +23,17 @@ import java.util.UUID;
 public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
 
+    private final InternalProcessing internalProcessing;
+
     @Value("${process.platform.kafka.topic.questionnaires}")
     private String topic;
     @Value("${process.platform.kafka.bootstrap.server}")
     private String bootstrapServers;
+
+    private final String message = "message";
+
+//    @Value(("${process.platform.kafka.topic.cyclepayment}"))
+//    private String topicName;
 
     private static final UUID questionnaireId = UUID.randomUUID();
 
@@ -42,7 +50,7 @@ public class ControllerTest {
      * Тест отправки объекта в топика RewardReq кафка
      * */
     @GetMapping("/publish")
-    public String publishMessage() {
+    public String publishMessage() throws InterruptedException {
 
         // создадим тестовый объект-заглушку кот приходит из кафка топика rewardreq
         QuestionnairesKafkaModel testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
@@ -64,11 +72,20 @@ public class ControllerTest {
 
         }
 
-        // flush data - synchronous
         producer.flush();
-
-        // flush and close producer
         producer.close();
+
+
+//        KafkaProducer<String, String> producerInternal = new KafkaProducer<>(properties);
+//        while (true) {
+//            ProducerRecord<String, String> recordInternal = new ProducerRecord<>(topicName, message);
+//            System.out.println("message sent ... ");
+//            producerInternal.send(recordInternal);
+//            Thread.sleep(2000);
+//        }
+
+        internalProcessing.processInternalKafkaStatusPayment();
+
 
         return "Object published in topic successfully!";
     }

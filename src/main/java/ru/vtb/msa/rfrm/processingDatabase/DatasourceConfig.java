@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.connectionDatabaseJdbc;
+package ru.vtb.msa.rfrm.processingDatabase;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;

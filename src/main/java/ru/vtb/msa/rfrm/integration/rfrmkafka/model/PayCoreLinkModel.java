@@ -9,7 +9,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PayResultReward {
+public class PayCoreLinkModel {
     private UUID rewardId;
     private Integer status;
     private String statusDescription;
