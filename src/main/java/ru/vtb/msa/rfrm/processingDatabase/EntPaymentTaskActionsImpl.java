@@ -82,7 +82,7 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
 
     @Override
     public List<UUID> getEntPaymentTaskByProcessed(Boolean b) {
-        String sql = "SELECT reward_id FROM ent_payment_task WHERE b = ?";
+        String sql = "SELECT reward_id FROM ent_payment_task WHERE processed = ?";
         return jdbcTemplate.query(
                 sql,
                 new Object[] {b},
@@ -97,6 +97,19 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     public void updateProcessedBPaymentTaskByRewardId(UUID rewardId) {
         String sql = "UPDATE ent_payment_task SET processed = ? WHERE b = ?";
         jdbcTemplate.update(sql, true, false);
+    }
+
+    @Override
+    public List<String> getEntPaymentTaskByStatus(Integer stat) {
+        String sql = "SELECT mdm_id FROM ent_payment_task WHERE status = ?";
+        return jdbcTemplate.query(
+                sql,
+                new Object[] {stat},
+                (rs, rowNum) -> {
+                    EntPaymentTask task = new EntPaymentTask();
+                    task.setMdmId(rs.getObject(3, String.class));
+                    return task.getMdmId();
+                });
     }
 
 }

@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessing;
+
+import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingStatuses;
+import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksPayment;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
@@ -22,21 +24,13 @@ import java.util.UUID;
 @Slf4j
 public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
-
-    private final InternalProcessing internalProcessing;
-
+    private final InternalProcessingStatuses internalProcessingStatuses;
+    private final InternalProcessingTasksPayment internalProcessingTasksPayment;
     @Value("${process.platform.kafka.topic.questionnaires}")
     private String topic;
     @Value("${process.platform.kafka.bootstrap.server}")
     private String bootstrapServers;
-
-    private final String message = "message";
-
-//    @Value(("${process.platform.kafka.topic.cyclepayment}"))
-//    private String topicName;
-
     private static final UUID questionnaireId = UUID.randomUUID();
-
 
     @GetMapping("/getaccounts")
     public String getAccounts() {
@@ -47,12 +41,12 @@ public class ControllerTest {
 
 
     /***
-     * Тест отправки объекта в топика RewardReq кафка
+     * Тест отправки объекта в топик rewardReq кафка
      * */
     @GetMapping("/publish")
     public String publishMessage() throws InterruptedException {
 
-        // создадим тестовый объект-заглушку кот приходит из кафка топика rewardreq
+        // создадим тестовый объект-заглушку кот приходит из кафка топика rewardReq
         QuestionnairesKafkaModel testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
 
         // create Producer properties
@@ -66,8 +60,8 @@ public class ControllerTest {
         for (int i = 0; i < 1; i++) {
             ProducerRecord<String, QuestionnairesKafkaModel> producerRecord =
                     new ProducerRecord<>(topic, testQuestionnairesKafkaModel);
-            log.info("sent i = " + i + " " + producerRecord.value());
-            // send data - asynchronous
+            log.info("sent object with frequency i = " + i + " " + producerRecord.value());
+
             producer.send(producerRecord);
 
         }
@@ -84,10 +78,10 @@ public class ControllerTest {
 //            Thread.sleep(2000);
 //        }
 
-        internalProcessing.processInternalKafkaStatusPayment();
+        internalProcessingStatuses.processInternalKafkaStatus();   //todo   решить как делать начальный запуск
+        internalProcessingTasksPayment.sendMessage();
 
-
-        return "Object published in topic successfully!";
+        return "Object published in topic rewardReq successfully!";
     }
 
     private static QuestionnairesKafkaModel getTestQuestionnairesKafkaModel() {

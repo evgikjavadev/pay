@@ -1,0 +1,76 @@
+package ru.vtb.msa.rfrm.integration.internalkafka;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.stereotype.Component;
+import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
+import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
+import ru.vtb.msa.rfrm.service.ServiceAccounts;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class InternalProcessingTasksPayment {
+
+    private final KafkaInternalConfigProperties kafkaInternalConfigProperties;
+    private final EntPaymentTaskActions entPaymentTaskActions;
+    private final ServiceAccounts serviceAccounts;
+    private final String topicFunctionResultReward = "rfrm_pay_function_result_reward";
+
+    public void consumeAndProcessInternalTasksPayment() throws InterruptedException {
+
+        while (true) {
+            Thread.sleep(3000);
+
+            Consumer<String, InternalMessageModel> consumer = new KafkaConsumer<>(kafkaInternalConfigProperties.setInternalConsumerProperties());
+            consumer.subscribe(Collections.singletonList(topicFunctionResultReward));
+            ConsumerRecords<String, InternalMessageModel> records = consumer.poll(Duration.ofMillis(100));
+            records.forEach(record -> {
+                        log.info("Received message: " + record.value());
+                    });
+            consumer.close();
+
+            // Осуществить поиск задач в таблице paymentTask, у которых status=10 (Новая)
+            List<String> mdmIdList = entPaymentTaskActions.getEntPaymentTaskByStatus(10);
+            Set<String> set = new HashSet<>(mdmIdList);
+            List<String> uniqueMdmIdsList = new ArrayList<>(set);
+
+            for (String mdmId: uniqueMdmIdsList ) {
+                // Вызов метода /portfolio/active 1503 и обработка ответа
+                serviceAccounts.getClientAccounts(mdmId);
+            }
+        }
+    }
+
+    public void sendMessage() throws InterruptedException {
+
+        // создание объекта для отправки в топик rfrm_pay_function_result_reward
+        InternalMessageModel internalMessageModel = getInternalMessageModel();
+
+        KafkaProducer<String, InternalMessageModel> producer = new KafkaProducer<>(kafkaInternalConfigProperties.setInternalProducerProperties());
+        ProducerRecord<String, InternalMessageModel> record = new ProducerRecord<>(topicFunctionResultReward, internalMessageModel);
+        producer.send(record);
+        producer.flush();
+        producer.close();
+
+        consumeAndProcessInternalTasksPayment();
+    }
+
+    private static InternalMessageModel getInternalMessageModel() {
+        return InternalMessageModel
+                .builder()
+                .functionName("function_status_update_reward")
+                .status("completed")
+                .timeStamp(LocalDateTime.now())
+                .build();
+    }
+}

@@ -20,4 +20,5 @@ public interface EntPaymentTaskActions {
 
     List<UUID> getEntPaymentTaskByProcessed(Boolean b);
     void updateProcessedBPaymentTaskByRewardId(UUID rewardId);
+    List<String> getEntPaymentTaskByStatus(Integer status);
 }

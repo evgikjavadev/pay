@@ -1,10 +1,14 @@
-package ru.vtb.msa.rfrm.integration.internalkafka;
+package ru.vtb.msa.rfrm.integration.internalkafka.model;
 
-import lombok.Builder;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Data
 @Builder
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class InternalMessageModel {
     private String functionName;
     private String status;
