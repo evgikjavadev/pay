@@ -95,19 +95,19 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
 
     @Override
     public void updateProcessedBPaymentTaskByRewardId(UUID rewardId) {
-        String sql = "UPDATE ent_payment_task SET processed = ? WHERE b = ?";
-        jdbcTemplate.update(sql, true, false);
+        String sql = "UPDATE ent_payment_task SET processed = ? WHERE reward_id = ?";
+        jdbcTemplate.update(sql, true, rewardId);
     }
 
     @Override
     public List<String> getEntPaymentTaskByStatus(Integer stat) {
-        String sql = "SELECT mdm_id FROM ent_payment_task WHERE status = ?";
+        String sql = "SELECT * FROM ent_payment_task WHERE status = ?";
         return jdbcTemplate.query(
                 sql,
                 new Object[] {stat},
                 (rs, rowNum) -> {
                     EntPaymentTask task = new EntPaymentTask();
-                    task.setMdmId(rs.getObject(3, String.class));
+                    task.setMdmId(rs.getObject("mdm_id", String.class));
                     return task.getMdmId();
                 });
     }

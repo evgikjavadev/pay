@@ -33,6 +33,7 @@ public class KafkaInternalConfigProperties {
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put("group.id", "${process.platform.kafka.consumer.group-id}");
+        properties.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 6000);
         properties.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);

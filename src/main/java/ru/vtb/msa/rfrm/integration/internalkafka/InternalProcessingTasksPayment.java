@@ -28,8 +28,8 @@ public class InternalProcessingTasksPayment {
 
     public void consumeAndProcessInternalTasksPayment() throws InterruptedException {
 
-        while (true) {
-            Thread.sleep(3000);
+        //while (true) {
+            //Thread.sleep(3000);
 
             Consumer<String, InternalMessageModel> consumer = new KafkaConsumer<>(kafkaInternalConfigProperties.setInternalConsumerProperties());
             consumer.subscribe(Collections.singletonList(topicFunctionResultReward));
@@ -41,6 +41,7 @@ public class InternalProcessingTasksPayment {
 
             // Осуществить поиск задач в таблице paymentTask, у которых status=10 (Новая)
             List<String> mdmIdList = entPaymentTaskActions.getEntPaymentTaskByStatus(10);
+
             Set<String> set = new HashSet<>(mdmIdList);
             List<String> uniqueMdmIdsList = new ArrayList<>(set);
 
@@ -48,7 +49,7 @@ public class InternalProcessingTasksPayment {
                 // Вызов метода /portfolio/active 1503 и обработка ответа
                 serviceAccounts.getClientAccounts(mdmId);
             }
-        }
+        //}
     }
 
     public void sendMessage() throws InterruptedException {
