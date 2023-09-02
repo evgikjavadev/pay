@@ -146,12 +146,8 @@ process.platform:
       server: localhost:9092
     consumer:
       group-id: pay
-
-
     topic:
       questionnaires: rewardreq
-#      rfrmPayFunctionResultReward: rfrm_pay_function_result_reward
-      payresultreward: rfrm_pay_result_reward
     max.poll.records: 10
 
     security:
@@ -169,6 +165,8 @@ process.platform:
       truststore-type: 'JKS'
       keystore-type: 'JKS'
 
+mykafka:
+  bootstrap-address: "localhost:29092"
 
 #      consumer:
 #        properties:

@@ -81,15 +81,15 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
-    public List<UUID> getEntPaymentTaskByProcessed(Boolean b) {
-        String sql = "SELECT reward_id FROM ent_payment_task WHERE processed = ?";
+    public List<EntPaymentTask> getEntPaymentTaskByProcessed(Boolean b) {
+        String sql = "SELECT * FROM ent_payment_task WHERE processed = ?";
         return jdbcTemplate.query(
                 sql,
                 new Object[] {b},
                 (rs, rowNum) -> {
                     EntPaymentTask task = new EntPaymentTask();
                     task.setRewardId(rs.getObject(11, UUID.class));
-                    return task.getRewardId();
+                    return task;
                 });
     }
 

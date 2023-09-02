@@ -18,7 +18,7 @@ public interface EntPaymentTaskActions {
 
     List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId);
 
-    List<UUID> getEntPaymentTaskByProcessed(Boolean b);
+    List<EntPaymentTask> getEntPaymentTaskByProcessed(Boolean b);
 
     void updateProcessedBPaymentTaskByRewardId(UUID rewardId);
 

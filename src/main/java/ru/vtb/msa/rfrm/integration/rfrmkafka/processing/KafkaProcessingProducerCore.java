@@ -14,7 +14,7 @@ public class KafkaProcessingProducerCore {
     private String bootstrapServers;
 
     //@Bean
-    public Properties setPropertiesProducer() {         //todo   переписать продюсер с учетом сертификатов
+    public Properties setPropertiesProducer() {           //todo   переписать продюсер с учетом сертификатов
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());

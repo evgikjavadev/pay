@@ -8,6 +8,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
@@ -20,19 +21,18 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class InternalProcessingTasksPayment {
-
     private final KafkaInternalConfigProperties kafkaInternalConfigProperties;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final ServiceAccounts serviceAccounts;
-    private final String topicFunctionResultReward = "rfrm_pay_function_result_reward";
+    private final String RFRM_PAY_FUNCTION_RESULT_REWARD = "rfrm_pay_function_result_reward";
 
-    public void consumeAndProcessInternalTasksPayment() throws InterruptedException {
+    @Transactional
+    public void processInternalKafkaTasksPayment() {
 
-        //while (true) {
-            //Thread.sleep(3000);
+        //while (true) {    //todo   решить по циклу
 
             Consumer<String, InternalMessageModel> consumer = new KafkaConsumer<>(kafkaInternalConfigProperties.setInternalConsumerProperties());
-            consumer.subscribe(Collections.singletonList(topicFunctionResultReward));
+            consumer.subscribe(Collections.singletonList(RFRM_PAY_FUNCTION_RESULT_REWARD));
             ConsumerRecords<String, InternalMessageModel> records = consumer.poll(Duration.ofMillis(100));
             records.forEach(record -> {
                         log.info("Received message: " + record.value());
@@ -52,18 +52,18 @@ public class InternalProcessingTasksPayment {
         //}
     }
 
-    public void sendMessage() throws InterruptedException {
+    public void sendMessage() {
 
-        // создание объекта для отправки в топик rfrm_pay_function_result_reward
+        // создание объекта для отправки в internal топик rfrm_pay_function_result_reward
         InternalMessageModel internalMessageModel = getInternalMessageModel();
 
         KafkaProducer<String, InternalMessageModel> producer = new KafkaProducer<>(kafkaInternalConfigProperties.setInternalProducerProperties());
-        ProducerRecord<String, InternalMessageModel> record = new ProducerRecord<>(topicFunctionResultReward, internalMessageModel);
+        ProducerRecord<String, InternalMessageModel> record = new ProducerRecord<>(RFRM_PAY_FUNCTION_RESULT_REWARD, internalMessageModel);
         producer.send(record);
         producer.flush();
         producer.close();
 
-        consumeAndProcessInternalTasksPayment();
+        processInternalKafkaTasksPayment();
     }
 
     private static InternalMessageModel getInternalMessageModel() {

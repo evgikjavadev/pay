@@ -14,16 +14,16 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
         //создадим объект с дозаполненными полями
         return EntPaymentTask
                 .builder()
-                    .rewardId(model.getRewardId())
-                    .mdmId(model.getMdmId())
-                    .questionnaireId(model.getQuestionnaireId())
-                    .recipientType(model.getRecipientType())
-                    .amount(model.getAmount())
-                    .status(10)
-                    .sourceQs(model.getSource_qs())
-                    .accountSystem(null)
-                    .account(null)
-                    .createdAt(LocalDateTime.now())
+                .rewardId(model.getRewardId())
+                .mdmId(model.getMdmId())
+                .questionnaireId(model.getQuestionnaireId())
+                .recipientType(model.getRecipientType())
+                .amount(model.getAmount())
+                .status(10)
+                .sourceQs(model.getSource_qs())
+                .accountSystem(null)
+                .account(null)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 }
