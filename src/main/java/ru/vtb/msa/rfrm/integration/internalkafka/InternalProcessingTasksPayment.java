@@ -7,9 +7,12 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
+import ru.vtb.msa.rfrm.integration.util.enums.Statuses;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
@@ -24,12 +27,12 @@ public class InternalProcessingTasksPayment {
     private final KafkaInternalConfigProperties kafkaInternalConfigProperties;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final ServiceAccounts serviceAccounts;
-    private final String RFRM_PAY_FUNCTION_RESULT_REWARD = "rfrm_pay_function_result_reward";
+    @Value("${process.platform.kafka.topic.rfrm_pay_function_result_reward}")
+    private String RFRM_PAY_FUNCTION_RESULT_REWARD;
 
     @Transactional
+    @Scheduled(fixedRate = 900*10, initialDelay = 5*1000)
     public void processInternalKafkaTasksPayment() {
-
-        //while (true) {    //todo   решить по циклу
 
             Consumer<String, InternalMessageModel> consumer = new KafkaConsumer<>(kafkaInternalConfigProperties.setInternalConsumerProperties());
             consumer.subscribe(Collections.singletonList(RFRM_PAY_FUNCTION_RESULT_REWARD));
@@ -49,7 +52,7 @@ public class InternalProcessingTasksPayment {
                 // Вызов метода /portfolio/active 1503 и обработка ответа
                 serviceAccounts.getClientAccounts(mdmId);
             }
-        //}
+
     }
 
     public void sendMessage() {
@@ -70,7 +73,7 @@ public class InternalProcessingTasksPayment {
         return InternalMessageModel
                 .builder()
                 .functionName("function_status_update_reward")
-                .status("completed")
+                .status(Statuses.COMPLETED.name())
                 .timeStamp(LocalDateTime.now())
                 .build();
     }

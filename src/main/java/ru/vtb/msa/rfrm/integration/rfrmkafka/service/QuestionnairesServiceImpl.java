@@ -10,6 +10,7 @@ import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -44,7 +45,7 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
         checkList.add(model.getQuestionnaireId());
         checkList.add(model.getRecipientType());
         checkList.add(model.getSource_qs());
-        List<Object> objectListNulls = checkList.stream().filter(a -> a.equals("")).collect(Collectors.toList());
+        List<Object> objectListNulls = checkList.stream().filter(Objects::isNull).collect(Collectors.toList());
 
         if (objectListNulls.size() != 0) {
             log.warn("В задании на оплату не заполнены обязательные поля: {}", objectListNulls);

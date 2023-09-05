@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreLinkModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaProcessingProducerCore;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
+import ru.vtb.msa.rfrm.processingDatabase.model.DctTaskStatuses;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 
 import java.time.LocalDateTime;
@@ -23,13 +25,13 @@ import java.util.UUID;
 @Slf4j
 public class InternalProcessingStatuses {
 
-    private final String RFRM_PAY_FUNCTION_STATUS_UPDATE_REWARD = "rfrm_pay_function_status_update_reward";
-    private final String RFRM_PAY_RESULT_REWARD = "rfrm_pay_result_reward";
+    @Value("${process.platform.kafka.topic.rfrm_pay_function_status_update_reward}")
+    private String RFRM_PAY_FUNCTION_STATUS_UPDATE_REWARD;
+    @Value("${process.platform.kafka.topic.rfrm_pay_result_reward}")
+    private String RFRM_PAY_RESULT_REWARD;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final KafkaProcessingProducerCore kafkaProcessingProducerCore;
     private final KafkaInternalConfigProperties kafkaInternalProperties;
-
-    //private final KafkaTemplate kafkaTemplate;
 
     @Transactional
     @Scheduled(fixedRate = 1000*10, initialDelay = 5*1000)
@@ -43,7 +45,7 @@ public class InternalProcessingStatuses {
             // и update ent_payment_task.processed=true
             entPaymentTaskActions.updateProcessedBPaymentTaskByRewardId(elem.getRewardId());
 
-            // Соберем объект для отправки в топик rfrm_pay_result_reward, указав reward_id = ent_payment_task.reward_id, status=ent_payment_task.status
+            // Соберем объект для отправки в топик rfrm_pay_result_reward (Core service), указав reward_id = ent_payment_task.reward_id, status=ent_payment_task.status
             PayCoreLinkModel coreLinkModel = getPayCoreLinkModel(elem.getRewardId(), elem.getStatus());
 
             // Отправить сообщение в топик rfrm_pay_result_reward (Core service)    //todo    проконтролить доп св-вa продюсера
@@ -58,11 +60,6 @@ public class InternalProcessingStatuses {
         // соберем объект для отправки в internal топик rfrm_pay_function_status_update_reward для запуска задания на обработку
         InternalMessageModel internalMessageModel = getInternalMessageModel();
         sendMessage(internalMessageModel);
-
-
-        //kafkaTemplate.send(topicStatusUpdate, "bla ... ");
-
-
 
     }
 
@@ -80,7 +77,7 @@ public class InternalProcessingStatuses {
         // status_description = Если ent_payment_task.status = 30, то привести к строке (SELECT description FROM dct_status_details WHERE status_details_code = 203),
         // иначе - поле не отправлять
 
-        if (status == 30) {
+        if (status.equals(DctTaskStatuses.STATUS_NEW.getStatus())) {
             String description = DctStatusDetails.ERR_REQUIREMENTS.getDescription();
             return PayCoreLinkModel
                     .builder()

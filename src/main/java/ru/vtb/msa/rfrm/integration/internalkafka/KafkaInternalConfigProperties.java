@@ -1,6 +1,7 @@
 package ru.vtb.msa.rfrm.integration.internalkafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
+import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
 
 import java.util.Properties;
 
@@ -27,6 +29,11 @@ public class KafkaInternalConfigProperties {
 
         return properties;
     }
+
+    public KafkaProducer<String, InternalMessageModel> getInternalProducer() {
+        return new KafkaProducer<>(setInternalProducerProperties());
+    }
+
 
     public Properties setInternalConsumerProperties() {
 
