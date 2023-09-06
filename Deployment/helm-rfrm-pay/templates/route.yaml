@@ -1,0 +1,20 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ .Values.app_value.name }}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  ingressClassName: ingress-dk5-rfrm01-rfrm-001
+  rules:
+    - host: 'rfrm-pay.oslb-dev01.corp.dev.vtb'
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: '{{ .Values.app_value.name }}-mesh-svc'
+                port:
+                  number: 443

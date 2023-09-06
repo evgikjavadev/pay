@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app_value.name }}
+  labels:
+    app: {{ .Values.app_value.name }}
+  annotations:
+    tsam.vtb.ru/scrape: 'true'
+    tsam.vtb.ru/path: '/actuator/prometheus'
+    tsam.vtb.ru/port: '{{ .Values.app_value.containerPort }}'
+    tsam.vtb.ru/project-code: 'RFRM'
+    tsam.vtb.ru/ris-code: '2155'
+spec:
+  selector:
+    app: {{ .Values.app_value.name }}
+  ports:
+    - protocol: TCP
+      name: http
+      port: {{ .Values.app_value.containerPort }}
+      targetPort: {{ .Values.app_value.containerPort }}
+  type: ClusterIP
+  sessionAffinity: None
+status:
+  loadBalancer: {}

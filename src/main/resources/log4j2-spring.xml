@@ -13,7 +13,7 @@
         <Console name="Console" target="SYSTEM_OUT"  pattern="%mask">
             <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} &#45;&#45; %mask%n"/>
         </Console>
-        <Kafka name="Kafka" topic="${env:LOG_KAFKA_TOPIC:-logs}" >
+      <!--  <Kafka name="Kafka" topic="${env:LOG_KAFKA_TOPIC:-logs}" >
             <JsonTemplateLayout locationInfoEnabled="true"
                                 maxStringLength="1048576"
                                 eventTemplateUri="classpath:log-template.json"/>
@@ -25,11 +25,11 @@
             <Property name="ssl.truststore.location">${env:PATH_TRUSTSTORE:-}</Property>
             <Property name="ssl.truststore.password">${env:STORE_PASSWORD:-}</Property>
             <Property name="ssl.key.password">${env:STORE_PASSWORD:-}</Property>
-        </Kafka>
+        </Kafka>-->
 
-        <Async name="Async">
+        <!--<Async name="Async">
             <AppenderRef ref="Kafka"/>
-        </Async>
+        </Async>-->
     </Appenders>
     <Loggers>
         <Root level="debug">

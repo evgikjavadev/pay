@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ .Values.app_value.name }}-health-ingress-vs
+spec:
+  gateways:
+    - {{ .Values.app_value.name }}-ingress-gw
+  hosts:
+    - {{ .Values.app_value.appUrl }}
+  http:
+    - match:
+        - uri:
+            prefix: /
+      rewrite:
+        uri: /actuator/health/readiness/
+      route:
+        - destination:
+            host: {{ .Values.app_value.name }}
+            port:
+              number: 8080
+
