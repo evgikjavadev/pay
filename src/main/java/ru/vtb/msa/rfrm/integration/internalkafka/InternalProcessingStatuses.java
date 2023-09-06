@@ -31,10 +31,12 @@ public class InternalProcessingStatuses {
     private String RFRM_PAY_RESULT_REWARD;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final KafkaProcessingProducerCore kafkaProcessingProducerCore;
+
+
     private final KafkaInternalConfigProperties kafkaInternalProperties;
 
     @Transactional
-    @Scheduled(fixedRate = 1000*10, initialDelay = 5*1000)
+    @Scheduled(fixedRate = 86400*1000, initialDelay = 5*1000)
     public void processInternalKafkaStatus() {
 
         // Выбрать из таблицы ent_payment_task задания с processed=false

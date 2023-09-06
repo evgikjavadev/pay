@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.util.enums.Statuses;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
+import ru.vtb.msa.rfrm.processingDatabase.model.DctTaskStatuses;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
 import java.time.Duration;
@@ -31,7 +32,7 @@ public class InternalProcessingTasksPayment {
     private String RFRM_PAY_FUNCTION_RESULT_REWARD;
 
     @Transactional
-    @Scheduled(fixedRate = 900*10, initialDelay = 5*1000)
+    @Scheduled(fixedRate = 3600*1000, initialDelay = 5*1000)
     public void processInternalKafkaTasksPayment() {
 
             Consumer<String, InternalMessageModel> consumer = new KafkaConsumer<>(kafkaInternalConfigProperties.setInternalConsumerProperties());
@@ -43,7 +44,7 @@ public class InternalProcessingTasksPayment {
             consumer.close();
 
             // Осуществить поиск задач в таблице paymentTask, у которых status=10 (Новая)
-            List<String> mdmIdList = entPaymentTaskActions.getEntPaymentTaskByStatus(10);
+            List<String> mdmIdList = entPaymentTaskActions.getEntPaymentTaskByStatus(DctTaskStatuses.STATUS_NEW.getStatus());
 
             Set<String> set = new HashSet<>(mdmIdList);
             List<String> uniqueMdmIdsList = new ArrayList<>(set);
