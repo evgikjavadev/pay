@@ -5,24 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ClientHttpRequest;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
-import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import ru.vtb.msa.rfrm.integration.HttpStatusException;
-import ru.vtb.msa.rfrm.integration.personaccounts.client.model.person.response.ResponseCommon;
-import ru.vtb.msa.rfrm.repository.PaymentTaskRepository;
-import ru.vtb.msa.rfrm.repository.TaskStatusHistoryRepository;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.CommonResponseAccounts;
+import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Slf4j
@@ -32,25 +26,32 @@ public abstract class WebClientBase {
     private static final String X_GENERATOR = "X-Generator";
     private final int maxAttempts;
     private final int duration;
-    private final MultiValueMap<String, String> headers;
     private final WebClient webClient;
 
-    public <T, R> R post(Function<UriBuilder, URI> function, T request, Class<R> clazz) {
+    public <T, R extends CommonResponseAccounts<Object>> Response<?> post(String mdmIdFromKafka, Function<UriBuilder, URI> function, T request, Class<R> clazz) {
+
         try {
-            return webClient.post()
+            ResponseEntity<R> response = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .headers(getHttpHeaders(headers))
+                    .header("X-Mdm-Id", mdmIdFromKafka)
                     .accept(MediaType.ALL)
                     .retrieve()
-                    .bodyToMono(clazz)
+                    .toEntity(clazz)
                     .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(duration))
                             .filter(WebClientBase::isRequestTimeout))
                     .block();
+            assert response != null;
+            return Response.builder()
+                    .headers(response.getHeaders())
+                    .body(response.getBody())
+                    .build();
+
         } catch (WebClientResponseException we) {
             log.error(we.getMessage());
             throw new HttpStatusException(we.getMessage(), we.getResponseBodyAsString(), we.getStatusCode());
+
         } catch (IllegalStateException exception) {
             log.error(exception.getMessage(), exception.fillInStackTrace());
             throw new HttpStatusException(exception.getMessage(), "",
@@ -58,16 +59,11 @@ public abstract class WebClientBase {
         }
     }
 
-    private Consumer<HttpHeaders> getHttpHeaders(MultiValueMap<String, String> headers) {
-        return httpHeaders -> httpHeaders.addAll(Optional.ofNullable(headers)
-                .orElse(new HttpHeaders()));
-    }
-
     public static boolean isRequestTimeout(Throwable throwable) {
         return throwable instanceof WebClientResponseException &&
-                ((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.REQUEST_TIMEOUT) ||
-                ((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.UNAUTHORIZED) ||
-                isForbiddenKeNotAuthorized(throwable);
+                (((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.REQUEST_TIMEOUT) ||
+                        ((WebClientResponseException) throwable).getStatusCode().equals(HttpStatus.UNAUTHORIZED) ||
+                        isForbiddenKeNotAuthorized(throwable));
     }
 
     public static boolean isForbiddenKeNotAuthorized(Throwable throwable) {
