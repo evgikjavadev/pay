@@ -25,7 +25,7 @@ spring:
   datasource:
     hikari:
       driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://localhost:5432/postgres1
+      jdbc-url: jdbc:postgresql://localhost:5432/rfrm_pay
       username: postgres
       password: 123
   jmx:
