@@ -43,7 +43,8 @@ public class ServiceAccounts {
     private final HikariDataSource hikariDataSource;
     @Value("${process.platform.kafka.bootstrap.server}")
     private String bootstrapServers;
-    private final String topicResult = "rfrm_pay_result_reward";
+    @Value("${process.platform.kafka.topic.rfrm_pay_result_reward}")
+    private final String topicResult;
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
@@ -229,6 +230,13 @@ public class ServiceAccounts {
                     rewardId
             );
 
+            // собираем объект для отправки в топик rfrm_pay_result_reward содержащее id задания, status=30, status_description если 30
+            PayCoreLinkModel payCoreLinkModel =
+                    createResultMessage(rewardId,
+                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
+                            DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getDescription()
+                    );
+
             try {
                 connection = hikariDataSource.getConnection();
                 connection.setAutoCommit(false);
@@ -238,6 +246,9 @@ public class ServiceAccounts {
 
                 // создать новую запись в таблице taskStatusHistory
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+                // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания,status=30, status_details_code=202
+                sendResultToKafka(payCoreLinkModel);
 
                 connection.commit();
 
@@ -265,14 +276,25 @@ public class ServiceAccounts {
                             rewardId
                     );
 
+            // собираем объект для отправки в топик rfrm_pay_result_reward содержащее id задания, status=30, status_details_code=201
+            PayCoreLinkModel payCoreLinkModel =
+                    createResultMessage(rewardId,
+                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
+                            DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getDescription()
+                    );
+
             try {
                 connection = hikariDataSource.getConnection();
                 connection.setAutoCommit(false);
 
                 // Записать в БД для данного задания paymentTask.status=30,
                 entPaymentTaskActions.updateStatusEntPaymentTaskByMdmId(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
+
                 //создать новую запись в таблице taskStatusHistory
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+                // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201
+                sendResultToKafka(payCoreLinkModel);
 
                 connection.commit();
 
@@ -284,16 +306,6 @@ public class ServiceAccounts {
                     ex.printStackTrace();
                 }
             }
-
-            // собираем объект для отправки в топик содержащее id задания, status=30, status_description если 30
-            PayCoreLinkModel payCoreLinkModel =
-                    createResultMessage(rewardId,
-                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                            DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getDescription()
-                    );
-
-            //Записать в топик rfrm_pay_result_reward сообщение
-            sendResultToKafka(payCoreLinkModel);
 
         }
 

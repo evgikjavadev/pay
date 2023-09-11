@@ -21,7 +21,7 @@ spring:
             token-uri: http://localhost:8070/passport/tech/oauth2/token
           epa-tyk-client:
             token-uri: http://localhost:8070/passport/oauth2/token
-#<<<<<<< HEAD
+
   datasource:
     hikari:
       driver-class-name: org.postgresql.Driver
@@ -32,7 +32,7 @@ spring:
     default-domain: some
   codec:
     max-in-memory-size: 5MB
-#=======
+
 
 
 #  datasource:
@@ -124,7 +124,6 @@ feature.toggle:
     asynOn: true
 
 
-#1642 Платформа анализа и обработки данных;
 process.platform:
   kafka:
     bootstrap:
@@ -132,7 +131,7 @@ process.platform:
     consumer:
       group-id: pay
     topic:
-      questionnaires: rewardreq
+      questionnaires: rfrm_core_payment_order
       rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
       rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
       rfrm_pay_result_reward: rfrm_pay_result_reward
@@ -153,7 +152,7 @@ process.platform:
       truststore-type: 'JKS'
       keystore-type: 'JKS'
 
-mykafka:
+kafkalocal:
   bootstrap-address: "localhost:29092"
 
 #      consumer:

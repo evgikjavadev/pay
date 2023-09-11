@@ -24,6 +24,9 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
                 .accountSystem(null)
                 .account(null)
                 .createdAt(LocalDateTime.now())
+                .processed(false)
+                .blocked(0)
+                .blockedAt(null)
                 .build();
     }
 }
