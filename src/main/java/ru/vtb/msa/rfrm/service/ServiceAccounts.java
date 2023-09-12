@@ -48,7 +48,7 @@ public class ServiceAccounts {
     @Value("${process.platform.kafka.bootstrap.server}")
     private String bootstrapServers;
     @Value("${process.platform.kafka.topic.rfrm_pay_result_reward}")
-    private final String topicResult;
+    private String topicResult;
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
