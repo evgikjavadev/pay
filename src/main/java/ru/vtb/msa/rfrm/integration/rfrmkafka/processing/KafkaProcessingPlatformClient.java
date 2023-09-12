@@ -26,15 +26,22 @@ public class KafkaProcessingPlatformClient {
                    topics = "${process.platform.kafka.topic.questionnaires}",
                    containerFactory = "kafkaListenerContainerFactory")
     public void listenRfrmCore(@Payload List<QuestionnairesKafkaModel> messageList, Acknowledgment ack,
-                             @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
+                             @Header(KafkaHeaders.RECEIVED_PARTITION_ID) Integer partition,
+                             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                              @Header(KafkaHeaders.OFFSET) int offsets) throws SQLException {
+        log.info("Start rfrm-pay processing topic = {} partition = {}", topic, partition);
 
-        for (int i = 0; i < messageList.size(); i++) {
-            log.info("index = {}, dataProcess = {}, offset = {}, par = {}", i, messageList.get(i).toString(), offsets, partition);
-            service.validateFieldsAndSaveTaskToDB(messageList.get(i));
+        try {
+            service.validateFieldsAndSaveTaskToDB(messageList);
             ack.acknowledge();
-            log.info("commit offset index = {}, offset = {}, par = {}", i, offsets, partition);
+        }catch (Exception e) {
+            ack.nack(0,100);
+            log.error(e.getMessage(), e.fillInStackTrace());
         }
+
+        log.info("Finish rfrm-pay processing topic = {} partition = {}", topic, partition);
+
+
 
     }
 }
