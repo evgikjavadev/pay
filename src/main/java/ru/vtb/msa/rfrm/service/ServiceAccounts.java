@@ -34,7 +34,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +51,7 @@ public class ServiceAccounts {
 
     @SneakyThrows
     @Audit(value = "EXAMPLE_EVENT_CODE")
-    public void getClientAccounts(String mdmIdFromKafka) {
+    public void getClientAccounts(Long mdmIdFromKafka) {
 
         try {
             // получаем весь объект с данными счета клиента из 1503
@@ -67,7 +66,7 @@ public class ServiceAccounts {
 
     }
 
-    private void handleResponseHttpStatuses(HttpStatus status, String mdmIdFromKafka) {
+    private void handleResponseHttpStatuses(HttpStatus status, Long mdmIdFromKafka) {
 
         // найдем в табл. ent_payment_task rewardId по mdmId
         List<EntPaymentTask> paymentTaskByMdmId = entPaymentTaskActions
@@ -148,7 +147,7 @@ public class ServiceAccounts {
         String result = personAccounts.getBody().getResult();
 
         // получаем mdmId из заголовков ответа от 1503
-        String mdmId = getMdmId(personAccounts);
+        Long mdmId = getMdmId(personAccounts);
 
         handlePersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested, result);
     }
@@ -157,7 +156,7 @@ public class ServiceAccounts {
     private void handlePersonAccounts(String personAccountNumber,
                                       String currency,
                                       String accountSystem,
-                                      String mdmId,
+                                      Long mdmId,
                                       Boolean isArrested,
                                       String result) {
 
@@ -396,9 +395,9 @@ public class ServiceAccounts {
                 .orElse("");
     }
 
-    private static String getMdmId(Response<?> personAccounts) {
+    private static Long getMdmId(Response<?> personAccounts) {
 
-        return personAccounts
+        return Long.valueOf(personAccounts
                 .getHeaders()
                 .entrySet()
                 .stream()
@@ -406,7 +405,7 @@ public class ServiceAccounts {
                 .findFirst()
                 .orElseThrow()
                 .getValue()
-                .get(0);
+                .get(0));
     }
 
     @Nullable

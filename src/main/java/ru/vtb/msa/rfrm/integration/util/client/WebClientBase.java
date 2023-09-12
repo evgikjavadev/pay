@@ -28,14 +28,14 @@ public abstract class WebClientBase {
     private final int duration;
     private final WebClient webClient;
 
-    public <T, R extends CommonResponseAccounts<Object>> Response<?> post(String mdmIdFromKafka, Function<UriBuilder, URI> function, T request, Class<R> clazz) {
+    public <T, R extends CommonResponseAccounts<Object>> Response<?> post(Long mdmIdFromKafka, Function<UriBuilder, URI> function, T request, Class<R> clazz) {
 
         try {
             ResponseEntity<R> response = webClient.post()
                     .uri(function)
                     .body(BodyInserters.fromValue(request))
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .header("X-Mdm-Id", mdmIdFromKafka)
+                    .header("X-Mdm-Id", String.valueOf(mdmIdFromKafka))
                     .accept(MediaType.ALL)
                     .retrieve()
                     .toEntity(clazz)
