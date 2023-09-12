@@ -1,7 +1,16 @@
 server:
   port: 8085
 
+ms.properties.infoSystemCode: RFRM
+ms.properties.infoSystemId: 1800
+#Количество заявок в поиске
+ms.properties.findSizeApplication: 1
+
 spring:
+  application:
+    name: rfrm-pay
+    version: @project.version@
+
   security:
     oauth2:
       client:
@@ -56,9 +65,6 @@ audit:
   default-resolver:
     sub: sub_from_kafka
     channel: channel_from_kafka
-
-ms.properties.infoSystemCode: RFRM
-ms.properties.infoSystemId: 1800
 
 omni-jwt-common:
   security:
