@@ -11,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class QuestionnairesKafkaModel {
     private UUID rewardId;
-    private String mdmId;
+    private Long mdmId;
     private UUID questionnaireId;
     private Integer recipientType;
     private Double amount;

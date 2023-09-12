@@ -35,7 +35,7 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
-    public List<EntPaymentTask> getPaymentTaskByMdmId(String mdmId) {
+    public List<EntPaymentTask> getPaymentTaskByMdmId(Long mdmId) {
         String sql = "SELECT * FROM ent_payment_task WHERE mdm_id = ?";
 
         return jdbcTemplate.query(
@@ -44,19 +44,19 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                 (rs, rowNum) -> {
                     EntPaymentTask task = new EntPaymentTask();
                     task.setRewardId(rs.getObject(1, UUID.class));
-                    task.setMdmId(rs.getObject(3, String.class));
+                    task.setMdmId(rs.getObject(3, Long.class));
                     return task;
                 });
     }
 
     @Override
-    public void updateAccountNumber(String accountNumber, String accountSystem, String mdmId, Integer status) {
+    public void updateAccountNumber(String accountNumber, String accountSystem, Long mdmId, Integer status) {
         String sql = "UPDATE ent_payment_task SET account = ?, account_system = ? WHERE mdm_id = ?";
         jdbcTemplate.update(sql, accountNumber, accountSystem, mdmId);
     }
 
     @Override
-    public void updateStatusEntPaymentTaskByMdmId(String mdmId, Integer status) {
+    public void updateStatusEntPaymentTaskByMdmId(Long mdmId, Integer status) {
         String sql = "UPDATE ent_payment_task SET status = ? WHERE mdm_id = ?";
         jdbcTemplate.update(sql, status, mdmId);
     }
@@ -100,14 +100,14 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
-    public List<String> getEntPaymentTaskByStatus(Integer stat) {
+    public List<Long> getEntPaymentTaskByStatus(Integer stat) {
         String sql = "SELECT * FROM ent_payment_task WHERE status = ?";
         return jdbcTemplate.query(
                 sql,
                 new Object[] {stat},
                 (rs, rowNum) -> {
                     EntPaymentTask task = new EntPaymentTask();
-                    task.setMdmId(rs.getObject("mdm_id", String.class));
+                    task.setMdmId(rs.getObject("mdm_id", Long.class));
                     return task.getMdmId();
                 });
     }

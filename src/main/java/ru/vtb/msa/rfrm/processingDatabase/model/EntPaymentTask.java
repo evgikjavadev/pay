@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class EntPaymentTask {
 
     /** ID задачи на оплату (генерируется ядром 2155 rfrm-core) */
+    @Id
     @NotBlank
     @Column("reward_id")
     private UUID rewardId;
@@ -32,7 +34,7 @@ public class EntPaymentTask {
     /** ID получателя вознаграждения в MDM */
     @NotBlank
     @Column("mdm_id")
-    private String mdmId;
+    private Long mdmId;
 
     /** Тип получателя вознаграждения */
     @NotBlank

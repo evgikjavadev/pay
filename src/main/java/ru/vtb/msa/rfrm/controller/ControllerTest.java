@@ -35,7 +35,7 @@ public class ControllerTest {
     @GetMapping("/getaccounts")
     public String getAccounts() {
         //todo   решить по какому событию тащим номер счета клиента
-        serviceAccounts.getClientAccounts("5000015297");
+        serviceAccounts.getClientAccounts(5000015297L);
         return "Accounts for clients are received !";
     }
 
@@ -89,7 +89,7 @@ public class ControllerTest {
         return QuestionnairesKafkaModel
                 .builder()
                     .rewardId(rewardId)
-                    .mdmId("5000015297")
+                    .mdmId(5000015297L)
                     .questionnaireId(questionnaireId)
                     .recipientType(3)
                     .source_qs("sourceQS")

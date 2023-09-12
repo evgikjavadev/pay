@@ -3,7 +3,7 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS ent_payment_task (
                        reward_id uuid PRIMARY KEY NOT NULL,
                        questionnaire_id uuid NOT NULL,
-                       mdm_id VARCHAR(255) NOT NULL,
+                       mdm_id BIGINT NOT NULL,
                        recipient_type integer NOT NULL,
                        amount double precision NOT NULL,
                        status integer NOT NULL,

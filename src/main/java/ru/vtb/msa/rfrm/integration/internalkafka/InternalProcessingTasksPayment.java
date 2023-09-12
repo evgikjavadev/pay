@@ -44,12 +44,12 @@ public class InternalProcessingTasksPayment {
             consumer.close();
 
             // Осуществить поиск задач в таблице paymentTask, у которых status=10 (Новая)
-            List<String> mdmIdList = entPaymentTaskActions.getEntPaymentTaskByStatus(DctTaskStatuses.STATUS_NEW.getStatus());
+            List<Long> mdmIdList = entPaymentTaskActions.getEntPaymentTaskByStatus(DctTaskStatuses.STATUS_NEW.getStatus());
 
-            Set<String> set = new HashSet<>(mdmIdList);
-            List<String> uniqueMdmIdsList = new ArrayList<>(set);
+            Set<Long> set = new HashSet<>(mdmIdList);
+            List<Long> uniqueMdmIdsList = new ArrayList<>(set);
 
-            for (String mdmId: uniqueMdmIdsList ) {
+            for (Long mdmId: uniqueMdmIdsList ) {
                 // Вызов метода /portfolio/active 1503 и обработка ответа
                 serviceAccounts.getClientAccounts(mdmId);
             }

@@ -4,6 +4,6 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountIn
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
 
 public interface PersonClientAccounts {
-    Response<?> getPersonAccounts(String mdmIdFromKafka, AccountInfoRequest request);
+    Response<?> getPersonAccounts(Long mdmIdFromKafka, AccountInfoRequest request);
 
 }

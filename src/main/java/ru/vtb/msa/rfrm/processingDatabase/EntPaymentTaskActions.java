@@ -8,11 +8,11 @@ import java.util.UUID;
 public interface EntPaymentTaskActions {
     void insertPaymentTaskInDB(EntPaymentTask entPaymentTask);
 
-    List<EntPaymentTask> getPaymentTaskByMdmId(String mdmId);
+    List<EntPaymentTask> getPaymentTaskByMdmId(Long mdmId);
 
-    void updateAccountNumber(String accountNumber, String accountSystem, String mdmId, Integer status);
+    void updateAccountNumber(String accountNumber, String accountSystem, Long mdmId, Integer status);
 
-    void updateStatusEntPaymentTaskByMdmId(String mdmId, Integer status);
+    void updateStatusEntPaymentTaskByMdmId(Long mdmId, Integer status);
 
     void updateStatusEntPaymentTaskByRewardId(UUID rewardId, Integer status);
 
@@ -22,5 +22,5 @@ public interface EntPaymentTaskActions {
 
     void updateProcessedBPaymentTaskByRewardId(UUID rewardId);
 
-    List<String> getEntPaymentTaskByStatus(Integer status);
+    List<Long> getEntPaymentTaskByStatus(Integer status);
 }
