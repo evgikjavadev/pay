@@ -21,25 +21,25 @@ spring:
             token-uri: http://localhost:8070/passport/tech/oauth2/token
           epa-tyk-client:
             token-uri: http://localhost:8070/passport/oauth2/token
-#<<<<<<< HEAD
-#  datasource:
-#    hikari:
-#      driver-class-name: org.postgresql.Driver
-#      jdbc-url: jdbc:postgresql://localhost:5432/postgres1
-#      username: postgres
-#      password: 123
-#  jmx:
-#    default-domain: some
-#  codec:
-#    max-in-memory-size: 5MB
-#=======
-
 
   datasource:
-    url: jdbc:postgresql://d5rfrm-pgc001lk.corp.dev.vtb:5432/rfrm_pay?currentSchema=rfrm_pay
-    username: rfrm_pay_admin
-    password: 7gEmkEBv3o7YID7baeMRlFo0R0YyHzlwW3U7p_F
-    driverClassName: org.postgresql.Driver
+    hikari:
+      driver-class-name: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://localhost:5432/rfrm_pay
+      username: postgres
+      password: 123
+  jmx:
+    default-domain: some
+  codec:
+    max-in-memory-size: 5MB
+
+
+
+#  datasource:
+#    url: jdbc:postgresql://d5rfrm-pgc001lk.corp.dev.vtb:5432/rfrm_pay?currentSchema=rfrm_pay
+#    username: rfrm_pay_admin
+#    password: 7gEmkEBv3o7YID7baeMRlFo0R0YyHzlwW3U7p_F
+#    driverClassName: org.postgresql.Driver
 
 
 audit:
@@ -124,7 +124,6 @@ feature.toggle:
     asynOn: true
 
 
-#1642 Платформа анализа и обработки данных;
 process.platform:
   kafka:
     bootstrap:
@@ -132,7 +131,7 @@ process.platform:
     consumer:
       group-id: pay
     topic:
-      questionnaires: rewardreq
+      questionnaires: rfrm_core_payment_order
       rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
       rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
       rfrm_pay_result_reward: rfrm_pay_result_reward
@@ -153,7 +152,7 @@ process.platform:
       truststore-type: 'JKS'
       keystore-type: 'JKS'
 
-mykafka:
+kafkalocal:
   bootstrap-address: "localhost:29092"
 
 #      consumer:

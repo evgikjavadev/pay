@@ -5,25 +5,38 @@ import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class QuestionnairesMapperImpl implements QuestionnairesMapper {
-    @Override
-    public EntPaymentTask quesKafkaToQuesModel(QuestionnairesKafkaModel model) {
 
-        //создадим объект с дозаполненными полями
-        return EntPaymentTask
-                .builder()
-                .rewardId(model.getRewardId())
-                .mdmId(model.getMdmId())
-                .questionnaireId(model.getQuestionnaireId())
-                .recipientType(model.getRecipientType())
-                .amount(model.getAmount())
-                .status(10)
-                .sourceQs(model.getSource_qs())
-                .accountSystem(null)
-                .account(null)
-                .createdAt(LocalDateTime.now())
-                .build();
+    @Override
+    public List<EntPaymentTask> quesKafkaToQuesModel(List<QuestionnairesKafkaModel> model) {
+
+        List<EntPaymentTask> entPayTaskList = new ArrayList<>();
+
+        for (QuestionnairesKafkaModel elem: model) {
+            EntPaymentTask task = EntPaymentTask
+                    .builder()
+                    .rewardId(elem.getRewardId())
+                    .mdmId(elem.getMdmId())
+                    .questionnaireId(elem.getQuestionnaireId())
+                    .recipientType(elem.getRecipientType())
+                    .amount(elem.getAmount())
+                    .status(10)
+                    .sourceQs(elem.getSource_qs())
+                    .accountSystem(null)
+                    .account(null)
+                    .createdAt(LocalDateTime.now())
+                    .processed(false)
+                    .blocked(0)
+                    .blockedAt(null)
+                    .build();
+
+            entPayTaskList.add(task);
+        }
+
+        return entPayTaskList;
     }
 }

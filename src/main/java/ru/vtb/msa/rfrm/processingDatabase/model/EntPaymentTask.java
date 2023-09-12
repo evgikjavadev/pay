@@ -70,6 +70,12 @@ public class EntPaymentTask {
     @Column("processed")
     private Boolean processed;
 
+    @Column("blocked")
+    private Integer blocked;
+
+    @Column("blocked_at")
+    private Integer blockedAt;
+
     public LocalDateTime getCreatedAt() {
         return LocalDateTime.now();
     }
