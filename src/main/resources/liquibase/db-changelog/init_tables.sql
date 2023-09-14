@@ -45,11 +45,11 @@ comment on column ent_payment_task.blocked is 'Отметка о блокиро�
 
 comment on column ent_payment_task.blocked_at is 'Время последней установки blocked в 1';
 
-alter table ent_payment_task owner to "postgres";
+alter table ent_payment_task owner to "rfrm_pay_admin";
 
 create sequence status_history_sq as integer;
 
-alter sequence status_history_sq owner to "postgres";
+alter sequence status_history_sq owner to "rfrm_pay_admin";
 
 BEGIN;
 CREATE TABLE IF NOT EXISTS ent_task_status_history (
@@ -78,7 +78,7 @@ comment on column ent_task_status_history.task_status is 'Статус, прис
 
 comment on column ent_task_status_history.status_updated_at is 'Дата и время присвоения заданию вышеуказанного статуса';
 
-alter table ent_task_status_history owner to "postgres";
+alter table ent_task_status_history owner to "rfrm_pay_admin";
 
 BEGIN;
 CREATE TABLE IF NOT EXISTS dct_task_statuses (

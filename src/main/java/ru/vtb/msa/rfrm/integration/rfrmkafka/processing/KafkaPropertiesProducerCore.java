@@ -3,17 +3,18 @@ package ru.vtb.msa.rfrm.integration.rfrmkafka.processing;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
 @Component
-public class KafkaProcessingProducerCore {
+public class KafkaPropertiesProducerCore {
     @Value("${process.platform.kafka.bootstrap.server}")
     private String bootstrapServers;
 
-    //@Bean
+    @Bean
     public Properties setPropertiesProducer() {           //todo   переписать продюсер с учетом сертификатов
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);

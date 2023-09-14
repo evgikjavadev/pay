@@ -15,11 +15,14 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.util.StringUtils;
+import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksPayment;
+import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksStatuses;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.service.ProcessQuestionnairesService;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -41,7 +44,7 @@ public class KafkaProcessingPlatformConfig {
     private String maxPartitionFetchBytes;
     @Value("${process.platform.kafka.max.poll.records:500}")
     private String maxPollRecords;
-    @Value("${process.platform.kafka.max.poll.interval.ms:300000}")
+    @Value("${process.platform.kafka.max.poll.interval.ms:3000}")
     private String maxPollIntervalsMs;
 
     // для организации "SSL":
@@ -83,7 +86,7 @@ public class KafkaProcessingPlatformConfig {
     private String sslTruststoreType;
 
     @Bean
-    public ConsumerFactory<String, QuestionnairesKafkaModel> consumerFactory(KafkaProperties kafkaProp) {
+    public ConsumerFactory<String, List<QuestionnairesKafkaModel>> consumerFactory(KafkaProperties kafkaProp) {
         Map<String, Object> props = kafkaProp.buildConsumerProperties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
@@ -98,7 +101,7 @@ public class KafkaProcessingPlatformConfig {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         setSecurityProps(props);
 
-        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<String, QuestionnairesKafkaModel>(props);
+        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<String, List<QuestionnairesKafkaModel>>(props);
         factory.setKeyDeserializer(new StringDeserializer());
         factory.setValueDeserializer(new JsonDeserializer());
 
@@ -106,14 +109,14 @@ public class KafkaProcessingPlatformConfig {
     }
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, QuestionnairesKafkaModel> kafkaListenerContainerFactory(ConsumerFactory<String, QuestionnairesKafkaModel> consumerFactory) {
-        ConcurrentKafkaListenerContainerFactory<String, QuestionnairesKafkaModel> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    ConcurrentKafkaListenerContainerFactory<String, List<QuestionnairesKafkaModel>> kafkaListenerContainerFactory(ConsumerFactory<String, List<QuestionnairesKafkaModel>> consumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, List<QuestionnairesKafkaModel>> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
         factory.setConcurrency(1);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         //factory.getContainerProperties().setAsyncAcks(true);
-        factory.getContainerProperties().setPollTimeout(5000);
+        factory.getContainerProperties().setPollTimeout(500);
         factory.getContainerProperties().setMicrometerEnabled(true);
        // factory.getContainerProperties().setMicrometerTags();
 
@@ -121,9 +124,9 @@ public class KafkaProcessingPlatformConfig {
     }
 
     @Bean
-    KafkaProcessingPlatformClient client(ProcessQuestionnairesService service) {
-        QuestionnairesMapper mapper = Mappers.getMapper(QuestionnairesMapper.class);
-        return new KafkaProcessingPlatformClient(service, mapper);
+    KafkaConsumerCoreClient client(ProcessQuestionnairesService service, InternalProcessingTasksStatuses status, InternalProcessingTasksPayment pay) {
+        //QuestionnairesMapper mapper = Mappers.getMapper(QuestionnairesMapper.class);
+        return new KafkaConsumerCoreClient(service, status, pay);
     }
 
     private void setSecurityProps(Map<String, Object> props) {

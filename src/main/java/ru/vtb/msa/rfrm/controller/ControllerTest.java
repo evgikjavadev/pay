@@ -11,11 +11,14 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingStatuses;
+import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksStatuses;
 import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksPayment;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -24,17 +27,17 @@ import java.util.UUID;
 @Slf4j
 public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
-    private final InternalProcessingStatuses internalProcessingStatuses;
+    private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
     private final InternalProcessingTasksPayment internalProcessingTasksPayment;
-    @Value("${process.platform.kafka.topic.questionnaires}")
-    private String topic;
+    @Value("${process.platform.kafka.topic.rfrm_core_payment_order}")
+    private String rfrm_core_payment_order;
     @Value("${process.platform.kafka.bootstrap.server}")
     private String bootstrapServers;
     private static final UUID questionnaireId = UUID.randomUUID();
 
     @GetMapping("/getaccounts")
     public String getAccounts() {
-        //todo   решить по какому событию тащим номер счета клиента
+
         serviceAccounts.getClientAccounts(5000015297L);
         return "Accounts for clients are received !";
     }
@@ -44,10 +47,10 @@ public class ControllerTest {
      * Тест отправки объекта в топик rewardReq кафка
      * */
     @GetMapping("/publish")
-    public String publishMessage() throws InterruptedException {
+    public String publishMessage() {
 
-        // создадим тестовый объект-заглушку кот приходит из кафка топика rewardReq
-        QuestionnairesKafkaModel testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
+        // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
+        List<QuestionnairesKafkaModel> testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
 
         // create Producer properties
         Properties properties = new Properties();
@@ -55,46 +58,45 @@ public class ControllerTest {
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
 
-        KafkaProducer<String, QuestionnairesKafkaModel> producer = new KafkaProducer<>(properties);
+        KafkaProducer<String, List<QuestionnairesKafkaModel>> producer = new KafkaProducer<>(properties);
+        ProducerRecord<String, List<QuestionnairesKafkaModel>> producerRecord =
+                new ProducerRecord<>(rfrm_core_payment_order, testQuestionnairesKafkaModel);
 
-        for (int i = 0; i < 1; i++) {
-            ProducerRecord<String, QuestionnairesKafkaModel> producerRecord =
-                    new ProducerRecord<>(topic, testQuestionnairesKafkaModel);
-            log.info("sent object with frequency i = " + i + " " + producerRecord.value());
+        //for (int i = 0; i < 10; i++) {
+
+            log.info("Object: {} WAS SENT TO TOPIC: rfrm_core_payment_order with frequency i: 1 = ", producerRecord.value());
 
             producer.send(producerRecord);
 
-        }
+       //}
 
         producer.flush();
         producer.close();
 
+        //internalProcessingTasksStatuses.processInternalKafkaStatus();
+        //internalProcessingTasksPayment.sendRunningMessageInternalTopic();
 
-//        KafkaProducer<String, String> producerInternal = new KafkaProducer<>(properties);
-//        while (true) {
-//            ProducerRecord<String, String> recordInternal = new ProducerRecord<>(topicName, message);
-//            System.out.println("message sent ... ");
-//            producerInternal.send(recordInternal);
-//            Thread.sleep(2000);
-//        }
-
-        internalProcessingStatuses.processInternalKafkaStatus();   //todo   решить как делать начальный запуск
-        internalProcessingTasksPayment.sendMessage();
-
-        return "Object published in topic rewardReq successfully!";
+        return "Object published in topic rfrm_core_payment_order successfully!";
     }
 
-    private static QuestionnairesKafkaModel getTestQuestionnairesKafkaModel() {
+    private static List<QuestionnairesKafkaModel> getTestQuestionnairesKafkaModel() {
         UUID rewardId = UUID.fromString("5f286023-f0ee-4fec-a51c-a16ea4912c5c");
-        return QuestionnairesKafkaModel
+        QuestionnairesKafkaModel build = QuestionnairesKafkaModel
                 .builder()
-                    .rewardId(rewardId)
-                    .mdmId(5000015297L)
-                    .questionnaireId(questionnaireId)
-                    .recipientType(3)
-                    .source_qs("sourceQS")
-                    .amount(69000.00)
+                .rewardId(rewardId)
+                .mdmId(5000015297L)
+                .questionnaireId(questionnaireId)
+                .recipientType(3)
+                .sourceQs("CC")
+                .amount(69000.00)
+                .createDate(LocalDateTime.now())
                 .build();
+
+        List<QuestionnairesKafkaModel> messageList = new ArrayList<>();
+        messageList.add(build);
+
+        return messageList;
+
     }
 
 }

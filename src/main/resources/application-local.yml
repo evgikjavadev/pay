@@ -4,7 +4,10 @@ server:
 ms.properties.infoSystemCode: RFRM
 ms.properties.infoSystemId: 1800
 #Количество заявок в поиске
-ms.properties.findSizeApplication: 1
+ms.properties.findSizeApplication: 6
+
+sleep-task-payment: 10000
+sleep-task-status: 10000
 
 spring:
   application:
@@ -33,23 +36,20 @@ spring:
 
   datasource:
     hikari:
-      driver-class-name: org.postgresql.Driver
-      jdbc-url: jdbc:postgresql://localhost:5432/rfrm_pay
-      username: postgres
+      driverClassName: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://localhost:5432/rfrm_pay?currentSchema=rfrm_pay
+      username: rfrm_pay_admin
       password: 123
   jmx:
     default-domain: some
   codec:
     max-in-memory-size: 5MB
 
-
-
 #  datasource:
 #    url: jdbc:postgresql://d5rfrm-pgc001lk.corp.dev.vtb:5432/rfrm_pay?currentSchema=rfrm_pay
 #    username: rfrm_pay_admin
 #    password: 7gEmkEBv3o7YID7baeMRlFo0R0YyHzlwW3U7p_F
 #    driverClassName: org.postgresql.Driver
-
 
 audit:
   local-mode: true
@@ -137,11 +137,13 @@ process.platform:
     consumer:
       group-id: pay
     topic:
-      questionnaires: rfrm_core_payment_order
+      rfrm_core_payment_order: rfrm_core_payment_order
       rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
       rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
       rfrm_pay_result_reward: rfrm_pay_result_reward
     max.poll.records: 10
+    listener:
+      poll-timeout: 100
 
     security:
       protocol: PLAINTEXT

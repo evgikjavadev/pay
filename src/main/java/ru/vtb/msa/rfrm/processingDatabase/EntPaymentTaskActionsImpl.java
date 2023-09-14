@@ -3,6 +3,7 @@ package ru.vtb.msa.rfrm.processingDatabase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 
 import java.util.List;
@@ -16,8 +17,8 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     @Override
     public void insertPaymentTaskInDB(EntPaymentTask entPaymentTask) {
         String sql = "INSERT INTO ent_payment_task " +
-                "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs, processed) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs, processed, blocked, blocked_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 entPaymentTask.getRewardId(),
@@ -30,7 +31,9 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                 entPaymentTask.getAccountSystem(),
                 entPaymentTask.getAccount(),
                 entPaymentTask.getSourceQs(),
-                entPaymentTask.getProcessed()
+                entPaymentTask.getProcessed(),
+                entPaymentTask.getBlocked(),
+                entPaymentTask.getBlockedAt()
         );
     }
 
@@ -67,18 +70,18 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
         jdbcTemplate.update(sql, status, rewardId);
     }
 
-    @Override
-    public List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId) {
-        String sql = "SELECT * FROM ent_payment_task WHERE reward_id = ?";
-        return jdbcTemplate.query(
-                sql,
-                new Object[] {rewardId},
-                (rs, rowNum) -> {
-                    EntPaymentTask task = new EntPaymentTask();
-                    task.setRewardId(rs.getObject(1, UUID.class));
-                    return task;
-                });
-    }
+//    @Override
+//    public List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId) {
+//        String sql = "SELECT * FROM ent_payment_task WHERE reward_id = ?";
+//        return jdbcTemplate.query(
+//                sql,
+//                new Object[] {rewardId},
+//                (rs, rowNum) -> {
+//                    EntPaymentTask task = new EntPaymentTask();
+//                    task.setRewardId(rs.getObject(1, UUID.class));
+//                    return task;
+//                });
+//    }
 
     @Override
     public List<EntPaymentTask> getEntPaymentTaskByProcessed(Boolean b) {
@@ -99,17 +102,31 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
         jdbcTemplate.update(sql, true, rewardId);
     }
 
-    @Override
-    public List<Long> getEntPaymentTaskByStatus(Integer stat) {
-        String sql = "SELECT * FROM ent_payment_task WHERE status = ?";
-        return jdbcTemplate.query(
-                sql,
-                new Object[] {stat},
-                (rs, rowNum) -> {
-                    EntPaymentTask task = new EntPaymentTask();
-                    task.setMdmId(rs.getObject("mdm_id", Long.class));
-                    return task.getMdmId();
-                });
-    }
+//    @Override
+//    public List<Long> getEntPaymentTaskByStatus(Integer stat) {
+//        String sql = "SELECT * FROM ent_payment_task WHERE status = ?";
+//        return jdbcTemplate.query(
+//                sql,
+//                new Object[] {stat},
+//                (rs, rowNum) -> {
+//                    EntPaymentTask task = new EntPaymentTask();
+//                    task.setMdmId(rs.getObject("mdm_id", Long.class));
+//                    return task.getMdmId();
+//                });
+//    }
+
+//    @Override
+//    public List<EntPaymentTask> getRewardIdsByProcessAndBlocked(Integer limitx) {
+//        String sql = "SELECT * FROM ent_payment_task WHERE processed = false AND blocked = 0 ORDER BY blocked_at ASC limit limitx";
+//        return jdbcTemplate.query(
+//                sql,
+//                new Object[] {limit},
+//                (rs, rowNum) -> {
+//                    EntPaymentTask task = new EntPaymentTask();
+//                    task.setRewardId(rs.getObject(1, UUID.class));
+//                    return task;
+//                });
+//    }
+
 
 }

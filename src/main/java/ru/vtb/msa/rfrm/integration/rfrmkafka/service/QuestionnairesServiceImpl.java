@@ -49,7 +49,7 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
             checkList.add(elem.getMdmId());
             checkList.add(elem.getAmount());
             checkList.add(elem.getRecipientType());
-            checkList.add(elem.getSource_qs());
+            checkList.add(elem.getSourceQs());
         }
 
         List<Object> objectList = checkList.stream().filter(Objects::isNull).collect(Collectors.toList());
@@ -67,9 +67,9 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
 
         for (EntPaymentTask elem: entPaymentTask ) {
 
-            EntPaymentTask taskfromDb = entPaymentTaskRepository.findByRewardId(elem.getRewardId());
+            EntPaymentTask taskFromDb = entPaymentTaskRepository.findByRewardId(elem.getRewardId());
 
-            if (taskfromDb != null) {
+            if (taskFromDb != null) {
                 log.warn("Задание с таким reward_id уже существует");
 
             } else {

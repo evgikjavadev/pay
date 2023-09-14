@@ -34,7 +34,6 @@ public class KafkaInternalConfigProperties {
         return new KafkaProducer<>(setInternalProducerProperties());
     }
 
-
     public Properties setInternalConsumerProperties() {
 
         Properties properties = new Properties();
@@ -47,7 +46,5 @@ public class KafkaInternalConfigProperties {
 
         return properties;
     }
-
-
 
 }

@@ -123,7 +123,7 @@ public class ServiceAccounts {
             }
 
             // присвоить заданию blocked=0
-            entPaymentTaskRepository.updateBlockedByRewardId(0, Timestamp.valueOf(LocalDateTime.now()), rewardIdList);
+            //entPaymentTaskRepository.updateBlockedByRewardId(0, Timestamp.valueOf(LocalDateTime.now()), rewardIdList);   //todo
 
         }
 
