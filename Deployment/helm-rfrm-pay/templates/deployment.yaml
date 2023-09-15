@@ -39,6 +39,10 @@ spec:
           secret:
             secretName: {{ .Values.app_value.name }}-secret
             defaultMode: 420
+        - name: {{ .Values.app_value.name }}-keystore
+          secret:
+            secretName: {{ .Values.app_value.name }}-keystore-secret
+            defaultMode: 420
         - name: log4j2-config-volume
           configMap:
             name: {{ .Values.app_value.name }}-config
@@ -109,6 +113,8 @@ spec:
             mountPath: /config
           - name: logdir-volume
             mountPath: /usr/app/logs
+          - name: {{ .Values.app_value.name }}-keystore
+            mountPath: /etc/certificate
       # Fluent-bit
       - name: fluent-bit
         image: "{{ .Values.image.fluentbit.registry }}/{{ .Values.image.fluentbit.repository }}/{{ .Values.image.fluentbit.imageName }}:{{ .Values.image.fluentbit.tag }}"

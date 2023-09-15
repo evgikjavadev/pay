@@ -3,32 +3,8 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.app_value.name }}-config
 data:
-  LOGGING_CONFIG: /config/log4j2.xml
-  DB_MIN_IDLE: '600000'
-  PROCES_PALTF_TOPIC: test
-  logging.level.com.zaxxer.hikari: INFO
-  PATH_TRUSTSTORE: /app
-  EPA_AM_URL: 'wiremock:8080'
-  DB_MAX_POOL_SIZE: '3'
-  TUS_EPA: test
-  LOG_LEVEL: INFO
-  PROCES_PALTF_KAFKA_SERVER: test
-  PROCES_PALTF_MAX_POLL_RECORDS: '1'
-  SYSTEM_RIS_ID: '2155'
-  PATH_TRUSTSTORE2: test
-  TUS_PASSW_EPA: test
-  TRACE_KAFKA_SERVER: testurl
-  EPA_IG_URL: 'wiremock:8080'
-  GET_RESOURCE: /portfolio/portfolio-agregator/portfolio/active
-  DB_MAX_LIFE: '1800000'
-  STORE_PASSWORD: qwer
-  STORE_PASSWORD2: test
-  AUDIT_LOCAL_MODE: 'true'
-  PATH_KEYSTORE: /app
-  AUDIT_KAFKA_SERVER: testurl
-  TRACING_MODE: 'false'
-  SYSTEM_RIS_CODE: rfrm
-  DB_CONNECTION_TIMEOUT: '30000'
+  {{range $key, $value := .Values.params_cm }}
+  { { $key } }: { { $value | quote } }{{end}}
   log4j2.xml: |
     <?xml version="1.0" encoding="UTF-8"?>
     <configuration>
