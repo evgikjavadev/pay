@@ -16,11 +16,14 @@ public interface EntPaymentTaskActions {
 
     void updateStatusEntPaymentTaskByRewardId(UUID rewardId, Integer status);
 
-    List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId);
+    //List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId);
 
     List<EntPaymentTask> getEntPaymentTaskByProcessed(Boolean b);
 
     void updateProcessedBPaymentTaskByRewardId(UUID rewardId);
 
-    List<Long> getEntPaymentTaskByStatus(Integer status);
+    //List<Long> getEntPaymentTaskByStatus(Integer status);
+
+    //List<EntPaymentTask> getRewardIdsByProcessAndBlocked(Integer size);
+
 }

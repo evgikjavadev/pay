@@ -1,6 +1,12 @@
 server:
   port: 8080
 
+#Количество заявок в поиске
+ms.properties.findSizeApplication: 1
+
+sleep-task-payment: 10000
+sleep-task-status: 10000
+
 spring:
   application:
     name: rfrm-pay
@@ -29,6 +35,9 @@ spring:
       minimum-idle: ${DB_MIN_IDLE:600000}
       maximim-life: ${DB_MAX_LIFE:1800000}
       maximum-pool-size: ${DB_MAX_POOL_SIZE:3}
+
+kafkalocal:
+  bootstrap-address: "localhost:29092"
 
 #Трассировка
 ru:
@@ -136,27 +145,29 @@ audit-events:
         title: "Название ошибочного сообщени"
         messageTemplate: "Произошла ошибка: + error.message"
 
-
-process.platform:
+process.platformpay:
   kafka:
-    enable: ${PROCES_PALTF_ENABLE:false}
+    enable: ${PROCES_PALTF_ENABLE_PAY:false}
     bootstrap:
-      server: ${PROCES_PALTF_KAFKA_SERVER}
+      server: ${PROCES_PALTF_KAFKA_SERVER_PAY}
     consumer:
       group-id: "pay"
     topic:
-      questionnaires: ${PROCES_PALTF_TOPIC}
+      rfrm_core_payment_order: ${RFRM_CORE_PAYMENT_ORDER}
+      rfrm_pay_function_result_reward: ${RFRM_PAY_FUNCTION_RESULT_REWARD}
+      rfrm_pay_function_status_update_reward: ${RFRM_PAY_DUNCTION_STATUS_UPDATE_REWARD}
+      rfrm_pay_result_reward: ${RFRM_PAY_RESULT_REWARD}
     ssl:
       enabled: true
       truststore:
         # для запуска из idea
-        location: ${PATH_TRUSTSTORE}
-        password: ${STORE_PASSWORD}
+        location: ${PATH_TRUSTSTORE_PAY}
+        password: ${STORE_PASSWORD_PAY}
       keystore:
         # для запуска из idea
-        location: ${PATH_KEYSTORE}
-        password: ${STORE_PASSWORD}
+        location: ${PATH_KEYSTORE_PAY}
+        password: ${STORE_PASSWORD_PAY}
       key:
-        password: ${STORE_PASSWORD}
+        password: ${STORE_PASSWORD_PAY}
       truststore-type: 'JKS'
       keystore-type: 'JKS'

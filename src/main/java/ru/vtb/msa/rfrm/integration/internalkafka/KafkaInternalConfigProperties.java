@@ -16,14 +16,14 @@ import java.util.Properties;
 @Component
 public class KafkaInternalConfigProperties {
 
-    @Value("${process.platform.kafka.bootstrap.server}")
+    @Value("${process.platformpay.kafka.bootstrap.server}")
     private String bootstrapServers;
 
     public Properties setInternalProducerProperties() {
 
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.put("group.id", "${process.platform.kafka.consumer.group-id}");
+        properties.put("group.id", "${process.platformpay.kafka.consumer.group-id}");
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
@@ -34,12 +34,11 @@ public class KafkaInternalConfigProperties {
         return new KafkaProducer<>(setInternalProducerProperties());
     }
 
-
     public Properties setInternalConsumerProperties() {
 
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.put("group.id", "${process.platform.kafka.consumer.group-id}");
+        properties.put("group.id", "${process.platformpay.kafka.consumer.group-id}");
         properties.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 6000);
         properties.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -47,7 +46,5 @@ public class KafkaInternalConfigProperties {
 
         return properties;
     }
-
-
 
 }

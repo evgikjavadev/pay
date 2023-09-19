@@ -1,6 +1,7 @@
 package ru.vtb.msa.rfrm.integration.rfrmkafka.mapper;
 
 import org.springframework.stereotype.Component;
+import ru.vtb.msa.rfrm.processingDatabase.model.DctTaskStatuses;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 
@@ -24,8 +25,8 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
                     .questionnaireId(elem.getQuestionnaireId())
                     .recipientType(elem.getRecipientType())
                     .amount(elem.getAmount())
-                    .status(10)
-                    .sourceQs(elem.getSource_qs())
+                    .status(DctTaskStatuses.STATUS_NEW.getStatus())
+                    .sourceQs(elem.getSourceQs())
                     .accountSystem(null)
                     .account(null)
                     .createdAt(LocalDateTime.now())

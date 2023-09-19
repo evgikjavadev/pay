@@ -5,7 +5,7 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet id="init" author="VTB4085285/VasilenkoEV">
-        <sqlFile encoding="utf8" path="src/main/resources/db-changelog/init_tables.sql"/>
+        <sqlFile encoding="utf8" path="liquibase/сhangelog/init_tables.sql"/>
     </changeSet>
 
 </databaseChangeLog>

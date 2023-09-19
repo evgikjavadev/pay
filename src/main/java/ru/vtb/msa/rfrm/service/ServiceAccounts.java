@@ -44,9 +44,9 @@ public class ServiceAccounts {
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
     private final HikariDataSource hikariDataSource;
     private final EntPaymentTaskRepository entPaymentTaskRepository;
-    @Value("${process.platform.kafka.bootstrap.server}")
+    @Value("${process.platformpay.kafka.bootstrap.server}")
     private String bootstrapServers;
-    @Value("${process.platform.kafka.topic.rfrm_pay_result_reward}")
+    @Value("${process.platformpay.kafka.topic.rfrm_pay_result_reward}")
     private String topicResult;
 
     @SneakyThrows
@@ -123,7 +123,7 @@ public class ServiceAccounts {
             }
 
             // присвоить заданию blocked=0
-            entPaymentTaskRepository.updateBlockedByRewardId(0, Timestamp.valueOf(LocalDateTime.now()), rewardIdList);
+            //entPaymentTaskRepository.updateBlockedByRewardId(0, Timestamp.valueOf(LocalDateTime.now()), rewardIdList);   //todo
 
         }
 
