@@ -59,7 +59,6 @@ public class ActionEntPaymentTaskRepoImpl implements ActionEntPaymentTaskRepo {
 
     }
 
-
     @NotNull
     private static SqlParameterSource[] getBatch(List<UUID> entities) {
         Map<String, List<UUID>> param = new HashMap<>();

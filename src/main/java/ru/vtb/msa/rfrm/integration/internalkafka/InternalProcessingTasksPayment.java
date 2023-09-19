@@ -33,9 +33,9 @@ public class InternalProcessingTasksPayment {
     private final KafkaInternalConfigProperties kafkaInternalConfigProperties;
     private final ActionEntPaymentTaskRepo actionEntPaymentTaskRepo;
     private final ServiceAccounts serviceAccounts;
-    @Value("${process.platform.kafka.topic.rfrm_pay_function_result_reward}")
+    @Value("${process.platformpay.kafka.topic.rfrm_pay_function_result_reward}")
     private String RFRM_PAY_FUNCTION_RESULT_REWARD;
-    @Value("${process.platform.kafka.listener.poll-timeout}")
+    @Value("${process.platformpay.kafka.listener.poll-timeout}")
     private Long POLL_TIMEOUT_CONSUMER;
     @Value("${ms.properties.findSizeApplication}")
     private Integer findSizeApplication;

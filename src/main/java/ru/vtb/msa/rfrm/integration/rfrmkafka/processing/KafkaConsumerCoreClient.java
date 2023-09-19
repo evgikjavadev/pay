@@ -23,8 +23,8 @@ public class KafkaConsumerCoreClient {
     private final InternalProcessingTasksPayment internalProcessingTasksPayment;
     //private final QuestionnairesMapper mapper;
 
-    @KafkaListener(id = "${process.platform.kafka.consumer.group-id}",
-                   topics = "${process.platform.kafka.topic.rfrm_core_payment_order}",
+    @KafkaListener(id = "${process.platformpay.kafka.consumer.group-id}",
+                   topics = "${process.platformpay.kafka.topic.rfrm_core_payment_order}",
                    containerFactory = "kafkaListenerContainerFactory"
     )
     public void listenRfrmCore(@Payload List<QuestionnairesKafkaModel> messageList, Acknowledgment ack,

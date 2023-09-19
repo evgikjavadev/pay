@@ -30,59 +30,59 @@ import java.util.Objects;
 @Configuration
 public class KafkaProcessingPlatformConfig {
     private static final String SECURITY_PROTOCOL = "security.protocol";
-    @Value("${process.platform.kafka.consumer.group-id}")
+    @Value("${process.platformpay.kafka.consumer.group-id}")
     private String groupId;
-    @Value("${process.platform.kafka.bootstrap.server}")
+    @Value("${process.platformpay.kafka.bootstrap.server}")
     private String servers;
-    @Value("${process.platform.kafka.session.timeout.ms:15000}")
+    @Value("${process.platformpay.kafka.session.timeout.ms:15000}")
     private String sessionTimeout;
-    @Value("${dprocess.platform.kafka.consumer.schedule.time:5000}")
+    @Value("${dprocess.platformpay.kafka.consumer.schedule.time:5000}")
     private long consumerScheduleTime;
-    @Value("${process.platform.kafka.consumer.pool.time:30000}")
+    @Value("${process.platformpay.kafka.consumer.pool.time:30000}")
     private long consumerPoolTime;
-    @Value("${process.platform.kafka.max.partition.fetch.bytes:1048576}")
+    @Value("${process.platformpay.kafka.max.partition.fetch.bytes:1048576}")
     private String maxPartitionFetchBytes;
-    @Value("${process.platform.kafka.max.poll.records:500}")
+    @Value("${process.platformpay.kafka.max.poll.records:500}")
     private String maxPollRecords;
-    @Value("${process.platform.kafka.max.poll.interval.ms:3000}")
+    @Value("${process.platformpay.kafka.max.poll.interval.ms:3000}")
     private String maxPollIntervalsMs;
 
     // для организации "SSL":
-    @Value("${process.platform.kafka.security.protocol:}")
+    @Value("${process.platformpay.kafka.security.protocol:}")
     private String securityProtocol;
 
     // При securityProtocol = "SSL" обязательны:
-    @Value("${process.platform.kafka.ssl.endpoint.identification.algorithm:}")
+    @Value("${process.platformpay.kafka.ssl.endpoint.identification.algorithm:}")
     private String sslEendpointIdentificationAlgorithm;
-    @Value("${process.platform.kafka.ssl.truststore.location:}")
+    @Value("${process.platformpay.kafka.ssl.truststore.location:}")
     private String sslTruststoreLocation;
-    @Value("${process.platform.kafka.ssl.truststore.password:}")
+    @Value("${process.platformpay.kafka.ssl.truststore.password:}")
     private String sslTruststorePassword;
-    @Value("${process.platform.kafka.ssl.keystore.location:}")
+    @Value("${process.platformpay.kafka.ssl.keystore.location:}")
     private String sslKeystoreLocation;
-    @Value("${process.platform.kafka.ssl.keystore.password:}")
+    @Value("${process.platformpay.kafka.ssl.keystore.password:}")
     private String sslKeystorePassword;
-    @Value("${process.platform.kafka.ssl.key.password:}")
+    @Value("${process.platformpay.kafka.ssl.key.password:}")
     private String sslKeyPassword;
 
     // При securityProtocol = "SSL" необязательны:
-    @Value("${process.platform.kafka.ssl.cipher.suites:}")
+    @Value("${process.platformpay.kafka.ssl.cipher.suites:}")
     private String sslCipherSuites;
-    @Value("${process.platform.kafka.ssl.enabled.protocols:}")
+    @Value("${process.platformpay.kafka.ssl.enabled.protocols:}")
     private String sslEnabledProtocols;
-    @Value("${process.platform.kafka.ssl.keymanager.algorithm:}")
+    @Value("${process.platformpay.kafka.ssl.keymanager.algorithm:}")
     private String sslKeymanagerAlgorithm;
-    @Value("${process.platform.kafka.ssl.keystore.type:}")
+    @Value("${process.platformpay.kafka.ssl.keystore.type:}")
     private String sslKeystoreType;
-    @Value("${process.platform.kafka.ssl.protocol:}")
+    @Value("${process.platformpay.kafka.ssl.protocol:}")
     private String sslProtocol;
-    @Value("${process.platform.kafka.ssl.provider:}")
+    @Value("${process.platformpay.kafka.ssl.provider:}")
     private String sslProvider;
-    @Value("${process.platform.kafka.ssl.secure.random.implementation:}")
+    @Value("${process.platformpay.kafka.ssl.secure.random.implementation:}")
     private String sslSecureRandomImplementation;
-    @Value("${process.platform.kafka.ssl.trustmanager.algorithm:}")
+    @Value("${process.platformpay.kafka.ssl.trustmanager.algorithm:}")
     private String sslTrustmanagerAlgorithm;
-    @Value("${process.platform.kafka.ssl.truststore.type:}")
+    @Value("${process.platformpay.kafka.ssl.truststore.type:}")
     private String sslTruststoreType;
 
     @Bean

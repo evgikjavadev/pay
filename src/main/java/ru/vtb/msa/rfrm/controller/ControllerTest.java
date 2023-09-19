@@ -29,9 +29,9 @@ public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
     private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
     private final InternalProcessingTasksPayment internalProcessingTasksPayment;
-    @Value("${process.platform.kafka.topic.rfrm_core_payment_order}")
+    @Value("${process.platformpay.kafka.topic.rfrm_core_payment_order}")
     private String rfrm_core_payment_order;
-    @Value("${process.platform.kafka.bootstrap.server}")
+    @Value("${process.platformpay.kafka.bootstrap.server}")
     private String bootstrapServers;
     private static final UUID questionnaireId = UUID.randomUUID();
 
@@ -43,8 +43,8 @@ public class ControllerTest {
     }
 
 
-    /***
-     * Тест отправки объекта в топик rewardReq кафка
+    /**
+     * Тест отправки объекта в топик rfrm_core_payment_order (Core)
      * */
     @GetMapping("/publish")
     public String publishMessage() {

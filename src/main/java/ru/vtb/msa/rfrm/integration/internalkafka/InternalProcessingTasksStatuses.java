@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class InternalProcessingTasksStatuses {
-    @Value("${process.platform.kafka.topic.rfrm_pay_function_status_update_reward}")
+    @Value("${process.platformpay.kafka.topic.rfrm_pay_function_status_update_reward}")
     private String RFRM_PAY_FUNCTION_STATUS_UPDATE_REWARD;
-    @Value("${process.platform.kafka.topic.rfrm_pay_result_reward}")
+    @Value("${process.platformpay.kafka.topic.rfrm_pay_result_reward}")
     private String RFRM_PAY_RESULT_REWARD;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final KafkaPropertiesProducerCore kafkaPropertiesProducerCore;
@@ -44,7 +44,7 @@ public class InternalProcessingTasksStatuses {
     private Integer findSizeApplication;
     @Value("${sleep-task-status}")
     private Integer sleepMs;
-    @Value("${process.platform.kafka.listener.poll-timeout}")
+    @Value("${process.platformpay.kafka.listener.poll-timeout}")
     private Long POLL_TIMEOUT_CONSUMER;
     private final ActionEntPaymentTaskRepo actionEntPaymentTaskRepo;
     private final KafkaInternalConfigProperties kafkaInternalConfigProperties;

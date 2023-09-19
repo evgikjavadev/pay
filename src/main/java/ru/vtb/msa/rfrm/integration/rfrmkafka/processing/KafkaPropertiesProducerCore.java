@@ -11,7 +11,7 @@ import java.util.Properties;
 
 @Component
 public class KafkaPropertiesProducerCore {
-    @Value("${process.platform.kafka.bootstrap.server}")
+    @Value("${process.platformpay.kafka.bootstrap.server}")
     private String bootstrapServers;
 
     @Bean

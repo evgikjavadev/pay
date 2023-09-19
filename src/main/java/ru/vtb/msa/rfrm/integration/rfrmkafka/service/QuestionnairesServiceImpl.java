@@ -27,12 +27,12 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
     private final EntPaymentTaskRepository entPaymentTaskRepository;
 
     @Override
-    public void validateFieldsAndSaveTaskToDB(List<QuestionnairesKafkaModel> model) {
+    public void validateFieldsAndSaveTaskToDB(List<QuestionnairesKafkaModel> modelList) {
 
-        if(checkRequiredFields(model)) {
+        if(checkRequiredFields(modelList)) {
 
             // если поля в входящем объекте ок, то обогащаем объект дополнит. полями
-            List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(model);
+            List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(modelList);
 
             // проверяем есть ли в pay_payment_task объект с таким rewardId и сохраняем его
             checkAndInsertNewTaskToEntPaymentTask(entPaymentTasks);
@@ -40,25 +40,23 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
         }
     }
 
-    private boolean checkRequiredFields(List<QuestionnairesKafkaModel> model) {
+    private boolean checkRequiredFields(List<QuestionnairesKafkaModel> modelList) {
 
         List<Object> checkList = new ArrayList<>();
-        for (QuestionnairesKafkaModel elem: model) {
+
+        for (QuestionnairesKafkaModel elem: modelList) {
             checkList.add(elem.getRewardId());
             checkList.add(elem.getQuestionnaireId());
             checkList.add(elem.getMdmId());
             checkList.add(elem.getAmount());
             checkList.add(elem.getRecipientType());
             checkList.add(elem.getSourceQs());
+            List<Object> objectList = checkList.stream().filter(Objects::isNull).collect(Collectors.toList());
+            if (objectList.size() != 0) {
+                log.warn("В задании на оплату не заполнены обязательные поля: {}", objectList);
+                return false;
+            }
         }
-
-        List<Object> objectList = checkList.stream().filter(Objects::isNull).collect(Collectors.toList());
-
-        if (objectList.size() != 0) {
-            log.warn("В задании на оплату не заполнены обязательные поля: {}", objectList);
-            return false;
-        }
-
         return true;
     }
 

@@ -130,7 +130,7 @@ feature.toggle:
     asynOn: true
 
 
-process.platform:
+process.platformpay:
   kafka:
     bootstrap:
       server: localhost:9092
