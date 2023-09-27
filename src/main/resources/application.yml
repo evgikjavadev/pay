@@ -156,7 +156,6 @@ process.platformpay:
       rfrm_core_payment_order: ${RFRM_CORE_PAYMENT_ORDER}
       rfrm_pay_function_result_reward: ${RFRM_PAY_FUNCTION_RESULT_REWARD}
       rfrm_pay_function_status_update_reward: ${RFRM_PAY_DUNCTION_STATUS_UPDATE_REWARD}
-      rfrm_pay_result_reward: ${RFRM_PAY_RESULT_REWARD}
     ssl:
       enabled: true
       truststore:
@@ -169,5 +168,35 @@ process.platformpay:
         password: ${STORE_PASSWORD_PAY}
       key:
         password: ${STORE_PASSWORD_PAY}
+      truststore-type: 'JKS'
+      keystore-type: 'JKS'
+
+#kafka properties for topic rfrm_pay_result_reward (pay -> core)
+coreresult:
+  kafka:
+    enable: true
+    #размер batch
+    max.poll.records: ${CORERESULT_MAX_POLL_RECORDS:10}
+    #Интервал через который кафка откоючит consumer и начент пере балансировку 5 минт
+    max.poll.interval.ms: ${CORERESULT_MAX_POLL_INTERVAL:300000}
+    #пауза в работе consumer влияет на max.poll.interval = max.poll.interval + pause.work.consumer
+    pause.work.consumer.ms: ${CORERESULT_PAUSE.WORK.CONSUMER:600000} # 10 минут
+    bootstrap:
+      server: ${CORERESULT_KAFKA_SERVER}
+    consumer:
+      group-id-pay: "pay-coreresult"
+    topic: ${RFRM_PAY_RESULT_REWARD:rfrm_pay_result_reward}
+    security:
+      protocol: PLAINTEXT
+    ssl:
+      enabled: true
+      truststore:
+        location: ${CORERESULT_PATH_TRUSTSTORE}
+        password: ${CORERESULT_PASSWORD}
+      keystore:
+        location: ${CORERESULT_PATH_KEYSTORE}
+        password: ${CORERESULT_PASSWORD_KEYSTORE}
+      key:
+        password: ${CORERESULT_PASSWORD_KEY}
       truststore-type: 'JKS'
       keystore-type: 'JKS'
