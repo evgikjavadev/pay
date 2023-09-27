@@ -16,6 +16,7 @@ import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksPayment;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +89,7 @@ public class ControllerTest {
                 .questionnaireId(questionnaireId)
                 .recipientType(3)
                 .sourceQs("CC")
-                .amount(69000.00)
+                .amount(BigDecimal.valueOf(69000.00))
                 .createDate(LocalDateTime.now())
                 .build();
 

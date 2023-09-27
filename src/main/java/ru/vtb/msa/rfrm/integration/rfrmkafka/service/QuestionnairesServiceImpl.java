@@ -12,7 +12,6 @@ import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -28,34 +27,38 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
 
     @Override
     public void validateFieldsAndSaveTaskToDB(List<QuestionnairesKafkaModel> modelList) {
+        List<QuestionnairesKafkaModel> validList = new ArrayList<>();
 
-        if(checkRequiredFields(modelList)) {
+        for (QuestionnairesKafkaModel elem: modelList) {
+            if (checkRequiredFields(elem)) {
+                validList.add(elem);
+            }
+        }
 
+        if (validList.size() != 0) {
             // если поля в входящем объекте ок, то обогащаем объект дополнит. полями
-            List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(modelList);
+            List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(validList);
 
             // проверяем есть ли в pay_payment_task объект с таким rewardId и сохраняем его
             checkAndInsertNewTaskToEntPaymentTask(entPaymentTasks);
-
         }
+
     }
 
-    private boolean checkRequiredFields(List<QuestionnairesKafkaModel> modelList) {
+    private boolean checkRequiredFields(QuestionnairesKafkaModel elem) {
 
         List<Object> checkList = new ArrayList<>();
 
-        for (QuestionnairesKafkaModel elem: modelList) {
-            checkList.add(elem.getRewardId());
-            checkList.add(elem.getQuestionnaireId());
-            checkList.add(elem.getMdmId());
-            checkList.add(elem.getAmount());
-            checkList.add(elem.getRecipientType());
-            checkList.add(elem.getSourceQs());
-            List<Object> objectList = checkList.stream().filter(Objects::isNull).collect(Collectors.toList());
-            if (objectList.size() != 0) {
-                log.warn("В задании на оплату не заполнены обязательные поля: {}", objectList);
-                return false;
-            }
+        checkList.add(elem.getRewardId());
+        checkList.add(elem.getQuestionnaireId());
+        checkList.add(elem.getMdmId());
+        checkList.add(elem.getAmount());
+        checkList.add(elem.getRecipientType());
+        checkList.add(elem.getSourceQs());
+        List<Object> objectList = checkList.stream().filter(Objects::isNull).collect(Collectors.toList());
+        if (objectList.size() != 0) {
+            log.warn("В задании на оплату не заполнены обязательные поля: {}", objectList);
+            return false;
         }
         return true;
     }

@@ -10,6 +10,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import javax.validation.constraints.NotBlank;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class EntPaymentTask {
     /** Сумма вознаграждения (определяется ядром 2155 rfrm-core) */
     @NotBlank
     @Column("amount")
-    private Double amount;
+    private BigDecimal amount;
 
     /** Cтатус задания на оплату */
     @NotBlank
