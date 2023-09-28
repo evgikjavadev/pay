@@ -35,7 +35,6 @@ spring:
   codec:
     max-in-memory-size: 5MB
 
-    
   liquibase:
     enabled: false
     
@@ -115,13 +114,13 @@ logging:
   level:
     ROOT: INFO
     ru.vtb.omni: INFO
-    ru.vtb.omni.ac: DEBUG
-    ru.vtb.msa: DEBUG
+    ru.vtb.omni.ac: ${LOG_LEVEL}
+    ru.vtb.msa: ${LOG_LEVEL}
     org.apache.http: INFO
-    ru.vtb.omni.audit: DEBUG
-    ru.vtb.msa.partner: DEBUG
-    ru.vtb.msa.rfrm.integration: DEBUG
-    ru.vtb.msa.mdclogging: DEBUG
+    ru.vtb.omni.audit: ${LOG_LEVEL}
+    ru.vtb.msa.partner: ${LOG_LEVEL}
+    ru.vtb.msa.rfrm.integration: ${LOG_LEVEL}
+    ru.vtb.msa.mdclogging: ${LOG_LEVEL}
 
 product-profile-fl-accounts:
   url: ${EPA_IG_URL}

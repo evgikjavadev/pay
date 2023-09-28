@@ -12,8 +12,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.forcore.KafkaResultRewardProducer;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreLinkModel;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaPropertiesProducerCore;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.forcore.KafkaProducerCoreConfig;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.batch.ActionEntPaymentTaskRepo;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
@@ -35,10 +36,8 @@ import java.util.stream.Collectors;
 public class InternalProcessingTasksStatuses {
     @Value("${process.platformpay.kafka.topic.rfrm_pay_function_status_update_reward}")
     private String RFRM_PAY_FUNCTION_STATUS_UPDATE_REWARD;
-    @Value("${process.platformpay.kafka.topic.rfrm_pay_result_reward}")
-    private String RFRM_PAY_RESULT_REWARD;
     private final EntPaymentTaskActions entPaymentTaskActions;
-    private final KafkaPropertiesProducerCore kafkaPropertiesProducerCore;
+    private final KafkaResultRewardProducer kafkaResultRewardProducer;
     private final EntPaymentTaskRepository entPaymentTaskRepository;
     @Value("${ms.properties.findSizeApplication}")
     private Integer findSizeApplication;
@@ -91,11 +90,7 @@ public class InternalProcessingTasksStatuses {
             PayCoreLinkModel coreLinkModel = getPayCoreLinkModel(task.getRewardId(), task.getStatus());
 
             // Отправить сообщение в топик rfrm_pay_result_reward (Core service)
-            KafkaProducer<String, PayCoreLinkModel> producerResultPaymentReward = new KafkaProducer<>(kafkaPropertiesProducerCore.setPropertiesProducer());
-            ProducerRecord<String, PayCoreLinkModel> record = new ProducerRecord<>(RFRM_PAY_RESULT_REWARD, coreLinkModel);
-            producerResultPaymentReward.send(record);
-            producerResultPaymentReward.flush();
-            producerResultPaymentReward.close();
+            kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
 
             // Установить для задачи blocked=0
             actionEntPaymentTaskRepo.updateBlockByUUIDEqualZero(setRewardIdList);

@@ -28,8 +28,8 @@ import java.util.UUID;
 @Slf4j
 public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
-    private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
-    private final InternalProcessingTasksPayment internalProcessingTasksPayment;
+    //private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
+    //private final InternalProcessingTasksPayment internalProcessingTasksPayment;
     @Value("${process.platformpay.kafka.topic.rfrm_core_payment_order}")
     private String rfrm_core_payment_order;
     @Value("${process.platformpay.kafka.bootstrap.server}")
