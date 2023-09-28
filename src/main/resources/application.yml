@@ -24,13 +24,16 @@ spring:
         provider:
           epa-tyk-client:
             token-uri: ${EPA_AM_URL}/passport/oauth2/token
-
   datasource:
     hikari:
       driverClassName: org.postgresql.Driver
       jdbc-url: jdbc:postgresql://${DB_URL}:5432/${DB_NAME}?currentSchema=rfrm_pay
       username: ${DB_USER}
       password: ${DB_PASS}
+  jmx:
+    default-domain: some
+  codec:
+    max-in-memory-size: 5MB
 
     
   liquibase:
