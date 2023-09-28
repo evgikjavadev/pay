@@ -58,7 +58,7 @@ opentracing:
 
 #Аудит
 audit:
-  local-mode: true #${AUDIT_LOCAL_MODE:false}
+  local-mode: ${AUDIT_LOCAL_MODE:false}
   kafka:
     bootstrap:
       server: ${AUDIT_KAFKA_SERVER}

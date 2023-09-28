@@ -13,19 +13,19 @@
         <Console name="Console" target="SYSTEM_OUT"  pattern="%mask">
             <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} &#45;&#45; %mask%n"/>
         </Console>
-      <!--  <Kafka name="Kafka" topic="${env:LOG_KAFKA_TOPIC:-logs}" >
-            <JsonTemplateLayout locationInfoEnabled="true"
-                                maxStringLength="1048576"
-                                eventTemplateUri="classpath:log-template.json"/>
-            <Property name="bootstrap.servers">${env:LOG_KAFKA_SERVER:-localhost:9092}</Property>
-            <Property name="security.protocol">${env:LOG_KAFKA_PROTOCOL:-PLAINTEXT}</Property>
-            <Property name="ssl.enabled.protocols">${env:LOG_KAFKA_ENABLED_PROTOCOL:-false}</Property>
-            <Property name="ssl.keystore.location">${env:PATH_KEYSTORE:-}</Property>
-            <Property name="ssl.keystore.password">${env:STORE_PASSWORD:-}</Property>
-            <Property name="ssl.truststore.location">${env:PATH_TRUSTSTORE:-}</Property>
-            <Property name="ssl.truststore.password">${env:STORE_PASSWORD:-}</Property>
-            <Property name="ssl.key.password">${env:STORE_PASSWORD:-}</Property>
-        </Kafka>-->
+<!--      <Kafka name="Kafka" topic="${env:LOG_KAFKA_TOPIC:-logs}" >-->
+<!--            <JsonTemplateLayout locationInfoEnabled="true"-->
+<!--                                maxStringLength="1048576"-->
+<!--                                eventTemplateUri="classpath:log-template.json"/>-->
+<!--            <Property name="bootstrap.servers">${env:LOG_KAFKA_SERVER:-localhost:9092}</Property>-->
+<!--            <Property name="security.protocol">${env:LOG_KAFKA_PROTOCOL:-PLAINTEXT}</Property>-->
+<!--            <Property name="ssl.enabled.protocols">${env:LOG_KAFKA_ENABLED_PROTOCOL:-false}</Property>-->
+<!--            <Property name="ssl.keystore.location">${env:PATH_KEYSTORE:-}</Property>-->
+<!--            <Property name="ssl.keystore.password">${env:STORE_PASSWORD:-}</Property>-->
+<!--            <Property name="ssl.truststore.location">${env:PATH_TRUSTSTORE:-}</Property>-->
+<!--            <Property name="ssl.truststore.password">${env:STORE_PASSWORD:-}</Property>-->
+<!--            <Property name="ssl.key.password">${env:STORE_PASSWORD:-}</Property>-->
+<!--      </Kafka>-->
 
         <!--<Async name="Async">
             <AppenderRef ref="Kafka"/>
