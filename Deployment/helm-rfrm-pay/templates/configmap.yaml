@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.app_value.name }}-config
 data:
   {{range $key, $value := .Values.params_cm }}
-  { { $key } }: { { $value | quote } }{{end}}
+  {{ $key }}: {{ $value | quote }}{{end}}
   log4j2.xml: |
     <?xml version="1.0" encoding="UTF-8"?>
     <configuration>
