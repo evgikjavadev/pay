@@ -26,15 +26,12 @@ spring:
             token-uri: ${EPA_AM_URL}/passport/oauth2/token
 
   datasource:
-    driverClassName: org.postgresql.Driver
-    jdbc-url: jdbc:postgresql://${DB_URL}:5432/${DB_NAME}?currentSchema=rfrm_pay
-    username: ${DB_USER}
-    password: ${DB_PASS}
     hikari:
-      connectionTimeout: ${DB_CONNECTION_TIMEOUT:30000}
-      minimum-idle: ${DB_MIN_IDLE:600000}
-      maximim-life: ${DB_MAX_LIFE:1800000}
-      maximum-pool-size: ${DB_MAX_POOL_SIZE:3}
+      driverClassName: org.postgresql.Driver
+      jdbc-url: jdbc:postgresql://${DB_URL}:5432/${DB_NAME}?currentSchema=rfrm_pay
+      username: ${DB_USER}
+      password: ${DB_PASS}
+
     
   liquibase:
     enabled: false
@@ -115,13 +112,13 @@ logging:
   level:
     ROOT: INFO
     ru.vtb.omni: INFO
-    ru.vtb.omni.ac: ${LOG_LEVEL}
-    ru.vtb.msa: ${LOG_LEVEL}
+    ru.vtb.omni.ac: DEBUG
+    ru.vtb.msa: DEBUG
     org.apache.http: INFO
-    ru.vtb.omni.audit: ${LOG_LEVEL}
-    ru.vtb.msa.partner: ${LOG_LEVEL}
-    ru.vtb.msa.rfrm.integration: ${LOG_LEVEL}
-    ru.vtb.msa.mdclogging: ${LOG_LEVEL}
+    ru.vtb.omni.audit: DEBUG
+    ru.vtb.msa.partner: DEBUG
+    ru.vtb.msa.rfrm.integration: DEBUG
+    ru.vtb.msa.mdclogging: DEBUG
 
 product-profile-fl-accounts:
   url: ${EPA_IG_URL}

@@ -55,7 +55,7 @@ audit:
   local-mode: true
   kafka:
     bootstrap:
-      server: d5mobc-kfc001lk.corp.dev.vtb:9092
+      server: localhost:9092
     consumer:
       group-id: audit-management
     topic: audit
