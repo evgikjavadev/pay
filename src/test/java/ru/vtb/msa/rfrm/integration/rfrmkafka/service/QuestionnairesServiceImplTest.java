@@ -73,9 +73,9 @@ class QuestionnairesServiceImplTest {
     @Test
     void validateFieldsAndSaveTaskToDB() throws SQLException {
 
-        for (QuestionnairesKafkaModel elem: questionnairesKafkaModelsList) {
-            when(entPaymentTaskActions.insertPaymentTaskInDB(elem))
-        }
+//        for (QuestionnairesKafkaModel elem: questionnairesKafkaModelsList) {
+//            when(entPaymentTaskActions.insertPaymentTaskInDB(elem))
+//        }
 
         when(mapper.quesKafkaToQuesModel(questionnairesKafkaModelsList)).thenReturn(anyList());
         //when(entPaymentTaskRepository.findByRewardId(UUID.randomUUID()).getRewardId()).thenReturn(null);
