@@ -27,14 +27,19 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_URL}:5432/${DB_NAME}?currentSchema=rfrm_pay
+    jdbc-url: jdbc:postgresql://${DB_URL}:5432/${DB_NAME}?currentSchema=rfrm_pay
     username: ${DB_USER}
     password: ${DB_PASS}
     hikari:
       connectionTimeout: ${DB_CONNECTION_TIMEOUT:30000}
       minimum-idle: ${DB_MIN_IDLE:600000}
-      maximim-life: ${DB_MAX_LIFE:1800000}
+      maximum-life: ${DB_MAX_LIFE:1800000}
       maximum-pool-size: ${DB_MAX_POOL_SIZE:3}
+
+  jmx:
+    default-domain: some
+  codec:
+    max-in-memory-size: 5MB
     
   liquibase:
     enabled: false
@@ -174,3 +179,4 @@ process.platformpay:
         password: ${STORE_PASSWORD_PAY}
       truststore-type: 'JKS'
       keystore-type: 'JKS'
+

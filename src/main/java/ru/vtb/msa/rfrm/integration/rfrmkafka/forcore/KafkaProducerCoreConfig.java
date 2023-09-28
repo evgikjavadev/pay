@@ -21,57 +21,57 @@ import java.util.Objects;
 public class KafkaProducerCoreConfig {
 
     private static final String SECURITY_PROTOCOL = "security.protocol";
-    @Value("${coreresult.kafka.topic}")
-    private String topic;
-    @Value("${coreresult.kafka.bootstrap.server}")
+//    @Value("${process.platformpay.kafka.topic.rfrm_pay_result_reward}")
+//    private String topic;
+    @Value("${process.platformpay.kafka.bootstrap.server}")
     private String servers;
-    @Value("${coreresult.kafka.max.partition.fetch.bytes:1048576}")
+    @Value("${process.platformpay.kafka.max.partition.fetch.bytes:1048576}")
     private String maxPartitionFetchBytes;
-    @Value("${coreresult.kafka.max.poll.records:500}")
+    @Value("${process.platformpay.kafka.max.poll.records:500}")
     private String maxPollRecords;
-    @Value("${coreresult.kafka.max.poll.interval.ms:300000}")
+    @Value("${process.platformpay.kafka.max.poll.interval.ms:300000}")
     private String maxPollIntervalsMs;
 
     // для организации "SSL":
-    @Value("${coreresult.kafka.security.protocol:}")
+    @Value("${process.platformpay.kafka.security.protocol:}")
     private String securityProtocol;
 
     // При securityProtocol = "SSL" обязательны:
-    @Value("${coreresult.kafka.ssl.endpoint.identification.algorithm:}")
+    @Value("${process.platformpay.kafka.ssl.endpoint.identification.algorithm:}")
     private String sslEendpointIdentificationAlgorithm;
-    @Value("${coreresult.kafka.ssl.truststore.location:}")
+    @Value("${process.platformpay.kafka.ssl.truststore.location:}")
     private String sslTruststoreLocation;
-    @Value("${coreresult.kafka.ssl.truststore.password:}")
+    @Value("${process.platformpay.kafka.ssl.truststore.password:}")
     private String sslTruststorePassword;
-    @Value("${coreresult.kafka.ssl.keystore.location:}")
+    @Value("${process.platformpay.kafka.ssl.keystore.location:}")
     private String sslKeystoreLocation;
-    @Value("${coreresult.kafka.ssl.keystore.password:}")
+    @Value("${process.platformpay.kafka.ssl.keystore.password:}")
     private String sslKeystorePassword;
-    @Value("${coreresult.kafka.ssl.key.password:}")
+    @Value("${process.platformpay.kafka.ssl.key.password:}")
     private String sslKeyPassword;
 
     // При securityProtocol = "SSL" необязательны:
-    @Value("${coreresult.kafka.ssl.cipher.suites:}")
+    @Value("${process.platformpay.kafka.ssl.cipher.suites:}")
     private String sslCipherSuites;
-    @Value("${coreresult.kafka.ssl.enabled.protocols:}")
+    @Value("${process.platformpay.kafka.ssl.enabled.protocols:}")
     private String sslEnabledProtocols;
-    @Value("${coreresult.kafka.ssl.keymanager.algorithm:}")
+    @Value("${process.platformpay.kafka.ssl.keymanager.algorithm:}")
     private String sslKeymanagerAlgorithm;
-    @Value("${coreresult.kafka.ssl.keystore.type:}")
+    @Value("${process.platformpay.kafka.ssl.keystore.type:}")
     private String sslKeystoreType;
-    @Value("${coreresult.kafka.ssl.protocol:}")
+    @Value("${process.platformpay.kafka.ssl.protocol:}")
     private String sslProtocol;
-    @Value("${coreresult.kafka.ssl.provider:}")
+    @Value("${process.platformpay.kafka.ssl.provider:}")
     private String sslProvider;
-    @Value("${coreresult.kafka.ssl.secure.random.implementation:}")
+    @Value("${process.platformpay.kafka.ssl.secure.random.implementation:}")
     private String sslSecureRandomImplementation;
-    @Value("${coreresult.kafka.ssl.trustmanager.algorithm:}")
+    @Value("${process.platformpay.kafka.ssl.trustmanager.algorithm:}")
     private String sslTrustmanagerAlgorithm;
-    @Value("${coreresult.kafka.ssl.truststore-type:}")
+    @Value("${process.platformpay.kafka.ssl.truststore-type:}")
     private String sslTruststoreType;
 
     @Bean
-    public ProducerFactory<String, PayCoreLinkModel> producerFactory(KafkaProperties kafkaProp) {
+    public ProducerFactory<String, PayCoreLinkModel> producerFactoryCore(KafkaProperties kafkaProp) {
         Map<String, Object> props = kafkaProp.buildProducerProperties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -82,12 +82,12 @@ public class KafkaProducerCoreConfig {
 
     @Bean
     public KafkaResultRewardProducer producer(@Qualifier("coreresult") KafkaTemplate template) {
-        template.setDefaultTopic(topic);
+        //template.setDefaultTopic(topic);
         return new KafkaResultRewardProducer(template);
     }
 
     @Bean("coreresult")
-    public KafkaTemplate<String, PayCoreLinkModel> kafkaTemplate(ProducerFactory<String, PayCoreLinkModel> producerFactory) {
+    public KafkaTemplate<String, PayCoreLinkModel> kafkaTemplate(@Qualifier("producerFactoryCore") ProducerFactory<String, PayCoreLinkModel> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 
