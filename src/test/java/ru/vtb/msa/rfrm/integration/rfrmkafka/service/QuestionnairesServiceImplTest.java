@@ -8,15 +8,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.util.Assert;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapperImpl;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
 
-import javax.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -30,7 +27,6 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class QuestionnairesServiceImplTest {
     List<QuestionnairesKafkaModel> questionnairesKafkaModelsList = new ArrayList<>();
-    List<EntPaymentTask> entPaymentTaskList = new ArrayList<>();
     @Mock
     private EntPaymentTaskActions entPaymentTaskActions;
 
@@ -46,9 +42,7 @@ class QuestionnairesServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        mapper = new QuestionnairesMapperImpl();
         questionnairesKafkaModelsList = createList();
-        entPaymentTaskList = mapper.quesKafkaToQuesModel(questionnairesKafkaModelsList);
     }
 
     List<QuestionnairesKafkaModel> createList() {
@@ -79,20 +73,20 @@ class QuestionnairesServiceImplTest {
     @Test
     void validateFieldsAndSaveTaskToDB() throws SQLException {
 
+//        for (QuestionnairesKafkaModel elem: questionnairesKafkaModelsList) {
+//            when(entPaymentTaskActions.insertPaymentTaskInDB(elem))
+//        }
 
-
-//        when(mapper.quesKafkaToQuesModel(questionnairesKafkaModelsList)).thenReturn(anyList());
+        when(mapper.quesKafkaToQuesModel(questionnairesKafkaModelsList)).thenReturn(anyList());
         //when(entPaymentTaskRepository.findByRewardId(UUID.randomUUID()).getRewardId()).thenReturn(null);
 
 
 
+
         // Act
-        //service.validateFieldsAndSaveTaskToDB(questionnairesKafkaModelsList);
+        service.validateFieldsAndSaveTaskToDB(questionnairesKafkaModelsList);
 
-        //entPaymentTaskList = mapper.quesKafkaToQuesModel(questionnairesKafkaModelsList);
-
-        //assertEquals(20, entPaymentTaskList.size());
-
+        // Assert
 //        verify(mapper, times(1)).quesKafkaToQuesModel(anyList());
 //        verify(entPaymentTaskActions, times(1)).insertPaymentTaskInDB(any(EntPaymentTask.class));
 
