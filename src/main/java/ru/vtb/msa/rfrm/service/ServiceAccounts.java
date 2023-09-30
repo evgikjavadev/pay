@@ -31,7 +31,6 @@ import ru.vtb.omni.audit.lib.api.annotation.Audit;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
