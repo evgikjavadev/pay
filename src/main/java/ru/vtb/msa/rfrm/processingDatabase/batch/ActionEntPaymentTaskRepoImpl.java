@@ -20,13 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ActionEntPaymentTaskRepoImpl implements ActionEntPaymentTaskRepo {
 
-    //private final NamedParameterJdbcTemplate jdbcTemplateName;
-
     private final JdbcTemplate jdbcTemplate;
-
-    //private final String updateListUuids = "UPDATE ent_payment_task SET blocked = 1, blocked_at = CURRENT_TIMESTAMP where reward_id  in(:ids)";
-
-    //private final String updateListUuidEqualZero = "UPDATE ent_payment_task SET blocked = 0, blocked_at = CURRENT_TIMESTAMP where reward_id  in(:ids)";
     private final String updateListUuidEqualZero = "UPDATE ent_payment_task SET blocked = 0, blocked_at = CURRENT_TIMESTAMP where reward_id = ?";
     private final String updateListUuidEqualOne = "UPDATE ent_payment_task SET blocked = 1, blocked_at = CURRENT_TIMESTAMP where reward_id = ?";
 
@@ -38,14 +32,6 @@ public class ActionEntPaymentTaskRepoImpl implements ActionEntPaymentTaskRepo {
             jdbcTemplate.update(updateListUuidEqualOne, elem);
         }
     }
-
-
-//    @Override
-//    @Transactional
-//    public void updateBlockByUUIDEqualOne(List<UUID> entities){
-//        SqlParameterSource[] batch = getBatch(entities);
-//        this.jdbcTemplateName.batchUpdate(updateListUuids, batch);
-//    }
 
     @Override
     @Transactional
