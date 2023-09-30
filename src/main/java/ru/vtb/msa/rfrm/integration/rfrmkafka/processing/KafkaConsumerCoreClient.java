@@ -25,7 +25,7 @@ public class KafkaConsumerCoreClient {
 
     @KafkaListener(id = "${process.platformpay.kafka.consumer.group-id}",
                    topics = "${process.platformpay.kafka.topic.rfrm_core_payment_order}",
-                   containerFactory = "kafkaListenerContainerFactory"
+                   containerFactory = "kafkaListenerContainerFactoryReward"
     )
     public void listenRfrmCore(@Payload List<QuestionnairesKafkaModel> messageList, Acknowledgment ack,
                              @Header(KafkaHeaders.RECEIVED_PARTITION_ID) Integer partition,

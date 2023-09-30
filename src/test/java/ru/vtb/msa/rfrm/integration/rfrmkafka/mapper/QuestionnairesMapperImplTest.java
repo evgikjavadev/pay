@@ -45,7 +45,7 @@ class QuestionnairesMapperImplTest {
 
         return QuestionnairesKafkaModel
                 .builder()
-                .rewardId(UUID.randomUUID())
+                .rewardId(random.nextInt())
                 .mdmId(random.nextLong())
                 .questionnaireId(UUID.randomUUID())
                 .recipientType(3)

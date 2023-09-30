@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.forcore.KafkaResultRewardProducer;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreLinkModel;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.forcore.KafkaProducerCoreConfig;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.batch.ActionEntPaymentTaskRepo;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
@@ -26,7 +25,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /** Сценарий обработки статусов заданий на оплату */
@@ -49,7 +47,7 @@ public class InternalProcessingTasksStatuses {
     private final KafkaInternalConfigProperties kafkaInternalConfigProperties;
 
     @Transactional
-    @Scheduled(fixedRate = 86400*1000, initialDelay = 5*1000)   //читаем сообщения каждые сутки
+    //@Scheduled(fixedRate = 86400*1000, initialDelay = 5*1000)   //читаем сообщения каждые сутки
     public void processInternalKafkaStatus() throws InterruptedException {
 
         Consumer<String, InternalMessageModel> consumer = new KafkaConsumer<>(kafkaInternalConfigProperties.setInternalConsumerProperties());
@@ -76,10 +74,10 @@ public class InternalProcessingTasksStatuses {
 
     private void handleTasksList(List<EntPaymentTask> paymentTaskList) throws InterruptedException {
 
-        List<UUID> setRewardIdList = paymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
+        List<Integer> setRewardIdList = paymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
 
         // Установить для задачи blocked=1 и blocked_at=now()
-        actionEntPaymentTaskRepo.updateBlockByUUIDEqualOne(setRewardIdList);
+        actionEntPaymentTaskRepo.updateBlockByRewardIdEqualOne(setRewardIdList);
 
         for (EntPaymentTask task: paymentTaskList) {
 
@@ -93,7 +91,7 @@ public class InternalProcessingTasksStatuses {
             kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
 
             // Установить для задачи blocked=0
-            actionEntPaymentTaskRepo.updateBlockByUUIDEqualZero(setRewardIdList);
+            actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);
 
         }
 
@@ -110,7 +108,7 @@ public class InternalProcessingTasksStatuses {
         producer.close();
     }
 
-    private static PayCoreLinkModel getPayCoreLinkModel(UUID rewardId, Integer status) {
+    private static PayCoreLinkModel getPayCoreLinkModel(Integer rewardId, Integer status) {
 
         // status_description = Если ent_payment_task.status = 30, то привести к строке (SELECT description FROM dct_status_details WHERE status_details_code = 203),
         // иначе - поле не отправлять

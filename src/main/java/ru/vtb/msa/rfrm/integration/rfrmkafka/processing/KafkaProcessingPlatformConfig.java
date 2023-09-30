@@ -109,7 +109,7 @@ public class KafkaProcessingPlatformConfig {
     }
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, List<QuestionnairesKafkaModel>> kafkaListenerContainerFactory(ConsumerFactory<String, List<QuestionnairesKafkaModel>> consumerFactory) {
+    ConcurrentKafkaListenerContainerFactory<String, List<QuestionnairesKafkaModel>> kafkaListenerContainerFactoryReward(ConsumerFactory<String, List<QuestionnairesKafkaModel>> consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, List<QuestionnairesKafkaModel>> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);

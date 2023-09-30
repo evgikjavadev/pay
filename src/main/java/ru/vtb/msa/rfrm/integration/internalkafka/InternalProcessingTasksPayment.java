@@ -43,7 +43,7 @@ public class InternalProcessingTasksPayment {
     private Integer sleepMs;
 
     @Transactional
-    @Scheduled(fixedRate = 3600*1000, initialDelay = 5*1000)
+    //@Scheduled(fixedRate = 3600*1000, initialDelay = 5*1000)
     public void processInternalKafkaTasksPayment() throws InterruptedException {
 
         Consumer<String, InternalMessageModel> consumer = new KafkaConsumer<>(kafkaInternalConfigProperties.setInternalConsumerProperties());
@@ -68,13 +68,13 @@ public class InternalProcessingTasksPayment {
 
     private void handleMdmIdList(List<EntPaymentTask> entPaymentTaskList) throws InterruptedException {
 
-        List<UUID> setRewardIdList = entPaymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
+        List<Integer> setRewardIdList = entPaymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
 
         List<Long> mdmIdsList = entPaymentTaskList.stream().map(EntPaymentTask::getMdmId).collect(Collectors.toList());
 
         //Установить для задачи blocked=1 и blocked_at=now()
         //actionEntPayTaskRepo.updateBlockByUUIDEqualOne(setRewardIdList);
-        actionEntPaymentTaskRepo.updateBlockByUUIDEqualOne(setRewardIdList);
+        actionEntPaymentTaskRepo.updateBlockByRewardIdEqualOne(setRewardIdList);
 
         for (Long mdmId: mdmIdsList ) {
             // Вызов метода /portfolio/active 1503 для каждого mdmId
@@ -82,7 +82,7 @@ public class InternalProcessingTasksPayment {
         }
 
         // Установить для задачи blocked=0 и blocked_at=now()
-        actionEntPaymentTaskRepo.updateBlockByUUIDEqualZero(setRewardIdList);
+        actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);
 
         Thread.sleep(sleepMs);
 

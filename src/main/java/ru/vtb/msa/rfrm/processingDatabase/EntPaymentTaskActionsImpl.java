@@ -3,11 +3,9 @@ package ru.vtb.msa.rfrm.processingDatabase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @Repository
@@ -46,7 +44,7 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                 new Object[] {mdmId},
                 (rs, rowNum) -> {
                     EntPaymentTask task = new EntPaymentTask();
-                    task.setRewardId(rs.getObject(1, UUID.class));
+                    task.setRewardId(rs.getObject(1, Integer.class));
                     task.setMdmId(rs.getObject(3, Long.class));
                     return task;
                 });
@@ -65,39 +63,26 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
-    public void updateStatusEntPaymentTaskByRewardId(UUID rewardId, Integer status) {
+    public void updateStatusEntPaymentTaskByRewardId(Integer rewardId, Integer status) {
         String sql = "UPDATE ent_payment_task SET status = ? WHERE reward_id = ?";
         jdbcTemplate.update(sql, status, rewardId);
     }
 
 //    @Override
-//    public List<EntPaymentTask> getPaymentTaskByRewardId(UUID rewardId) {
-//        String sql = "SELECT * FROM ent_payment_task WHERE reward_id = ?";
+//    public List<EntPaymentTask> getEntPaymentTaskByProcessed(Boolean b) {
+//        String sql = "SELECT * FROM ent_payment_task WHERE processed = ?";
 //        return jdbcTemplate.query(
 //                sql,
-//                new Object[] {rewardId},
+//                new Object[] {b},
 //                (rs, rowNum) -> {
 //                    EntPaymentTask task = new EntPaymentTask();
-//                    task.setRewardId(rs.getObject(1, UUID.class));
+//                    task.setRewardId(rs.getObject(11, Integer.class));
 //                    return task;
 //                });
 //    }
 
     @Override
-    public List<EntPaymentTask> getEntPaymentTaskByProcessed(Boolean b) {
-        String sql = "SELECT * FROM ent_payment_task WHERE processed = ?";
-        return jdbcTemplate.query(
-                sql,
-                new Object[] {b},
-                (rs, rowNum) -> {
-                    EntPaymentTask task = new EntPaymentTask();
-                    task.setRewardId(rs.getObject(11, UUID.class));
-                    return task;
-                });
-    }
-
-    @Override
-    public void updateProcessedBPaymentTaskByRewardId(UUID rewardId) {
+    public void updateProcessedBPaymentTaskByRewardId(Integer rewardId) {
         String sql = "UPDATE ent_payment_task SET processed = ? WHERE reward_id = ?";
         jdbcTemplate.update(sql, true, rewardId);
     }

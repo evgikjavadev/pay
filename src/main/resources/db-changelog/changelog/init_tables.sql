@@ -1,18 +1,18 @@
 
 BEGIN;
 CREATE TABLE IF NOT EXISTS ent_payment_task (
-                       reward_id uuid PRIMARY KEY NOT NULL,
+                       reward_id bigint PRIMARY KEY NOT NULL,
                        questionnaire_id uuid NOT NULL,
-                       mdm_id BIGINT NOT NULL,
+                       mdm_id bigint NOT NULL,
                        recipient_type integer NOT NULL,
-                       amount double precision NOT NULL,
+                       amount numeric NOT NULL,
                        status integer NOT NULL,
                        created_at timestamp NOT NULL,
                        account_system VARCHAR(255),
                        account VARCHAR(255),
                        source_qs VARCHAR(255) NOT NULL,
                        processed BOOLEAN,
-                       blocked integer,
+                       blocked integer NOT NULL,
                        blocked_at timestamp
 );
 COMMIT;
@@ -53,10 +53,10 @@ alter sequence status_history_sq owner to "rfrm_pay_admin";
 
 BEGIN;
 CREATE TABLE IF NOT EXISTS ent_task_status_history (
-                      status_history_id integer default nextval('rfrm_pay.status_history_sq'::regclass) not null
+                      status_history_id bigint default nextval('rfrm_pay.status_history_sq'::regclass) not null
                           constraint ent_task_status_history_pk
                               primary key,
-                      reward_id uuid NOT NULL,
+                      reward_id bigint NOT NULL,
                       status_details_code integer,
                       task_status integer NOT NULL,
                       status_updated_at timestamp NOT NULL,

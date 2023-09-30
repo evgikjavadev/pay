@@ -115,7 +115,7 @@ public class ServiceAccounts {
 
         if (status.value() == 400 || status.value() == 500) {
 
-            List<UUID> rewardIdList = new ArrayList<>();
+            List<Integer> rewardIdList = new ArrayList<>();
 
             for (EntPaymentTask elem: paymentTaskByMdmId) {
                 rewardIdList.add(elem.getRewardId());
@@ -161,7 +161,7 @@ public class ServiceAccounts {
 
         // получаем из БД объекты с mdmId который пришел из 1503 и уже сохранен в БД
         List<EntPaymentTask> listTasks = entPaymentTaskActions.getPaymentTaskByMdmId(mdmId);
-        UUID rewardId = listTasks.get(0).getRewardId();
+        Integer rewardId = listTasks.get(0).getRewardId();
 
         Connection connection = null;
 
@@ -344,7 +344,7 @@ public class ServiceAccounts {
         kafkaProducer.close();
     }
 
-    private PayCoreLinkModel createResultMessage(UUID rewardId, Integer status, String description) {
+    private PayCoreLinkModel createResultMessage(Integer rewardId, Integer status, String description) {
 
         return PayCoreLinkModel
                 .builder()
@@ -354,7 +354,7 @@ public class ServiceAccounts {
                 .build();
     }
 
-    private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode, UUID rewardId) {
+    private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode, Integer rewardId) {
         return EntTaskStatusHistory
                 .builder()
                     .rewardId(rewardId)
