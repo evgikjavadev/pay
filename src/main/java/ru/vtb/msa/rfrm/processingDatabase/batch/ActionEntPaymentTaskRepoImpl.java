@@ -26,28 +26,28 @@ public class ActionEntPaymentTaskRepoImpl implements ActionEntPaymentTaskRepo {
 
     @Override
     @Transactional
-    public void updateBlockByUUIDEqualOne(List<UUID> entities) {
+    public void updateBlockByRewardIdEqualOne(List<Integer> entities) {
 
-        for (UUID elem: entities) {
+        for (Integer elem: entities) {
             jdbcTemplate.update(updateListUuidEqualOne, elem);
         }
     }
 
     @Override
     @Transactional
-    public void updateBlockByUUIDEqualZero(List<UUID> entities){
+    public void updateBlockByRewardIdEqualZero(List<Integer> entities){
 //        SqlParameterSource[] batch = getBatch(entities);
 //        this.jdbcTemplateName.batchUpdate(updateListUuidEqualZero, batch);
 
-        for (UUID elem: entities) {
+        for (Integer elem: entities) {
             jdbcTemplate.update(updateListUuidEqualZero, elem);
         }
 
     }
 
     @NotNull
-    private static SqlParameterSource[] getBatch(List<UUID> entities) {
-        Map<String, List<UUID>> param = new HashMap<>();
+    private static SqlParameterSource[] getBatch(List<Integer> entities) {
+        Map<String, List<Integer>> param = new HashMap<>();
         param.put("ids", entities);
         SqlParameterSource[] batch = SqlParameterSourceUtils.createBatch(param);
         return batch;

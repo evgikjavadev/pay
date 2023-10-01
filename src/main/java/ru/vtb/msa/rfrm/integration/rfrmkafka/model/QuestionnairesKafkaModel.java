@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class QuestionnairesKafkaModel {
     @JsonProperty("reward_id")
-    private UUID rewardId;
+    private Integer rewardId;
     @JsonProperty("mdm_id")
     private Long mdmId;
     @JsonProperty("questionnaire_id")

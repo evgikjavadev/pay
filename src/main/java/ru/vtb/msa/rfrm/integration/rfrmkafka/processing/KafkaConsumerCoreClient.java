@@ -7,6 +7,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Component;
 import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksStatuses;
 import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksPayment;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
@@ -17,15 +18,15 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class KafkaConsumerCoreClient {
     private final ProcessQuestionnairesService service;
     private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
     private final InternalProcessingTasksPayment internalProcessingTasksPayment;
-    //private final QuestionnairesMapper mapper;
 
     @KafkaListener(id = "${process.platformpay.kafka.consumer.group-id}",
                    topics = "${process.platformpay.kafka.topic.rfrm_core_payment_order}",
-                   containerFactory = "kafkaListenerContainerFactory"
+                   containerFactory = "kafkaListenerContainerFactoryReward"
     )
     public void listenRfrmCore(@Payload List<QuestionnairesKafkaModel> messageList, Acknowledgment ack,
                              @Header(KafkaHeaders.RECEIVED_PARTITION_ID) Integer partition,

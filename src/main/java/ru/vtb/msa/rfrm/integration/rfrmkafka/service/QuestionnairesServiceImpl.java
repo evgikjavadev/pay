@@ -35,9 +35,9 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
             }
         }
 
-        if (validList.size() != 0) {
+        if (modelList.size() != 0) {
             // если поля в входящем объекте ок, то обогащаем объект дополнит. полями
-            List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(validList);
+            List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(modelList);
 
             // проверяем есть ли в pay_payment_task объект с таким rewardId и сохраняем его
             checkAndInsertNewTaskToEntPaymentTask(entPaymentTasks);

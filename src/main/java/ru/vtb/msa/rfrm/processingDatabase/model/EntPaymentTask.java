@@ -9,7 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,36 +22,29 @@ public class EntPaymentTask {
 
     /** ID задачи на оплату (генерируется ядром 2155 rfrm-core) */
     @Id
-    @NotBlank
     @Column("reward_id")
-    private UUID rewardId;
+    private Integer rewardId;
 
     /** ID заявки на участие в реферальной программе */
-    @NotBlank
     @Column("questionnaire_id")
     private UUID questionnaireId;
 
     /** ID получателя вознаграждения в MDM */
-    @NotBlank
     @Column("mdm_id")
     private Long mdmId;
 
     /** Тип получателя вознаграждения */
-    @NotBlank
     @Column("recipient_type")
     private Integer recipientType;
 
     /** Сумма вознаграждения (определяется ядром 2155 rfrm-core) */
-    @NotBlank
     @Column("amount")
     private BigDecimal amount;
 
     /** Cтатус задания на оплату */
-    @NotBlank
     @Column("status")
     private Integer status;
 
-    @NotBlank
     @Column("created_at")
     @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
@@ -66,7 +58,6 @@ public class EntPaymentTask {
     private String account;
 
     /** ID продукта, по которому должно быть выплачено вознаграждение за участие в реферальной программе */
-    @NotBlank
     @Column("source_qs")
     private String sourceQs;
 
@@ -77,7 +68,7 @@ public class EntPaymentTask {
     private Integer blocked;
 
     @Column("blocked_at")
-    private Integer blockedAt;
+    private LocalDateTime blockedAt;
 
     public LocalDateTime getCreatedAt() {
         return LocalDateTime.now();

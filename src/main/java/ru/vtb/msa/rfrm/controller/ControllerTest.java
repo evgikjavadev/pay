@@ -17,19 +17,17 @@ import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
-    //private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
-    //private final InternalProcessingTasksPayment internalProcessingTasksPayment;
+//    private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
+//    private final InternalProcessingTasksPayment internalProcessingTasksPayment;
     @Value("${process.platformpay.kafka.topic.rfrm_core_payment_order}")
     private String rfrm_core_payment_order;
     @Value("${process.platformpay.kafka.bootstrap.server}")
@@ -51,7 +49,7 @@ public class ControllerTest {
     public String publishMessage() {
 
         // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
-        List<QuestionnairesKafkaModel> testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
+        QuestionnairesKafkaModel testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
 
         // create Producer properties
         Properties properties = new Properties();
@@ -59,45 +57,44 @@ public class ControllerTest {
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
 
-        KafkaProducer<String, List<QuestionnairesKafkaModel>> producer = new KafkaProducer<>(properties);
-        ProducerRecord<String, List<QuestionnairesKafkaModel>> producerRecord =
-                new ProducerRecord<>(rfrm_core_payment_order, testQuestionnairesKafkaModel);
+        KafkaProducer<String, QuestionnairesKafkaModel> producer = new KafkaProducer<>(properties);
 
-        //for (int i = 0; i < 10; i++) {
-
-            log.info("Object: {} WAS SENT TO TOPIC: rfrm_core_payment_order with frequency i: 1 = ", producerRecord.value());
+            ProducerRecord<String, QuestionnairesKafkaModel> producerRecord =
+                    new ProducerRecord<>(rfrm_core_payment_order, testQuestionnairesKafkaModel);
+            log.info("Object: {} WAS SENT TO TOPIC: rfrm_core_payment_order ", producerRecord.value());
 
             producer.send(producerRecord);
-
-       //}
 
         producer.flush();
         producer.close();
 
-        //internalProcessingTasksStatuses.processInternalKafkaStatus();
-        //internalProcessingTasksPayment.sendRunningMessageInternalTopic();
-
         return "Object published in topic rfrm_core_payment_order successfully!";
     }
 
-    private static List<QuestionnairesKafkaModel> getTestQuestionnairesKafkaModel() {
-        UUID rewardId = UUID.fromString("5f286023-f0ee-4fec-a51c-a16ea4912c5c");
-        QuestionnairesKafkaModel build = QuestionnairesKafkaModel
-                .builder()
-                .rewardId(rewardId)
-                .mdmId(5000015297L)
-                .questionnaireId(questionnaireId)
-                .recipientType(3)
-                .sourceQs("CC")
-                .amount(BigDecimal.valueOf(69000.00))
-                .createDate(LocalDateTime.now())
-                .build();
+    private QuestionnairesKafkaModel getTestQuestionnairesKafkaModel() {
+        Random rand = new Random();
 
-        List<QuestionnairesKafkaModel> messageList = new ArrayList<>();
-        messageList.add(build);
+            Integer value = rand.nextInt();
+            QuestionnairesKafkaModel build = QuestionnairesKafkaModel
+                    .builder()
+                    .rewardId(value)
+                    .mdmId(5000015297L)
+                    .questionnaireId(questionnaireId)
+                    .recipientType(3)
+                    .sourceQs("CC")
+                    .amount(BigDecimal.valueOf(69000.00))
+                    .createDate(LocalDateTime.now())
+                    .build();
 
-        return messageList;
+        return build;
+    }
 
+    //сохранение заданий в табл начальное заполнение
+    @GetMapping("savetask")
+    public String saveTasksInDatabase() {
+
+
+        return "Test tasks saved successfully";
     }
 
 }

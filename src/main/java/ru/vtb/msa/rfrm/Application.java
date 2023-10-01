@@ -16,7 +16,7 @@ import ru.vtb.msa.rfrm.integration.internalkafka.BootstrapKafkaProperties;
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class, QuartzEndpointAutoConfiguration.class,
         DataSourceAutoConfiguration.class })
 @ComponentScan("ru.vtb.msa")
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableRetry
 @EnableScheduling
 @EnableConfigurationProperties(value = {BootstrapKafkaProperties.class})

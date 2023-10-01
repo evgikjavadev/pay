@@ -81,12 +81,12 @@ public class KafkaProducerCoreConfig {
     }
 
     @Bean
-    public KafkaResultRewardProducer producer(@Qualifier("coreresult") KafkaTemplate template) {
+    public KafkaResultRewardProducer producer(KafkaTemplate template) {
         //template.setDefaultTopic(topic);
         return new KafkaResultRewardProducer(template);
     }
 
-    @Bean("coreresult")
+    @Bean
     public KafkaTemplate<String, PayCoreLinkModel> kafkaTemplate(@Qualifier("producerFactoryCore") ProducerFactory<String, PayCoreLinkModel> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
