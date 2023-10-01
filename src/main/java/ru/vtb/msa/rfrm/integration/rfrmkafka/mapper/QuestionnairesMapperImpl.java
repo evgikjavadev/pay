@@ -32,7 +32,7 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
                     .createdAt(LocalDateTime.now())
                     .processed(false)
                     .blocked(0)
-                    .blockedAt(null)
+                    .blockedAt(LocalDateTime.now())
                     .build();
 
             entPayTaskList.add(task);

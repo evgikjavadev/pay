@@ -123,11 +123,11 @@ public class KafkaProcessingPlatformConfig {
         return factory;
     }
 
-    @Bean
-    KafkaConsumerCoreClient client(ProcessQuestionnairesService service, InternalProcessingTasksStatuses status, InternalProcessingTasksPayment pay) {
-        //QuestionnairesMapper mapper = Mappers.getMapper(QuestionnairesMapper.class);
-        return new KafkaConsumerCoreClient(service, status, pay);
-    }
+//    @Bean
+//    KafkaConsumerCoreClient client(ProcessQuestionnairesService service, InternalProcessingTasksStatuses status, InternalProcessingTasksPayment pay) {
+//        //QuestionnairesMapper mapper = Mappers.getMapper(QuestionnairesMapper.class);
+//        return new KafkaConsumerCoreClient(service, status, pay);
+//    }
 
     private void setSecurityProps(Map<String, Object> props) {
         setProp(props, SECURITY_PROTOCOL, securityProtocol);

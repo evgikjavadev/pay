@@ -136,7 +136,7 @@ process.platformpay:
       rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
       rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
       rfrm_pay_result_reward: rfrm_pay_result_reward
-    max.poll.records: 10
+    max.poll.records: 1
     listener:
       poll-timeout: 100
 

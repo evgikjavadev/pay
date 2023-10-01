@@ -7,6 +7,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Component;
 import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksStatuses;
 import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksPayment;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
+@Component
 public class KafkaConsumerCoreClient {
     private final ProcessQuestionnairesService service;
     private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
