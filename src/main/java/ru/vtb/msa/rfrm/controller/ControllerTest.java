@@ -75,7 +75,7 @@ public class ControllerTest {
         Random rand = new Random();
         List<QuestionnairesKafkaModel> messageList = new ArrayList<>();
 
-        for (int i = 0; i < 1; i++) {
+        //for (int i = 0; i < 1; i++) {
             Integer value = rand.nextInt();
             QuestionnairesKafkaModel build = QuestionnairesKafkaModel
                     .builder()
@@ -89,7 +89,7 @@ public class ControllerTest {
                     .build();
 
             messageList.add(build);
-        }
+        //}
 
         return messageList;
     }
