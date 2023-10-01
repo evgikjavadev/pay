@@ -23,7 +23,6 @@ public class KafkaConsumerCoreClient {
     private final ProcessQuestionnairesService service;
     private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
     private final InternalProcessingTasksPayment internalProcessingTasksPayment;
-    //private final QuestionnairesMapper mapper;
 
     @KafkaListener(id = "${process.platformpay.kafka.consumer.group-id}",
                    topics = "${process.platformpay.kafka.topic.rfrm_core_payment_order}",

@@ -49,7 +49,7 @@ public class ControllerTest {
     public String publishMessage() {
 
         // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
-        List<QuestionnairesKafkaModel> testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
+        QuestionnairesKafkaModel testQuestionnairesKafkaModel = getTestQuestionnairesKafkaModel();
 
         // create Producer properties
         Properties properties = new Properties();
@@ -57,9 +57,9 @@ public class ControllerTest {
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
 
-        KafkaProducer<String, List<QuestionnairesKafkaModel>> producer = new KafkaProducer<>(properties);
+        KafkaProducer<String, QuestionnairesKafkaModel> producer = new KafkaProducer<>(properties);
 
-            ProducerRecord<String, List<QuestionnairesKafkaModel>> producerRecord =
+            ProducerRecord<String, QuestionnairesKafkaModel> producerRecord =
                     new ProducerRecord<>(rfrm_core_payment_order, testQuestionnairesKafkaModel);
             log.info("Object: {} WAS SENT TO TOPIC: rfrm_core_payment_order ", producerRecord.value());
 
@@ -71,11 +71,9 @@ public class ControllerTest {
         return "Object published in topic rfrm_core_payment_order successfully!";
     }
 
-    private List<QuestionnairesKafkaModel> getTestQuestionnairesKafkaModel() {
+    private QuestionnairesKafkaModel getTestQuestionnairesKafkaModel() {
         Random rand = new Random();
-        List<QuestionnairesKafkaModel> messageList = new ArrayList<>();
 
-        //for (int i = 0; i < 1; i++) {
             Integer value = rand.nextInt();
             QuestionnairesKafkaModel build = QuestionnairesKafkaModel
                     .builder()
@@ -88,10 +86,7 @@ public class ControllerTest {
                     .createDate(LocalDateTime.now())
                     .build();
 
-            messageList.add(build);
-        //}
-
-        return messageList;
+        return build;
     }
 
     //сохранение заданий в табл начальное заполнение
