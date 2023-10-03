@@ -49,7 +49,6 @@ public class ServiceAccounts {
     private String topicResult;
 
     @SneakyThrows
-    @Audit(value = "EXAMPLE_EVENT_CODE")
     public void getClientAccounts(Long mdmIdFromKafka) {
 
         try {
