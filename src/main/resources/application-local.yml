@@ -131,14 +131,15 @@ process.platformpay:
       server: localhost:9092
     consumer:
       group-id: pay
+      max.poll.records: 500
     topic:
       rfrm_core_payment_order: rfrm_core_payment_order
       rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
       rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
       rfrm_pay_result_reward: rfrm_pay_result_reward
-    max.poll.records: 1
+
     listener:
-      poll-timeout: 100
+      poll-timeout: 1000
 
     security:
       protocol: PLAINTEXT

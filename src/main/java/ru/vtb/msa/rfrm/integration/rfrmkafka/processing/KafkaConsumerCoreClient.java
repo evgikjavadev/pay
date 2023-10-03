@@ -32,7 +32,7 @@ public class KafkaConsumerCoreClient {
                              @Header(KafkaHeaders.RECEIVED_PARTITION_ID) Integer partition,
                              @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                              @Header(KafkaHeaders.OFFSET) int offsets) throws InterruptedException {
-        log.info("Start rfrm-pay processing topic = {} partition = {}", topic, partition);
+        log.info("Start rfrm-pay processing topic = {}, partition = {}, messages = {}", topic, partition, messageList);
 
         try {
             service.validateFieldsAndSaveTaskToDB(messageList);
@@ -46,7 +46,7 @@ public class KafkaConsumerCoreClient {
 
 
         internalProcessingTasksStatuses.processInternalKafkaStatus();
-        internalProcessingTasksPayment.sendRunningMessageInternalTopic();
+        //internalProcessingTasksPayment.sendRunningMessageInternalTopic();
 
     }
 }
