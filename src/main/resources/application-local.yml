@@ -134,8 +134,8 @@ process.platformpay:
       max.poll.records: 500
     topic:
       rfrm_core_payment_order: rfrm_core_payment_order
-      rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
-      rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
+#      rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
+#      rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
       rfrm_pay_result_reward: rfrm_pay_result_reward
 
     listener:
@@ -156,6 +156,34 @@ process.platformpay:
       truststore-type: 'JKS'
       keystore-type: 'JKS'
 
+function:
+  kafka:
+    enable: true
+    #Интервал черезготорый кафкаоткоючит consumer и начент пере балансировку
+    max.poll.interval.ms: 300000
+    #паузара в работе consumer влиает на max.poll.interval = max.poll.interval + pause.work.consumer
+    pause.work.consumer.ms: 0
+    bootstrap:
+      server: "localhost:9092"
+    consumer:
+      group-id: "pay"
+    topic:
+      rfrm_pay_function_result_reward: "rfrm_pay_function_result_reward"
+      rfrm_pay_function_status_update_reward: "rfrm_pay_function_status_update_reward"
+    security:
+      protocol: PLAINTEXT
+    ssl:
+      enabled: false
+      truststore:
+        location: ""
+        password: ""
+      keystore:
+        location: ""
+        password: ""
+      key:
+        password: ""
+      truststore-type: 'JKS'
+      keystore-type: 'JKS'
 
 #kafka properties for rfrm_pay_result_reward (pay -> core)
 #coreresult:
