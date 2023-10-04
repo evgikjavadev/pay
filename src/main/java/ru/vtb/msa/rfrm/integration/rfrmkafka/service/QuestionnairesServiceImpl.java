@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel;
 import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
 
 import java.util.ArrayList;
@@ -26,10 +26,10 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
     private final EntPaymentTaskRepository entPaymentTaskRepository;
 
     @Override
-    public void validateFieldsAndSaveTaskToDB(List<QuestionnairesKafkaModel> modelList) {
-        List<QuestionnairesKafkaModel> validList = new ArrayList<>();
+    public void validateFieldsAndSaveTaskToDB(List<CorePayKafkaModel> modelList) {
+        List<CorePayKafkaModel> validList = new ArrayList<>();
 
-        for (QuestionnairesKafkaModel elem: modelList) {
+        for (CorePayKafkaModel elem: modelList) {
             if (checkRequiredFields(elem)) {
                 validList.add(elem);
             }
@@ -45,7 +45,7 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
 
     }
 
-    private boolean checkRequiredFields(QuestionnairesKafkaModel elem) {
+    private boolean checkRequiredFields(CorePayKafkaModel elem) {
 
         List<Object> checkList = new ArrayList<>();
 

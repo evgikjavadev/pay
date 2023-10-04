@@ -8,7 +8,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PayCoreLinkModel {
+public class PayCoreKafkaModel {
     @JsonProperty("reward_id")
     private Integer rewardId;
     @JsonProperty("status")

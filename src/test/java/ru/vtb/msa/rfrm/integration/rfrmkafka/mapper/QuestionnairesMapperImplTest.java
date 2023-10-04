@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 
 import java.math.BigDecimal;
@@ -22,28 +22,28 @@ import static org.junit.jupiter.api.Assertions.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class QuestionnairesMapperImplTest {
 
-    List<QuestionnairesKafkaModel> questionnairesKafkaModelsList = new ArrayList<>();
+    List<CorePayKafkaModel> corePayKafkaModelsList = new ArrayList<>();
     List<EntPaymentTask> entPaymentTaskList = new ArrayList<>();
     private QuestionnairesMapper mapper;
 
     @BeforeEach()
     void setUp() {
-        questionnairesKafkaModelsList = createList();
+        corePayKafkaModelsList = createList();
         mapper = new QuestionnairesMapperImpl();
     }
 
-    List<QuestionnairesKafkaModel> createList() {
+    List<CorePayKafkaModel> createList() {
         for (int i = 0; i < 20; i++) {
-            QuestionnairesKafkaModel questionnairesKafkaModelObject = createQuestionnairesKafkaModelObject();
-            questionnairesKafkaModelsList.add(questionnairesKafkaModelObject);
+            CorePayKafkaModel corePayKafkaModelObject = createQuestionnairesKafkaModelObject();
+            corePayKafkaModelsList.add(corePayKafkaModelObject);
         }
-        return questionnairesKafkaModelsList;
+        return corePayKafkaModelsList;
     }
 
-    QuestionnairesKafkaModel createQuestionnairesKafkaModelObject() {
+    CorePayKafkaModel createQuestionnairesKafkaModelObject() {
         Random random = new Random();
 
-        return QuestionnairesKafkaModel
+        return CorePayKafkaModel
                 .builder()
                 .rewardId(random.nextInt())
                 .mdmId(random.nextLong())
@@ -58,8 +58,8 @@ class QuestionnairesMapperImplTest {
 
     @Test
     void validateFieldsAndSaveTaskToDB() {
-        entPaymentTaskList = mapper.quesKafkaToQuesModel(questionnairesKafkaModelsList);
-        assertEquals(questionnairesKafkaModelsList.size(), entPaymentTaskList.size());
+        entPaymentTaskList = mapper.quesKafkaToQuesModel(corePayKafkaModelsList);
+        assertEquals(corePayKafkaModelsList.size(), entPaymentTaskList.size());
 
     }
 

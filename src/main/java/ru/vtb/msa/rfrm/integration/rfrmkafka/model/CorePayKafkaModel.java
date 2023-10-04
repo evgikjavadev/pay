@@ -12,7 +12,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionnairesKafkaModel {
+public class CorePayKafkaModel {
     @JsonProperty("reward_id")
     private Integer rewardId;
     @JsonProperty("mdm_id")

@@ -1,98 +1,91 @@
-package ru.vtb.msa.rfrm.integration.rfrmkafka.processing;
+package ru.vtb.msa.rfrm.integration.rfrmkafka.coretopay;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.util.StringUtils;
-import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksPayment;
-import ru.vtb.msa.rfrm.integration.internalkafka.InternalProcessingTasksStatuses;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.service.ProcessQuestionnairesService;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel;
 
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
 @Configuration
-public class KafkaProcessingPlatformConfig {
+public class KafkaCoreConfig {
     private static final String SECURITY_PROTOCOL = "security.protocol";
-    @Value("${process.platformpay.kafka.consumer.group-id}")
+    @Value("${pay.kafka.consumer.group-id}")
     private String groupId;
-    @Value("${process.platformpay.kafka.bootstrap.server}")
+    @Value("${pay.kafka.bootstrap.server}")
     private String servers;
-    @Value("${process.platformpay.kafka.session.timeout.ms:15000}")
+    @Value("${pay.kafka.session.timeout.ms:15000}")
     private String sessionTimeout;
-    @Value("${dprocess.platformpay.kafka.consumer.schedule.time:5000}")
+    @Value("${pay.kafka.consumer.schedule.time:5000}")
     private long consumerScheduleTime;
-    @Value("${process.platformpay.kafka.consumer.pool.time:30000}")
+    @Value("${pay.kafka.consumer.pool.time:30000}")
     private long consumerPoolTime;
-    @Value("${process.platformpay.kafka.max.partition.fetch.bytes:1048576}")
+    @Value("${pay.kafka.max.partition.fetch.bytes:1048576}")
     private String maxPartitionFetchBytes;
-    @Value("${process.platformpay.kafka.max.poll.records:500}")
+    @Value("${pay.kafka.max.poll.records:500}")
     private String maxPollRecords;
-    @Value("${process.platformpay.kafka.max.poll.interval.ms:3000}")
+    @Value("${pay.kafka.max.poll.interval.ms:3000}")
     private String maxPollIntervalsMs;
 
     // для организации "SSL":
-    @Value("${process.platformpay.kafka.security.protocol:}")
+    @Value("${pay.kafka.security.protocol:}")
     private String securityProtocol;
 
     // При securityProtocol = "SSL" обязательны:
-    @Value("${process.platformpay.kafka.ssl.endpoint.identification.algorithm:}")
+    @Value("${pay.kafka.ssl.endpoint.identification.algorithm:}")
     private String sslEendpointIdentificationAlgorithm;
-    @Value("${process.platformpay.kafka.ssl.truststore.location:}")
+    @Value("${pay.kafka.ssl.truststore.location:}")
     private String sslTruststoreLocation;
-    @Value("${process.platformpay.kafka.ssl.truststore.password:}")
+    @Value("${pay.kafka.ssl.truststore.password:}")
     private String sslTruststorePassword;
-    @Value("${process.platformpay.kafka.ssl.keystore.location:}")
+    @Value("${pay.kafka.ssl.keystore.location:}")
     private String sslKeystoreLocation;
-    @Value("${process.platformpay.kafka.ssl.keystore.password:}")
+    @Value("${pay.kafka.ssl.keystore.password:}")
     private String sslKeystorePassword;
-    @Value("${process.platformpay.kafka.ssl.key.password:}")
+    @Value("${pay.kafka.ssl.key.password:}")
     private String sslKeyPassword;
 
     // При securityProtocol = "SSL" необязательны:
-    @Value("${process.platformpay.kafka.ssl.cipher.suites:}")
+    @Value("${pay.kafka.ssl.cipher.suites:}")
     private String sslCipherSuites;
-    @Value("${process.platformpay.kafka.ssl.enabled.protocols:}")
+    @Value("${pay.kafka.ssl.enabled.protocols:}")
     private String sslEnabledProtocols;
-    @Value("${process.platformpay.kafka.ssl.keymanager.algorithm:}")
+    @Value("${pay.kafka.ssl.keymanager.algorithm:}")
     private String sslKeymanagerAlgorithm;
-    @Value("${process.platformpay.kafka.ssl.keystore.type:}")
+    @Value("${pay.kafka.ssl.keystore.type:}")
     private String sslKeystoreType;
-    @Value("${process.platformpay.kafka.ssl.protocol:}")
+    @Value("${pay.kafka.ssl.protocol:}")
     private String sslProtocol;
-    @Value("${process.platformpay.kafka.ssl.provider:}")
+    @Value("${pay.kafka.ssl.provider:}")
     private String sslProvider;
-    @Value("${process.platformpay.kafka.ssl.secure.random.implementation:}")
+    @Value("${pay.kafka.ssl.secure.random.implementation:}")
     private String sslSecureRandomImplementation;
-    @Value("${process.platformpay.kafka.ssl.trustmanager.algorithm:}")
+    @Value("${pay.kafka.ssl.trustmanager.algorithm:}")
     private String sslTrustmanagerAlgorithm;
-    @Value("${process.platformpay.kafka.ssl.truststore.type:}")
+    @Value("${pay.kafka.ssl.truststore.type:}")
     private String sslTruststoreType;
 
     @Bean
-    public ConsumerFactory<String, List<QuestionnairesKafkaModel>> consumerFactory(KafkaProperties kafkaProp) {
+    public ConsumerFactory<String, CorePayKafkaModel> consumerFactory(KafkaProperties kafkaProp) {
         Map<String, Object> props = kafkaProp.buildConsumerProperties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.rfrmkafka.model.QuestionnairesKafkaModel");
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeout);
         props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, maxPartitionFetchBytes);
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
@@ -101,7 +94,7 @@ public class KafkaProcessingPlatformConfig {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         setSecurityProps(props);
 
-        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<String, List<QuestionnairesKafkaModel>>(props);
+        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<String, CorePayKafkaModel>(props);
         factory.setKeyDeserializer(new StringDeserializer());
         factory.setValueDeserializer(new JsonDeserializer());
 
@@ -109,8 +102,8 @@ public class KafkaProcessingPlatformConfig {
     }
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, List<QuestionnairesKafkaModel>> kafkaListenerContainerFactoryReward(ConsumerFactory<String, List<QuestionnairesKafkaModel>> consumerFactory) {
-        ConcurrentKafkaListenerContainerFactory<String, List<QuestionnairesKafkaModel>> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    ConcurrentKafkaListenerContainerFactory<String, CorePayKafkaModel> kafkaListenerContainerFactoryReward(ConsumerFactory<String, CorePayKafkaModel> consumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, CorePayKafkaModel> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);
         factory.setConcurrency(1);

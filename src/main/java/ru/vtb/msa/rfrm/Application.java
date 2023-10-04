@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import ru.vtb.msa.rfrm.integration.internalkafka.BootstrapKafkaProperties;
+//import ru.vtb.msa.rfrm.integration.internalkafka.BootstrapKafkaProperties;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class, QuartzEndpointAutoConfiguration.class,
         DataSourceAutoConfiguration.class })
@@ -19,7 +19,7 @@ import ru.vtb.msa.rfrm.integration.internalkafka.BootstrapKafkaProperties;
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableRetry
 @EnableScheduling
-@EnableConfigurationProperties(value = {BootstrapKafkaProperties.class})
+//@EnableConfigurationProperties(value = {BootstrapKafkaProperties.class})
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
