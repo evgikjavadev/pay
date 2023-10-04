@@ -156,8 +156,6 @@ pay:
       group-id: "pay"
     topic:
       rfrm_core_payment_order: ${RFRM_CORE_PAYMENT_ORDER}
-#      rfrm_pay_function_result_reward: ${RFRM_PAY_FUNCTION_RESULT_REWARD}
-#      rfrm_pay_function_status_update_reward: ${RFRM_PAY_DUNCTION_STATUS_UPDATE_REWARD}
       rfrm_pay_result_reward: ${RFRM_PAY_RESULT_REWARD}
     max.poll.records: 10
     listener:
