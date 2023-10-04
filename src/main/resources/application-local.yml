@@ -124,8 +124,7 @@ feature.toggle:
   asynToggle:
     asynOn: true
 
-
-process.platformpay:
+pay:
   kafka:
     bootstrap:
       server: localhost:9092
@@ -134,8 +133,6 @@ process.platformpay:
       max.poll.records: 500
     topic:
       rfrm_core_payment_order: rfrm_core_payment_order
-#      rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
-#      rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
       rfrm_pay_result_reward: rfrm_pay_result_reward
 
     listener:
@@ -185,36 +182,6 @@ function:
       truststore-type: 'JKS'
       keystore-type: 'JKS'
 
-#kafka properties for rfrm_pay_result_reward (pay -> core)
-#coreresult:
-#  kafka:
-#    enable: true
-#    #размер batch
-#    max.poll.records: 10
-#    #Интервал черезготорый кафкаоткоючит consumer и начент пере балансировку 5 минт
-#    max.poll.interval.ms: 300000
-#    #паузара в работе consumer влиает на max.poll.interval = max.poll.interval + pause.work.consumer
-#    pause.work.consumer.ms: 600000
-#    bootstrap:
-#      server: "localhost:9092"
-#    consumer:
-#      group-id-pay: "pay-coreresult"
-#    topic: "rfrm_pay_result_reward"
-#    security:
-#      protocol: PLAINTEXT
-#    ssl:
-#      enabled: false
-#      truststore:
-#        location: ""
-#        password: ""
-#      keystore:
-#        location: ""
-#        password: ""
-#      key:
-#        password: ""
-#      truststore-type: 'JKS'
-#      keystore-type: 'JKS'
-
 
 kafkalocal:
   bootstrap-address: "localhost:29092"
@@ -251,3 +218,25 @@ data.event:
         identification:
           algorithm: ""
 
+# настройки для кафки топика core -> pay, взято из Core
+core:
+  kafka:
+    enable: true
+    max.poll.records: 1
+    bootstrap:
+      server: localhost:9092
+    consumer:
+      group-id: "pay"
+    topic: rfrm_core_payment_order
+    ssl:
+      enabled: false
+      truststore:
+        location: ""
+        password: ""
+      keystore:
+        location: ""
+        password: ""
+      key:
+        password: ""
+      truststore-type: 'JKS'
+      keystore-type: 'JKS'

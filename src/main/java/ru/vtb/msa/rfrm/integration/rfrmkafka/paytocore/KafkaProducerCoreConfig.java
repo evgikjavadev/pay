@@ -1,4 +1,4 @@
-package ru.vtb.msa.rfrm.integration.rfrmkafka.forcore;
+package ru.vtb.msa.rfrm.integration.rfrmkafka.paytocore;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
@@ -10,9 +10,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreLinkModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
 
 import java.util.Map;
 import java.util.Objects;
@@ -23,71 +25,71 @@ public class KafkaProducerCoreConfig {
     private static final String SECURITY_PROTOCOL = "security.protocol";
 //    @Value("${process.platformpay.kafka.topic.rfrm_pay_result_reward}")
 //    private String topic;
-    @Value("${process.platformpay.kafka.bootstrap.server}")
+    @Value("${pay.kafka.bootstrap.server}")
     private String servers;
-    @Value("${process.platformpay.kafka.max.partition.fetch.bytes:1048576}")
+    @Value("${pay.kafka.max.partition.fetch.bytes:1048576}")
     private String maxPartitionFetchBytes;
-    @Value("${process.platformpay.kafka.max.poll.records:500}")
+    @Value("${pay.kafka.max.poll.records:500}")
     private String maxPollRecords;
-    @Value("${process.platformpay.kafka.max.poll.interval.ms:300000}")
+    @Value("${pay.kafka.max.poll.interval.ms:300000}")
     private String maxPollIntervalsMs;
 
     // для организации "SSL":
-    @Value("${process.platformpay.kafka.security.protocol:}")
+    @Value("${pay.kafka.security.protocol:}")
     private String securityProtocol;
 
     // При securityProtocol = "SSL" обязательны:
-    @Value("${process.platformpay.kafka.ssl.endpoint.identification.algorithm:}")
+    @Value("${pay.kafka.ssl.endpoint.identification.algorithm:}")
     private String sslEendpointIdentificationAlgorithm;
-    @Value("${process.platformpay.kafka.ssl.truststore.location:}")
+    @Value("${pay.kafka.ssl.truststore.location:}")
     private String sslTruststoreLocation;
-    @Value("${process.platformpay.kafka.ssl.truststore.password:}")
+    @Value("${pay.kafka.ssl.truststore.password:}")
     private String sslTruststorePassword;
-    @Value("${process.platformpay.kafka.ssl.keystore.location:}")
+    @Value("${pay.kafka.ssl.keystore.location:}")
     private String sslKeystoreLocation;
-    @Value("${process.platformpay.kafka.ssl.keystore.password:}")
+    @Value("${pay.kafka.ssl.keystore.password:}")
     private String sslKeystorePassword;
-    @Value("${process.platformpay.kafka.ssl.key.password:}")
+    @Value("${pay.kafka.ssl.key.password:}")
     private String sslKeyPassword;
 
     // При securityProtocol = "SSL" необязательны:
-    @Value("${process.platformpay.kafka.ssl.cipher.suites:}")
+    @Value("${pay.kafka.ssl.cipher.suites:}")
     private String sslCipherSuites;
-    @Value("${process.platformpay.kafka.ssl.enabled.protocols:}")
+    @Value("${pay.kafka.ssl.enabled.protocols:}")
     private String sslEnabledProtocols;
-    @Value("${process.platformpay.kafka.ssl.keymanager.algorithm:}")
+    @Value("${pay.kafka.ssl.keymanager.algorithm:}")
     private String sslKeymanagerAlgorithm;
-    @Value("${process.platformpay.kafka.ssl.keystore.type:}")
+    @Value("${pay.kafka.ssl.keystore.type:}")
     private String sslKeystoreType;
-    @Value("${process.platformpay.kafka.ssl.protocol:}")
+    @Value("${pay.kafka.ssl.protocol:}")
     private String sslProtocol;
-    @Value("${process.platformpay.kafka.ssl.provider:}")
+    @Value("${pay.kafka.ssl.provider:}")
     private String sslProvider;
-    @Value("${process.platformpay.kafka.ssl.secure.random.implementation:}")
+    @Value("${pay.kafka.ssl.secure.random.implementation:}")
     private String sslSecureRandomImplementation;
-    @Value("${process.platformpay.kafka.ssl.trustmanager.algorithm:}")
+    @Value("${pay.kafka.ssl.trustmanager.algorithm:}")
     private String sslTrustmanagerAlgorithm;
-    @Value("${process.platformpay.kafka.ssl.truststore-type:}")
+    @Value("${pay.kafka.ssl.truststore-type:}")
     private String sslTruststoreType;
 
     @Bean
-    public ProducerFactory<String, PayCoreLinkModel> producerFactoryCore(KafkaProperties kafkaProp) {
+    public ProducerFactory<String, PayCoreKafkaModel> producerFactoryCore(KafkaProperties kafkaProp) {
         Map<String, Object> props = kafkaProp.buildProducerProperties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         setSecurityProps(props);
         return new DefaultKafkaProducerFactory<>(props);
     }
 
     @Bean
-    public KafkaResultRewardProducer producer(KafkaTemplate template) {
-        //template.setDefaultTopic(topic);
+    public KafkaResultRewardProducer producer(@Qualifier("kafkaTemplateToCore") KafkaTemplate template) {
+        template.setDefaultTopic("rfrm_pay_result_reward");    //todo  вынести топик
         return new KafkaResultRewardProducer(template);
     }
 
-    @Bean
-    public KafkaTemplate<String, PayCoreLinkModel> kafkaTemplate(@Qualifier("producerFactoryCore") ProducerFactory<String, PayCoreLinkModel> producerFactory) {
+    @Bean("kafkaTemplateToCore")
+    public KafkaTemplate<String, PayCoreKafkaModel> kafkaTemplate(@Qualifier("producerFactoryCore") ProducerFactory<String, PayCoreKafkaModel> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 

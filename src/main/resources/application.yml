@@ -147,7 +147,7 @@ audit-events:
         title: "Название ошибочного сообщени"
         messageTemplate: "Произошла ошибка: + error.message"
 
-process.platformpay:
+pay:
   kafka:
     enable: ${PROCES_PALTF_ENABLE_PAY:false}
     bootstrap:
@@ -203,5 +203,28 @@ function:
         password: ${STORE_PASSWORD_PAY}
       key:
         password: ${STORE_PASSWORD_PAY}
+      truststore-type: 'JKS'
+      keystore-type: 'JKS'
+
+# настройки для кафки топика core -> pay, взято из Core
+core:
+  kafka:
+    enable: ${PAY_ENABLE:true}
+    max.poll.records: 1
+    bootstrap:
+      server: ${PAY_KAFKA_SERVER:d5rfrm-kfc001lk.corp.dev.vtb:9092}
+    consumer:
+      group-id: "pay"
+    topic: ${PAY_TOPIC:rfrm_core_payment_order}
+    ssl:
+      enabled: true
+      truststore:
+        location: ${PATH_TRUSTSTORE}
+        password: ${STORE_PASSWORD}
+      keystore:
+        location: ${PATH_KEYSTORE}
+        password: ${STORE_PASSWORD}
+      key:
+        password: ${STORE_PASSWORD}
       truststore-type: 'JKS'
       keystore-type: 'JKS'

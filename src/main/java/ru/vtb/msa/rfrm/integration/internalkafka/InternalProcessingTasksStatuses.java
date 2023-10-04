@@ -8,12 +8,11 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.forcore.KafkaResultRewardProducer;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreLinkModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.batch.ActionEntPaymentTaskRepo;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
 
 /** Сценарий обработки статусов заданий на оплату */
 @RequiredArgsConstructor
-@Component
+//@Component
 @Slf4j
 public class InternalProcessingTasksStatuses {
     @Value("${process.platformpay.kafka.topic.rfrm_pay_function_status_update_reward}")
@@ -85,7 +84,7 @@ public class InternalProcessingTasksStatuses {
             entPaymentTaskActions.updateProcessedBPaymentTaskByRewardId(task.getRewardId());
 
             // Соберем объект для отправки в топик rfrm_pay_result_reward (Core service), указав reward_id = ent_payment_task.reward_id, status=ent_payment_task.status
-            PayCoreLinkModel coreLinkModel = getPayCoreLinkModel(task.getRewardId(), task.getStatus());
+            PayCoreKafkaModel coreLinkModel = getPayCoreLinkModel(task.getRewardId(), task.getStatus());
 
             // Отправить сообщение в топик rfrm_pay_result_reward (Core service)
             kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
@@ -108,21 +107,21 @@ public class InternalProcessingTasksStatuses {
         producer.close();
     }
 
-    private static PayCoreLinkModel getPayCoreLinkModel(Integer rewardId, Integer status) {
+    private static PayCoreKafkaModel getPayCoreLinkModel(Integer rewardId, Integer status) {
 
         // status_description = Если ent_payment_task.status = 30, то привести к строке (SELECT description FROM dct_status_details WHERE status_details_code = 203),
         // иначе - поле не отправлять
 
         if (status.equals(DctTaskStatuses.STATUS_REJECTED.getStatus())) {
             String description = DctStatusDetails.ERR_REQUIREMENTS.getDescription();
-            return PayCoreLinkModel
+            return PayCoreKafkaModel
                     .builder()
                     .rewardId(rewardId)
                     .status(status)
                     .statusDescription(description)
                     .build();
         } else {
-            return PayCoreLinkModel
+            return PayCoreKafkaModel
                     .builder()
                     .rewardId(rewardId)
                     .status(status)

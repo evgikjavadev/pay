@@ -16,14 +16,14 @@ import java.util.Properties;
 @Component
 public class KafkaInternalConfigProperties {
 
-    @Value("${process.platformpay.kafka.bootstrap.server}")
+    @Value("${pay.kafka.bootstrap.server}")
     private String bootstrapServers;
 
     public Properties setInternalProducerProperties() {
 
         Properties properties = new Properties();
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.put("group.id", "${process.platformpay.kafka.consumer.group-id}");
+        properties.put("group.id", "${pay.kafka.consumer.group-id}");
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 

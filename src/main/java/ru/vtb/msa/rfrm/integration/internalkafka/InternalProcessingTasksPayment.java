@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /** Класс Сценария обработки новых заданий на оплату */
-@Component
+//@Component
 @RequiredArgsConstructor
 @Slf4j
 public class InternalProcessingTasksPayment {

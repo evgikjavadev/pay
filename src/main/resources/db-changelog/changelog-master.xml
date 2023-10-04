@@ -9,7 +9,7 @@
     </changeSet>
 
     <changeSet id="change_desc_field" author="VTB4085285/VasilenkoEV">
-        <sqlFile encoding="utf8" path="src/main/resources/db-changelog/сhangelog/change_desc_field.sql"/>
+        <sqlFile encoding="utf8" path="src/main/resources/db-changelog/changelog/change_desc_field.sql"/>
     </changeSet>
 
 </databaseChangeLog>
