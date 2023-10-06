@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class KafkaInternalConsumerTask {
     @Value("${function.kafka.topic.rfrm_pay_function_status_update_reward}")
     private String rfrm_pay_function_status_update_reward;
-    @Value("${ms.properties.findSizeApplication}")
+    @Value("${findSizeApplication}")
     private Integer findSizeApplication;
     @Value("${sleep-task-status}")
     private Integer sleepMs;
