@@ -208,7 +208,7 @@ core:
     enable: ${PAY_ENABLE:true}
     max.poll.records: 1
     bootstrap:
-      server: ${PAY_KAFKA_SERVER:d5rfrm-kfc001lk.corp.dev.vtb:9092}
+      server: ${PROCES_PALTF_KAFKA_SERVER_PAY}
     consumer:
       group-id: "pay"
     topic: ${PAY_TOPIC:rfrm_core_payment_order}
