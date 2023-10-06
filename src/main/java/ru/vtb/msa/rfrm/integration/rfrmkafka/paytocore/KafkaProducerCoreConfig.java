@@ -23,8 +23,8 @@ import java.util.Objects;
 public class KafkaProducerCoreConfig {
 
     private static final String SECURITY_PROTOCOL = "security.protocol";
-//    @Value("${process.platformpay.kafka.topic.rfrm_pay_result_reward}")
-//    private String topic;
+    @Value("${pay.kafka.topic.rfrm_pay_result_reward}")
+    private String rfrm_pay_result_reward;
     @Value("${pay.kafka.bootstrap.server}")
     private String servers;
     @Value("${pay.kafka.max.partition.fetch.bytes:1048576}")
@@ -83,13 +83,13 @@ public class KafkaProducerCoreConfig {
     }
 
     @Bean
-    public KafkaResultRewardProducer producer(@Qualifier("kafkaTemplateToCore") KafkaTemplate<String, PayCoreKafkaModel> template) {
-        template.setDefaultTopic("rfrm_pay_result_reward");
+    public KafkaResultRewardProducer producer(@Qualifier("kafkaTemplatePayToCore") KafkaTemplate<String, PayCoreKafkaModel> template) {
+        template.setDefaultTopic(rfrm_pay_result_reward);
         return new KafkaResultRewardProducer(template);
     }
 
-    @Bean("kafkaTemplateToCore")
-    public KafkaTemplate<String, PayCoreKafkaModel> kafkaTemplate(@Qualifier("producerFactoryCore") ProducerFactory<String, PayCoreKafkaModel> producerFactory) {
+    @Bean
+    public KafkaTemplate<String, PayCoreKafkaModel> kafkaTemplatePayToCore(@Qualifier("producerFactoryCore") ProducerFactory<String, PayCoreKafkaModel> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 

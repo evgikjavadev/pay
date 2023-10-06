@@ -156,4 +156,19 @@ public class ControllerTest {
         return "Object sent to topic rfrm_pay_function_result_reward successfully!";
     }
 
+    /** Тест ПРОДЮСЕРА отправки объекта в топик rfrm_pay_result_reward */
+    @GetMapping("/send_to_rfrm_pay_result_reward")
+    public String sendObjectToRfrmPayResultReward() {
+        PayCoreKafkaModel object = PayCoreKafkaModel
+                .builder()
+                .rewardId(1234567)
+                .status(30)
+                .statusDescription("Description status ... ")
+                .build();
+
+        kafkaResultRewardProducer.sendToResultReward(object);
+
+        return "Object to topic rfrm_pay_result_reward sent successfully!";
+    }
+
 }

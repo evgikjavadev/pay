@@ -15,7 +15,7 @@ public class KafkaResultRewardProducer {
         template.flush();
     }
 
-//    public void sendListHistory(List<PayCoreLinkModel> obj) {       //todo решить будет ли использован List
+//    public void sendListHistory(List<PayCoreLinkModel> obj) {
 //        obj.stream().map(e -> template.sendDefault(obj)).count();
 //        template.flush();
 //    }
