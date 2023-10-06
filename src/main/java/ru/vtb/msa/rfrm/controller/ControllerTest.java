@@ -11,9 +11,12 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ru.vtb.msa.rfrm.integration.kafkainternal.KafkaInternalProducer;
+import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
+import ru.vtb.msa.rfrm.integration.util.enums.Statuses;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
 import java.math.BigDecimal;
@@ -26,10 +29,15 @@ import java.util.*;
 public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
     private final KafkaResultRewardProducer kafkaResultRewardProducer;
+
+    private final KafkaInternalProducer kafkaInternalProducer;
+
 //    private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
 //    private final InternalProcessingTasksPayment internalProcessingTasksPayment;
     @Value("${core.kafka.topic}")
     private String rfrm_core_payment_order;
+    @Value("function.kafka.topic.rfrm_pay_function_result_reward")
+    private String rfrm_pay_function_result_reward;
     @Value("${core.kafka.bootstrap.server}")
     private String bootstrapServers;
     private static final UUID questionnaireId = UUID.randomUUID();
@@ -43,7 +51,7 @@ public class ControllerTest {
 
 
     /**
-     * Отправляем тестовый объект в топик rfrm_core_payment_order (Core), тестируем consumer в Pay
+     * Отправляем тестовый объект в топик rfrm_core_payment_order (Core), ТЕСТИРУЕМ CONSUMER в Pay
      * */
     @GetMapping("/publish")
     public String publishMessage() {
@@ -77,6 +85,21 @@ public class ControllerTest {
         return "Object published in topic rfrm_core_payment_order successfully!";
     }
 
+    /** send test object using app to topic for core */
+    @GetMapping("/send_to_core_order_using_app")
+    public String sendObjectToRfrmCorePaymentOrder() {
+        PayCoreKafkaModel payCoreKafkaModel = PayCoreKafkaModel
+                .builder()
+                .status(20)
+                .rewardId(124684648)
+                .statusDescription("Status description ... ")
+                .build();
+
+        kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
+
+        return "Object to topic rfrm_core_payment_order sent! ";
+    }
+
     private CorePayKafkaModel getTestQuestionnairesKafkaModel() {
         Random rand = new Random();
 
@@ -103,19 +126,34 @@ public class ControllerTest {
         return "Test tasks saved successfully";
     }
 
-    /** Собираем и отправляем тестовый объект в топик rfrm_pay_result_reward */
-    @GetMapping("/sendtotopicresultreward")
-    public String sendObjectFromPayToCore() {
-        PayCoreKafkaModel payCoreKafkaModelTest = PayCoreKafkaModel
+    /** Собираем и отправляем тестовый объект в внутренний топик rfrm_pay_function_result_reward */
+    @GetMapping("/send_to_rfrm_pay_function_result_reward")
+    public String sendInternalMessageToFunctionResultReward() {
+        InternalMessageModel functionResultReward = InternalMessageModel
                 .builder()
-                .rewardId(21564864)
-                .status(30)
-                .statusDescription("Описание статуса для 30")
+                .status(Statuses.COMPLETED.name())
+                .functionName("function_result_reward")
+                .timeStamp(LocalDateTime.now())
                 .build();
 
-        kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModelTest);
+        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", functionResultReward);
 
-        return "Object sent successfully!";
+        return "Object sent to topic rfrm_pay_function_result_reward successfully!";
+    }
+
+    /** Проверка ПРОДЮСЕРА для отправки в топик rfrm_pay_function_status_update_reward */
+    @GetMapping("/send_to_rfrm_pay_function_status_update_reward")
+    public String sendInternalMessageToRfrmPayFunctionStatusUpdatereward() {
+        InternalMessageModel functionResultReward = InternalMessageModel
+                .builder()
+                .status(Statuses.COMPLETED.name())
+                .functionName("function_status_update_reward")
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_status_update_reward", functionResultReward);
+
+        return "Object sent to topic rfrm_pay_function_result_reward successfully!";
     }
 
 }

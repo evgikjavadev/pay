@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -79,7 +80,7 @@ public class KafkaCoreConfig {
     private String sslTruststoreType;
 
     @Bean
-    public ConsumerFactory<String, CorePayKafkaModel> consumerFactory(KafkaProperties kafkaProp) {
+    public ConsumerFactory<String, CorePayKafkaModel> consumerFactoryCore(KafkaProperties kafkaProp) {
         Map<String, Object> props = kafkaProp.buildConsumerProperties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
@@ -102,7 +103,7 @@ public class KafkaCoreConfig {
     }
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, CorePayKafkaModel> kafkaListenerContainerFactoryReward(ConsumerFactory<String, CorePayKafkaModel> consumerFactory) {
+    ConcurrentKafkaListenerContainerFactory<String, CorePayKafkaModel> kafkaListenerContainerFactoryReward(@Qualifier("consumerFactoryCore") ConsumerFactory<String, CorePayKafkaModel> consumerFactory) {
         ConcurrentKafkaListenerContainerFactory<String, CorePayKafkaModel> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
         factory.setBatchListener(true);

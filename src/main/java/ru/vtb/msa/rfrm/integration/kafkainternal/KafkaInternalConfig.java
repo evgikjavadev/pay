@@ -1,8 +1,7 @@
-package ru.vtb.msa.rfrm.integration.internalkafka;
+package ru.vtb.msa.rfrm.integration.kafkainternal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -11,21 +10,27 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.*;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
+import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
+import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
+import ru.vtb.msa.rfrm.processingDatabase.batch.ActionEntPaymentTaskRepo;
+import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
+import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 
+/** Класс конфигурации кафки для внутренних топиков */
 @Slf4j
-@Component
+@Configuration
 public class KafkaInternalConfig {
     private static final String SECURITY_PROTOCOL = "security.protocol";
     public static final int COUNT_THREAD = 1;
@@ -90,19 +95,82 @@ public class KafkaInternalConfig {
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel");
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel");
+        //props.put(JsonDeserializer.TRUSTED_PACKAGES, "ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel");
         setSecurityProps(props);
         return new DefaultKafkaProducerFactory<>(props);
     }
 
-    @Bean("kafkaTemplateInternal")
-    public KafkaTemplate<String, InternalMessageModel> kafkaTemplate(@Qualifier("producerInternalFactory") ProducerFactory<String, InternalMessageModel> producerFactory) {
+    @Bean
+    public KafkaTemplate<String, InternalMessageModel> kafkaTemplateInternal(@Qualifier("producerInternalFactory") ProducerFactory<String, InternalMessageModel> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 
     @Bean
     public KafkaInternalProducer produceInternal(@Qualifier("kafkaTemplateInternal") KafkaTemplate<String, InternalMessageModel> kafkaTemplate) {
         return new KafkaInternalProducer(kafkaTemplate);
+    }
+
+    @Bean
+    public ConsumerFactory<String, InternalMessageModel> consumerFactoryInternal(KafkaProperties kafkaProp) {
+        Map<String, Object> props = kafkaProp.buildConsumerProperties();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel");
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeout);
+        props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, maxPartitionFetchBytes);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollIntervalsMs);
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, Boolean.FALSE);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        setSecurityProps(props);
+
+        DefaultKafkaConsumerFactory<String, InternalMessageModel> factory = new DefaultKafkaConsumerFactory<>(props);
+        factory.setKeyDeserializer(new StringDeserializer());
+        factory.setValueDeserializer(new JsonDeserializer<>());
+
+        return factory;
+    }
+
+    @Bean
+    ConcurrentKafkaListenerContainerFactory<String, InternalMessageModel> kafkaListenerInternalResult(ConsumerFactory<String, InternalMessageModel> consumerFactory) {
+
+        ConcurrentKafkaListenerContainerFactory<String, InternalMessageModel> factory = kafkaListenerContainerFactoryInternal(consumerFactory);
+
+        return factory;
+    }
+
+    @Bean
+    KafkaInternalConsumer consumerFunction(EntPaymentTaskRepository entPaymentTaskRepository, ActionEntPaymentTaskRepo actionEntPaymentTaskRepo,
+                                           ServiceAccounts serviceAccounts, KafkaInternalProducer kafkaInternalProducer) {
+        return new KafkaInternalConsumer(entPaymentTaskRepository, actionEntPaymentTaskRepo, serviceAccounts, kafkaInternalProducer);
+    }
+
+    @Bean
+    KafkaInternalConsumerTask consumerFunctionUpdate(EntPaymentTaskActions entPaymentTaskActions, KafkaResultRewardProducer kafkaResultRewardProducer,
+                                                     EntPaymentTaskRepository entPaymentTaskRepository, ActionEntPaymentTaskRepo actionEntPaymentTaskRepo,
+                                                     KafkaInternalProducer kafkaInternalProducer) {
+        return new KafkaInternalConsumerTask(entPaymentTaskActions, kafkaResultRewardProducer, entPaymentTaskRepository, actionEntPaymentTaskRepo, kafkaInternalProducer);
+    }
+
+    @Bean
+    public static ConcurrentKafkaListenerContainerFactory<String, InternalMessageModel> kafkaListenerContainerFactoryInternal(
+            @Qualifier("consumerFactoryInternal") ConsumerFactory<String, InternalMessageModel> consumerFactory) {
+
+        ConcurrentKafkaListenerContainerFactory<String, InternalMessageModel> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
+        factory.setBatchListener(false);
+        factory.setConcurrency(1);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        //factory.getContainerProperties().setAsyncAcks(true);
+        factory.getContainerProperties().setPollTimeout(500);
+        factory.getContainerProperties().setMicrometerEnabled(true);
+        // factory.getContainerProperties().setMicrometerTags();
+
+        return factory;
     }
 
     private void setSecurityProps(Map<String, Object> props) {

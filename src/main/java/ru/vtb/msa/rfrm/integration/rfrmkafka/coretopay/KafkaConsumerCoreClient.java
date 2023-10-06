@@ -27,7 +27,7 @@ public class KafkaConsumerCoreClient {
     public void listenRfrmCore(@Payload List<CorePayKafkaModel> messageList, Acknowledgment ack,
                                @Header(KafkaHeaders.RECEIVED_PARTITION_ID) Integer partition,
                                @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
-                               @Header(KafkaHeaders.OFFSET) int offsets) throws InterruptedException {
+                               @Header(KafkaHeaders.OFFSET) int offsets) {
         log.info("Start rfrm-pay processing topic = {}, partition = {}, messages = {}", topic, partition, messageList);
 
         try {

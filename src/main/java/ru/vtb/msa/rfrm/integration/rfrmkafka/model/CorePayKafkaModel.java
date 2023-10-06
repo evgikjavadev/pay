@@ -1,5 +1,6 @@
 package ru.vtb.msa.rfrm.integration.rfrmkafka.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -26,6 +27,7 @@ public class CorePayKafkaModel {
     @JsonProperty("source_qs")
     private String sourceQs;
     @JsonProperty("create_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createDate;
 
 }
