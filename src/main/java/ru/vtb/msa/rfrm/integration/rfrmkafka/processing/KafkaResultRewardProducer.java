@@ -8,7 +8,7 @@ import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 @Slf4j
 @RequiredArgsConstructor
 public class KafkaResultRewardProducer {
-    private final KafkaTemplate template;
+    private final KafkaTemplate<String, PayCoreKafkaModel> template;
 
     public void sendToResultReward(PayCoreKafkaModel obj) {
         template.sendDefault(obj);

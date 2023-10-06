@@ -2,7 +2,7 @@ server:
   port: 8080
 
 #Количество заявок в поиске
-ms.properties.findSizeApplication: 1
+findSizeApplication: 1
 
 sleep-task-payment: 10000
 sleep-task-status: 10000
@@ -37,9 +37,6 @@ spring:
 
   liquibase:
     enabled: false
-    
-kafkalocal:
-  bootstrap-address: "localhost:29092"
 
 #Трассировка
 ru:
@@ -185,7 +182,8 @@ function:
     bootstrap:
       server: ${FUNCTION_KAFKA_SERVER}
     consumer:
-      group-id: "pay"
+      group-id: pay
+      group-id-res: function-pay-result
     topic:
       rfrm_pay_function_result_reward: ${RFRM_PAY_FUNCTION_RESULT_REWARD:rfrm_pay_function_result_reward}
       rfrm_pay_function_status_update_reward: ${RFRM_PAY_DUNCTION_STATUS_UPDATE_REWARD:rfrm_pay_function_status_update_reward}

@@ -1,5 +1,6 @@
-package ru.vtb.msa.rfrm.integration.internalkafka.model;
+package ru.vtb.msa.rfrm.integration.kafkainternal.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -16,6 +17,7 @@ public class InternalMessageModel {
     @JsonProperty("status")
     private String status;
     @JsonProperty("timestamp")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timeStamp;
 
 }

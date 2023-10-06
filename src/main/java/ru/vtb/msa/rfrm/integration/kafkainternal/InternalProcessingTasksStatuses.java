@@ -1,29 +1,15 @@
-package ru.vtb.msa.rfrm.integration.internalkafka;
+package ru.vtb.msa.rfrm.integration.kafkainternal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
-import ru.vtb.msa.rfrm.integration.internalkafka.model.InternalMessageModel;
+import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.batch.ActionEntPaymentTaskRepo;
-import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
-import ru.vtb.msa.rfrm.processingDatabase.model.DctTaskStatuses;
-import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** Сценарий обработки статусов заданий на оплату */
 @RequiredArgsConstructor

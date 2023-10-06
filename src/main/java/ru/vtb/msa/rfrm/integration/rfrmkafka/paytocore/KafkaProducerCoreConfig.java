@@ -83,8 +83,8 @@ public class KafkaProducerCoreConfig {
     }
 
     @Bean
-    public KafkaResultRewardProducer producer(@Qualifier("kafkaTemplateToCore") KafkaTemplate template) {
-        template.setDefaultTopic("rfrm_pay_result_reward");    //todo  вынести топик
+    public KafkaResultRewardProducer producer(@Qualifier("kafkaTemplateToCore") KafkaTemplate<String, PayCoreKafkaModel> template) {
+        template.setDefaultTopic("rfrm_pay_result_reward");
         return new KafkaResultRewardProducer(template);
     }
 

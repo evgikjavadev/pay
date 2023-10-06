@@ -3,8 +3,9 @@ server:
 
 ms.properties.infoSystemCode: RFRM
 ms.properties.infoSystemId: 1800
+
 #Количество заявок в поиске
-ms.properties.findSizeApplication: 1
+findSizeApplication: 1
 
 sleep-task-payment: 10000
 sleep-task-status: 10000
@@ -157,16 +158,17 @@ function:
   kafka:
     enable: true
     #Интервал черезготорый кафкаоткоючит consumer и начент пере балансировку
-    max.poll.interval.ms: 300000
+    max.poll.interval.ms: 3000
     #паузара в работе consumer влиает на max.poll.interval = max.poll.interval + pause.work.consumer
     pause.work.consumer.ms: 0
     bootstrap:
-      server: "localhost:9092"
+      server: localhost:9092
     consumer:
-      group-id: "pay"
+      group-id: function-pay
+      group-id-res: function-pay-result
     topic:
-      rfrm_pay_function_result_reward: "rfrm_pay_function_result_reward"
-      rfrm_pay_function_status_update_reward: "rfrm_pay_function_status_update_reward"
+      rfrm_pay_function_result_reward: rfrm_pay_function_result_reward
+      rfrm_pay_function_status_update_reward: rfrm_pay_function_status_update_reward
     security:
       protocol: PLAINTEXT
     ssl:
@@ -181,10 +183,6 @@ function:
         password: ""
       truststore-type: 'JKS'
       keystore-type: 'JKS'
-
-
-kafkalocal:
-  bootstrap-address: "localhost:29092"
 
 #      consumer:
 #        properties:
@@ -226,7 +224,7 @@ core:
     bootstrap:
       server: localhost:9092
     consumer:
-      group-id: "pay"
+      group-id: pay
     topic: rfrm_core_payment_order
     ssl:
       enabled: false
