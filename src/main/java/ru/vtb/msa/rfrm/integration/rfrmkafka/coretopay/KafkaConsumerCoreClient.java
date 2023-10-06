@@ -21,7 +21,7 @@ public class KafkaConsumerCoreClient {
     //private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
     //private final InternalProcessingTasksPayment internalProcessingTasksPayment;
 
-    @KafkaListener(id = "${core.kafka.consumer.group-id}",
+    @KafkaListener(id = "${core.kafka.consumer.group-id-core}",
                    topics = "${core.kafka.topic}",
                    containerFactory = "kafkaListenerContainerFactoryReward")
     public void listenRfrmCore(@Payload List<CorePayKafkaModel> messageList, Acknowledgment ack,

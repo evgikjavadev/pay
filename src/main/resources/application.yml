@@ -210,7 +210,7 @@ core:
     bootstrap:
       server: ${PROCES_PALTF_KAFKA_SERVER_PAY}
     consumer:
-      group-id: "pay"
+      group-id-core: pay-core
     topic: ${PAY_TOPIC:rfrm_core_payment_order}
     ssl:
       enabled: true
