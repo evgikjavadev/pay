@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
 import ru.vtb.msa.rfrm.processingDatabase.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
@@ -41,11 +42,8 @@ public class ServiceAccounts {
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
     private final HikariDataSource hikariDataSource;
-    private final EntPaymentTaskRepository entPaymentTaskRepository;
-    @Value("${pay.kafka.bootstrap.server}")
-    private String bootstrapServers;
-    @Value("${pay.kafka.topic.rfrm_pay_result_reward}")
-    private String rfrm_pay_result_reward;
+    //private final EntPaymentTaskRepository entPaymentTaskRepository;
+    private final KafkaResultRewardProducer kafkaResultRewardProducer;
 
     @SneakyThrows
     public void getClientAccounts(Long mdmIdFromKafka) {
@@ -264,7 +262,7 @@ public class ServiceAccounts {
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
                 // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания,status=30, status_details_code=202
-                sendResultToKafka(payCoreKafkaModel);
+                kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
 
                 connection.commit();
 
@@ -293,7 +291,7 @@ public class ServiceAccounts {
                     );
 
             // собираем объект для отправки в топик rfrm_pay_result_reward содержащее id задания, status=30, status_details_code=201
-            PayCoreKafkaModel payCoreKafkaModel =
+            PayCoreKafkaModel payCoreKafkaModel1 =
                     createResultMessage(rewardId,
                             DctTaskStatuses.STATUS_REJECTED.getStatus(),
                             DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getDescription()
@@ -310,7 +308,7 @@ public class ServiceAccounts {
                 entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
                 // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201
-                sendResultToKafka(payCoreKafkaModel);
+                kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel1);
 
                 connection.commit();
 
@@ -327,20 +325,21 @@ public class ServiceAccounts {
 
     }
 
-    private void sendResultToKafka(PayCoreKafkaModel payCoreKafkaModel) {                         //todo  сделать нормальный producer
-        Properties properties = new Properties();
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
-
-        KafkaProducer<Object, PayCoreKafkaModel> kafkaProducer = new KafkaProducer<>(properties);
-
-        ProducerRecord<Object, PayCoreKafkaModel> producerRecord = new ProducerRecord<>(rfrm_pay_result_reward, payCoreKafkaModel);
-
-        kafkaProducer.send(producerRecord);
-        kafkaProducer.flush();
-        kafkaProducer.close();
-    }
+//    private void sendResultToKafka(PayCoreKafkaModel payCoreKafkaModel) {
+//
+//        Properties properties = new Properties();
+//        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+//        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+//        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
+//
+//        KafkaProducer<Object, PayCoreKafkaModel> kafkaProducer = new KafkaProducer<>(properties);
+//
+//        ProducerRecord<Object, PayCoreKafkaModel> producerRecord = new ProducerRecord<>(rfrm_pay_result_reward, payCoreKafkaModel);
+//
+//        kafkaProducer.send(producerRecord);
+//        kafkaProducer.flush();
+//        kafkaProducer.close();
+//    }
 
     private PayCoreKafkaModel createResultMessage(Integer rewardId, Integer status, String description) {
 
