@@ -21,7 +21,7 @@ public class InternalProcessingTasksStatuses {
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final KafkaResultRewardProducer kafkaResultRewardProducer;
     private final EntPaymentTaskRepository entPaymentTaskRepository;
-    @Value("${ms.properties.findSizeApplication}")
+    @Value("${findSizeApplication}")
     private Integer findSizeApplication;
     @Value("${sleep-task-status}")
     private Integer sleepMs;
