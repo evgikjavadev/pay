@@ -180,7 +180,7 @@ function:
     #паузара в работе consumer влиает на max.poll.interval = max.poll.interval + pause.work.consumer
     pause.work.consumer.ms: ${FUNCTION_PAUSE_WORK_CONSUMER:0}
     bootstrap:
-      server: ${FUNCTION_KAFKA_SERVER_PAY}
+      server: ${PROCES_PALTF_KAFKA_SERVER_PAY}
     consumer:
       group-id: pay
       group-id-res: function-pay-result
