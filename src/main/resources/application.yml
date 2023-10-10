@@ -120,8 +120,8 @@ logging:
     ru.vtb.msa.mdclogging: ${LOG_LEVEL}
 
 product-profile-fl-accounts:
-  url: ${EPA_IG_URL}
-  resource:  ${GET_RESOURCE} /portfolio/portfolio-agregator/portfolio/active
+  url: ${EPA_IG_URL:http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock}
+  resource:  ${GET_RESOURCE}/portfolio/portfolio-agregator/portfolio/active
   headers:
     X-INITIATOR-SERVICE: rfrm-pay
   retry:
