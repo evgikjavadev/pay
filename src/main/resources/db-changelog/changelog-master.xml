@@ -12,4 +12,8 @@
         <sqlFile encoding="utf8" path="src/main/resources/db-changelog/changelog/change_desc_field.sql"/>
     </changeSet>
 
+    <changeSet id="add_column_account_branch" author="VTB4085285/VasilenkoEV">
+        <sqlFile encoding="utf8" path="src/main/resources/db-changelog/changelog/add_column_account_branch.sql"/>
+    </changeSet>
+
 </databaseChangeLog>
