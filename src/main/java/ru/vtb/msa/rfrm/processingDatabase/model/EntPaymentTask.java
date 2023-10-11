@@ -46,7 +46,6 @@ public class EntPaymentTask {
     private Integer status;
 
     @Column("created_at")
-    @JsonFormat(pattern = "MM/dd/yyyy HH:mm:ss")
     private LocalDateTime createdAt;
 
     /** Система, в которой расположен счет клиента для оплаты вознаграждения */
