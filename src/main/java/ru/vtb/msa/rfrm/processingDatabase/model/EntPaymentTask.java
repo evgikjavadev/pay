@@ -1,6 +1,5 @@
 package ru.vtb.msa.rfrm.processingDatabase.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -68,6 +67,9 @@ public class EntPaymentTask {
 
     @Column("blocked_at")
     private LocalDateTime blockedAt;
+
+    @Column("account_branch")
+    private String accountBranch;
 
     public LocalDateTime getCreatedAt() {
         return LocalDateTime.now();

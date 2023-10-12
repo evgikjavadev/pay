@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.service.ProcessQuestionnairesService;
+import ru.vtb.msa.rfrm.service.ServiceAccountsInterface;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @Component
 public class KafkaConsumerCoreClient {
     private final ProcessQuestionnairesService service;
+    private final ServiceAccountsInterface serviceAccounts;
     //private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
     //private final InternalProcessingTasksPayment internalProcessingTasksPayment;
 
@@ -38,10 +40,15 @@ public class KafkaConsumerCoreClient {
             log.error(e.getMessage(), e.fillInStackTrace());
         }
 
+//        for (CorePayKafkaModel elem: messageList) {
+//            // получаем счета клиента из 1503 для каждого mdmId и rewardId
+//            serviceAccounts.getClientAccounts(elem.getMdmId(), elem.getRewardId());
+//
+//        }
+
         log.info("Finish rfrm-pay processing topic = {} partition = {}", topic, partition);
 
-
-        //internalProcessingTasksStatuses.processInternalKafkaStatus();   //todo решить по запуску внутренней кафки
+        //internalProcessingTasksStatuses.processInternalKafkaStatus();
         //internalProcessingTasksPayment.sendRunningMessageInternalTopic();
 
     }

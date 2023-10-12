@@ -128,22 +128,6 @@ product-profile-fl-accounts:
     count: 3
     duration: 2000
 
-audit-events:
-  auditEventCodeMetadataInfoList:
-    - event-code: "EXAMPLE_EVENT_CODE"
-      event-type: "Отправка"
-      business-object: "Название бизнес-объекта"
-      business-operation: "Название бизнес операции"
-      audit-event-start:
-        title: "Название стартового сообщения"
-        messageTemplate: "'Начало операции'"
-      audit-event-success:
-        title: "Название успешного сообщения"
-        messageTemplate: "Успешно завершено"
-      audit-event-failure:
-        title: "Название ошибочного сообщени"
-        messageTemplate: "Произошла ошибка: + error.message"
-
 pay:
   kafka:
     enable: ${PROCES_PALTF_ENABLE_PAY:false}

@@ -19,10 +19,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
-
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final QuestionnairesMapper mapper;
-
     private final EntPaymentTaskRepository entPaymentTaskRepository;
 
     @Override
@@ -39,7 +37,7 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
             // если поля в входящем объекте ок, то обогащаем объект дополнит. полями
             List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(modelList);
 
-            // проверяем есть ли в pay_payment_task объект с таким rewardId и сохраняем его
+            // проверяем есть ли в ent_payment_task объект с таким rewardId и сохраняем его
             checkAndInsertNewTaskToEntPaymentTask(entPaymentTasks);
         }
 
@@ -72,13 +70,9 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
 
             if (taskFromDb != null) {
                 log.warn("Задание с таким reward_id уже существует");
-
-            } else {
-                entPaymentTaskActions.insertPaymentTaskInDB(elem);
             }
-
+            entPaymentTaskActions.insertPaymentTaskInDB(elem);
         }
-
     }
 
 }

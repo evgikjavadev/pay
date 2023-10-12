@@ -1,6 +1,5 @@
 package ru.vtb.msa.rfrm.processingDatabase;
 
-import org.apache.kafka.common.metrics.internals.IntGaugeSuite;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 
 import java.util.List;
@@ -10,7 +9,7 @@ public interface EntPaymentTaskActions {
 
     List<EntPaymentTask> getPaymentTaskByMdmId(Long mdmId);
 
-    void updateAccountNumber(String accountNumber, String accountSystem, Long mdmId, Integer status);
+    void updateAccountNumber(String accountNumber, String accountSystem, Long mdmId, Integer status, String accountBranch);
 
     void updateStatusEntPaymentTaskByMdmId(Long mdmId, Integer status);
 

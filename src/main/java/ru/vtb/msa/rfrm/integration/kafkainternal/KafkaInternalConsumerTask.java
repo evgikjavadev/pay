@@ -85,7 +85,7 @@ public class KafkaInternalConsumerTask {
             // Установить для задачи blocked=0
             actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);
         }
-        Thread.sleep(sleepMs);
+        //Thread.sleep(sleepMs);
     }
 
     private void sendRunningMessageInternalTopic() {
