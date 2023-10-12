@@ -45,7 +45,7 @@ public class ControllerTest {
     @GetMapping("/getaccounts")
     public String getAccounts() {
 
-        serviceAccounts.getClientAccounts(5000015297L);
+        //serviceAccounts.getClientAccounts(5000015297L);
         return "Accounts for clients are received !";
     }
 

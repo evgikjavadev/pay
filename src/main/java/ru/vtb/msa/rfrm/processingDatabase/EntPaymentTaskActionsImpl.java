@@ -16,7 +16,7 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     public void insertPaymentTaskInDB(EntPaymentTask entPaymentTask) {
         String sql = "INSERT INTO ent_payment_task " +
                 "(reward_id, questionnaire_id, mdm_id, recipient_type, amount, status, created_at, account_system, account, source_qs, processed, blocked, blocked_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 entPaymentTask.getRewardId(),
@@ -51,9 +51,9 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
-    public void updateAccountNumber(String accountNumber, String accountSystem, Long mdmId, Integer status) {
-        String sql = "UPDATE ent_payment_task SET account = ?, account_system = ? WHERE mdm_id = ?";
-        jdbcTemplate.update(sql, accountNumber, accountSystem, mdmId);
+    public void updateAccountNumber(String accountNumber, String accountSystem, Long mdmId, Integer status, String accountBranch) {
+        String sql = "UPDATE ent_payment_task SET account = ?, account_system = ?, account_branch = ? WHERE mdm_id = ?";
+        jdbcTemplate.update(sql, accountNumber, accountSystem, accountBranch, mdmId);
     }
 
     @Override
@@ -68,50 +68,10 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
         jdbcTemplate.update(sql, status, rewardId);
     }
 
-//    @Override
-//    public List<EntPaymentTask> getEntPaymentTaskByProcessed(Boolean b) {
-//        String sql = "SELECT * FROM ent_payment_task WHERE processed = ?";
-//        return jdbcTemplate.query(
-//                sql,
-//                new Object[] {b},
-//                (rs, rowNum) -> {
-//                    EntPaymentTask task = new EntPaymentTask();
-//                    task.setRewardId(rs.getObject(11, Integer.class));
-//                    return task;
-//                });
-//    }
-
     @Override
     public void updateProcessedBPaymentTaskByRewardId(Integer rewardId) {
         String sql = "UPDATE ent_payment_task SET processed = ? WHERE reward_id = ?";
         jdbcTemplate.update(sql, true, rewardId);
     }
-
-//    @Override
-//    public List<Long> getEntPaymentTaskByStatus(Integer stat) {
-//        String sql = "SELECT * FROM ent_payment_task WHERE status = ?";
-//        return jdbcTemplate.query(
-//                sql,
-//                new Object[] {stat},
-//                (rs, rowNum) -> {
-//                    EntPaymentTask task = new EntPaymentTask();
-//                    task.setMdmId(rs.getObject("mdm_id", Long.class));
-//                    return task.getMdmId();
-//                });
-//    }
-
-//    @Override
-//    public List<EntPaymentTask> getRewardIdsByProcessAndBlocked(Integer limitx) {
-//        String sql = "SELECT * FROM ent_payment_task WHERE processed = false AND blocked = 0 ORDER BY blocked_at ASC limit limitx";
-//        return jdbcTemplate.query(
-//                sql,
-//                new Object[] {limit},
-//                (rs, rowNum) -> {
-//                    EntPaymentTask task = new EntPaymentTask();
-//                    task.setRewardId(rs.getObject(1, UUID.class));
-//                    return task;
-//                });
-//    }
-
 
 }

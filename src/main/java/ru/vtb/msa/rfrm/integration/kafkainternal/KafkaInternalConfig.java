@@ -97,6 +97,7 @@ public class KafkaInternalConfig {
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel");
         //props.put(JsonDeserializer.TRUSTED_PACKAGES, "ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel");
+        props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "20000");
         setSecurityProps(props);
         return new DefaultKafkaProducerFactory<>(props);
     }

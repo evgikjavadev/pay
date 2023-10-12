@@ -66,21 +66,18 @@ public class KafkaInternalConsumer {
 
         List<Integer> setRewardIdList = entPaymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
 
-        List<Long> mdmIdsList = entPaymentTaskList.stream().map(EntPaymentTask::getMdmId).collect(Collectors.toList());
-
         //Установить для задачи blocked=1 и blocked_at=now()
-        //actionEntPayTaskRepo.updateBlockByUUIDEqualOne(setRewardIdList);
         actionEntPaymentTaskRepo.updateBlockByRewardIdEqualOne(setRewardIdList);
 
-        for (Long mdmId: mdmIdsList ) {
-            // Вызов метода /portfolio/active 1503 для каждого mdmId
-            serviceAccounts.getClientAccounts(mdmId);
+        for (EntPaymentTask elem: entPaymentTaskList) {
+            // получаем счета клиента из 1503 для каждого mdmId и rewardId
+            serviceAccounts.getClientAccounts(elem.getMdmId(), elem.getRewardId());
         }
 
         // Установить для задачи blocked=0 и blocked_at=now()
         actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);
 
-        Thread.sleep(sleepMs);
+        //Thread.sleep(sleepMs);
     }
 
     private void sendRunningMessageInternalTopic() {

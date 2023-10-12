@@ -1,20 +1,10 @@
 package ru.vtb.msa.rfrm.service;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
 import ru.vtb.msa.rfrm.processingDatabase.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
@@ -26,33 +16,28 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Account;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
-import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ServiceAccounts {
+public class ServiceAccounts implements ServiceAccountsInterface {
     private final PersonClientAccounts personClientAccounts;
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
-    private final HikariDataSource hikariDataSource;
-    //private final EntPaymentTaskRepository entPaymentTaskRepository;
-    private final KafkaResultRewardProducer kafkaResultRewardProducer;
+    private final ProcessClientAccounts processClientAccounts;
 
     @SneakyThrows
-    public void getClientAccounts(Long mdmIdFromKafka) {
+    @Override
+    public void getClientAccounts(Long mdmIdFromKafka, Integer rewardId) {
 
         try {
             // получаем весь объект с данными счета клиента из 1503
             Response<?> personAccounts = personClientAccounts
                     .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
-            getAndPassParameters(personAccounts);
+            getAndPassParameters(personAccounts, mdmIdFromKafka, rewardId);
 
         } catch (HttpStatusException e) {
             HttpStatus status = e.getStatus();
@@ -80,27 +65,11 @@ public class ServiceAccounts {
                         .statusUpdatedAt(LocalDateTime.now())
                         .build();
 
-                Connection connection = null;
+                // обновляем табл. ent_payment_task
+                entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(elem.getRewardId(), DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus());
 
-                try {
-                    connection = hikariDataSource.getConnection();
-                    connection.setAutoCommit(false);
-
-                    // обновляем табл. ent_payment_task
-                    entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(elem.getRewardId(), DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus());
-
-                    // создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details_code=101
-                    entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    try {
-                        assert connection != null;
-                        connection.rollback();
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                }
+                // создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details_code=101
+                entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
             }
 
@@ -125,309 +94,45 @@ public class ServiceAccounts {
     }
 
     // в методе бполучаем нужные параметры и передаем их в обработку счета
-    private void getAndPassParameters(Response<?> personAccounts) {
-        // получаем номер счета в ответе от 1503
-        String personAccountNumber = getAccountNumber(personAccounts);
+    private void getAndPassParameters(Response<?> personAccounts, Long mdmId, Integer rewardId) {
 
-        // получаем currency в ответе от 1503
-        String currency = getCurrency(personAccounts);
-
-        // ищем accountSystem (getEntitySubSystems) в ответе от 1503
-        String accountSystem = getAccountSystem(personAccounts);
-
-        // получаем isArrested в ответе от 1503
-        Boolean isArrested = getArrested(personAccounts);
+        List<Account> accountList = new ArrayList<>(personAccounts.getBody().getAccounts().values());
+        Account masterAccount = findMasterAccountRub(accountList);
 
         // получаем значение result в ответе от 1503
         String result = personAccounts.getBody().getResult();
 
         // получаем mdmId из заголовков ответа от 1503
-        Long mdmId = getMdmId(personAccounts);
+        //Long mdmId = getMdmId(personAccounts);
 
-        handlePersonAccounts(personAccountNumber, currency, accountSystem, mdmId, isArrested, result);
-    }
+        processClientAccounts.processAccounts(masterAccount, result, mdmId, rewardId);
 
-    @SneakyThrows
-    private void handlePersonAccounts(String personAccountNumber,
-                                      String currency,
-                                      String accountSystem,
-                                      Long mdmId,
-                                      Boolean isArrested,
-                                      String result) {
-
-        // получаем из БД объекты с mdmId который пришел из 1503 и уже сохранен в БД
-        List<EntPaymentTask> listTasks = entPaymentTaskActions.getPaymentTaskByMdmId(mdmId);
-        Integer rewardId = listTasks.get(0).getRewardId();
-
-        Connection connection = null;
-
-        if (personAccountNumber != null
-                && currency.equals("RUB")
-                && isArrested.equals(false)) {
-
-            if (listTasks.size() == 1) {
-                // формируем объект для записи в табл. taskStatusHistory
-                EntTaskStatusHistory entTaskStatusHistory =
-                        createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null, rewardId);
-
-                try {
-                    connection = hikariDataSource.getConnection();
-                    connection.setAutoCommit(false);
-
-                    // Записать в БД для данного задания paymentTask.status=50
-                    entPaymentTaskActions.updateAccountNumber(
-                                    personAccountNumber,
-                                    accountSystem,
-                                    mdmId,
-                                    DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus()
-                            );
-
-                    // создать новую запись в таблице taskStatusHistory
-                    entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
-
-                    connection.commit();
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    try {
-                        assert connection != null;
-                        connection.rollback();
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        if (personAccountNumber == null || personAccountNumber.isEmpty()) {
-            // формируем объект для записи в табл. taskStatusHistory
-            EntTaskStatusHistory entTaskStatusHistory =
-                    createEntTaskStatusHistory(DctTaskStatuses.STATUS_REJECTED.getStatus(), null, rewardId);
-
-                try {
-                    connection = hikariDataSource.getConnection();
-                    connection.setAutoCommit(false);
-
-                    // изменяем статус задания на "отклонено" (paymentTask.status=30)
-                    entPaymentTaskActions
-                            .updateAccountNumber(
-                                    personAccountNumber,
-                                    accountSystem,
-                                    mdmId,
-                                    DctTaskStatuses.STATUS_REJECTED.getStatus()
-                            );
-
-                    // создать новую запись в таблице taskStatusHistory
-                    entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
-
-                    connection.commit();
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    try {
-                        assert connection != null;
-                        connection.rollback();
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-        }
-
-        if (personAccountNumber != null
-                && currency.equals("RUB")
-                && isArrested.equals(true)) {
-
-            // формируем данные для сохранения в БД ent_task_status_history
-            EntTaskStatusHistory entTaskStatusHistory = createEntTaskStatusHistory(
-                    DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                    DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getStatusDetailsCode(),
-                    rewardId
-            );
-
-            // собираем объект для отправки в топик rfrm_pay_result_reward содержащее id задания, status=30, status_description если 30
-            PayCoreKafkaModel payCoreKafkaModel =
-                    createResultMessage(rewardId,
-                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                            DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getDescription()
-                    );
-
-            try {
-                connection = hikariDataSource.getConnection();
-                connection.setAutoCommit(false);
-
-                //обновляем в БД для данного задания paymentTask.status=30
-                entPaymentTaskActions.updateStatusEntPaymentTaskByMdmId(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
-
-                // создать новую запись в таблице taskStatusHistory
-                entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
-
-                // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания,status=30, status_details_code=202
-                kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
-
-                connection.commit();
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                try {
-                    assert connection != null;
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-
-        if (personAccountNumber == null
-                || personAccountNumber.equals("")
-                || personAccountNumber.isEmpty()
-                && result.equals("ok")) {
-
-            //  создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details=201
-            EntTaskStatusHistory entTaskStatusHistory =
-                    createEntTaskStatusHistory(
-                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                            DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode(),
-                            rewardId
-                    );
-
-            // собираем объект для отправки в топик rfrm_pay_result_reward содержащее id задания, status=30, status_details_code=201
-            PayCoreKafkaModel payCoreKafkaModel1 =
-                    createResultMessage(rewardId,
-                            DctTaskStatuses.STATUS_REJECTED.getStatus(),
-                            DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getDescription()
-                    );
-
-            try {
-                connection = hikariDataSource.getConnection();
-                connection.setAutoCommit(false);
-
-                // Записать в БД для данного задания paymentTask.status=30,
-                entPaymentTaskActions.updateStatusEntPaymentTaskByMdmId(mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus());
-
-                //создать новую запись в таблице taskStatusHistory
-                entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
-
-                // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201
-                kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel1);
-
-                connection.commit();
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                try {
-                    connection.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-        }
-
-    }
-
-//    private void sendResultToKafka(PayCoreKafkaModel payCoreKafkaModel) {
-//
-//        Properties properties = new Properties();
-//        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-//        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-//        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
-//
-//        KafkaProducer<Object, PayCoreKafkaModel> kafkaProducer = new KafkaProducer<>(properties);
-//
-//        ProducerRecord<Object, PayCoreKafkaModel> producerRecord = new ProducerRecord<>(rfrm_pay_result_reward, payCoreKafkaModel);
-//
-//        kafkaProducer.send(producerRecord);
-//        kafkaProducer.flush();
-//        kafkaProducer.close();
-//    }
-
-    private PayCoreKafkaModel createResultMessage(Integer rewardId, Integer status, String description) {
-
-        return PayCoreKafkaModel
-                .builder()
-                .rewardId(rewardId)
-                .status(status)
-                .statusDescription(description)
-                .build();
-    }
-
-    private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode, Integer rewardId) {
-        return EntTaskStatusHistory
-                .builder()
-                    .rewardId(rewardId)
-                    .statusDetailsCode(statusDetailsCode)
-                    .taskStatus(taskStatus)
-                    .statusUpdatedAt(LocalDateTime.now())
-                .build();
     }
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {
         return AccountInfoRequest.builder().productTypes(str).build();
     }
 
-    @NotNull
-    private static String getAccountNumber(Response<?> personAccounts) {
+    private Account findMasterAccountRub(List<Account> accountList) {
 
-        return personAccounts
-                .getBody()
-                .getAccounts()
-                .values()
-                .stream()
-                .map(Account::getNumber)
+        return accountList.stream()
+                .filter(a -> a.getEntityType().equals("MASTER_ACCOUNT"))
+                .filter(b -> b.getBalance().getCurrency().equals("RUB"))
                 .findFirst()
-                .orElse("");
+                .orElseThrow();
     }
 
-    @NotNull
-    private static String getAccountSystem(Response<?> personAccounts) {
-
-        return personAccounts
-                .getBody()
-                .getAccounts()
-                .values()
-                .stream()
-                .map(Account::getEntitySubSystems)
-                .findFirst()
-                .orElse("");
-    }
-
-    private static Long getMdmId(Response<?> personAccounts) {
-
-        return Long.valueOf(personAccounts
-                .getHeaders()
-                .entrySet()
-                .stream()
-                .filter(a -> a.getKey().equals("X-Mdm-Id"))
-                .findFirst()
-                .orElseThrow()
-                .getValue()
-                .get(0));
-    }
-
-    @Nullable
-    private static Boolean getArrested(Response<?> personAccounts) {
-
-        return personAccounts
-                .getBody()
-                .getAccounts()
-                .values()
-                .stream()
-                .map(Account::getIsArrested)
-                .findFirst()
-                .orElse(null);
-    }
-
-    @NotNull
-    private static String getCurrency(Response<?> personAccounts) {
-
-        return personAccounts
-                .getBody()
-                .getAccounts()
-                .values()
-                .stream()
-                .map(a -> a.getBalance().getCurrency())
-                .findFirst()
-                .orElse("");
-    }
+//    private static Long getMdmId(Response<?> personAccounts) {
+//
+//        return Long.valueOf(personAccounts
+//                .getHeaders()
+//                .entrySet()
+//                .stream()
+//                .filter(a -> a.getKey().equals("X-Mdm-Id"))
+//                .findFirst()
+//                .orElseThrow()
+//                .getValue()
+//                .get(0));
+//    }
     
 }
