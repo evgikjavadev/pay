@@ -77,7 +77,7 @@ public class KafkaProducerCoreConfig {
         Map<String, Object> props = kafkaProp.buildProducerProperties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         setSecurityProps(props);
         return new DefaultKafkaProducerFactory<>(props);
     }
