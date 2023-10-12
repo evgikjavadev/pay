@@ -127,6 +127,7 @@ public class KafkaInternalConfig {
         props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollIntervalsMs);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, Boolean.FALSE);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(String.valueOf(ConsumerConfig.DEFAULT_MAX_PARTITION_FETCH_BYTES), 30000);
         setSecurityProps(props);
 
         DefaultKafkaConsumerFactory<String, InternalMessageModel> factory = new DefaultKafkaConsumerFactory<>(props);
