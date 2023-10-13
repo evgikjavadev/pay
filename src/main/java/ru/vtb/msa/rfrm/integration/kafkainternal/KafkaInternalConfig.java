@@ -41,7 +41,7 @@ public class KafkaInternalConfig {
     private String sessionTimeout;
     @Value("${function.kafka.bootstrap.server}")
     private String servers;
-    @Value("${function.kafka.max.partition.fetch.bytes:500000}")
+    @Value("${function.kafka.max.partition.fetch.bytes:300000}")
     private String maxPartitionFetchBytes;
     @Value("${function.kafka.max.poll.records:500}")
     private String maxPollRecords;
@@ -118,7 +118,7 @@ public class KafkaInternalConfig {
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel");
         //props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeout);
