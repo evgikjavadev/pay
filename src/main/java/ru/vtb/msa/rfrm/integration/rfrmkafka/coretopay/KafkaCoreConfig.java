@@ -34,11 +34,11 @@ public class KafkaCoreConfig {
     private long consumerScheduleTime;
     @Value("${pay.kafka.consumer.pool.time:30000}")
     private long consumerPoolTime;
-    @Value("${pay.kafka.max.partition.fetch.bytes:1048576}")
+    @Value("${pay.kafka.max.partition.fetch.bytes:300000}")
     private String maxPartitionFetchBytes;
     @Value("${pay.kafka.max.poll.records:500}")
     private String maxPollRecords;
-    @Value("${pay.kafka.max.poll.interval.ms:3000}")
+    @Value("${pay.kafka.max.poll.interval.ms:300000}")
     private String maxPollIntervalsMs;
 
     // для организации "SSL":

@@ -40,12 +40,6 @@ public class KafkaConsumerCoreClient {
             log.error(e.getMessage(), e.fillInStackTrace());
         }
 
-//        for (CorePayKafkaModel elem: messageList) {
-//            // получаем счета клиента из 1503 для каждого mdmId и rewardId
-//            serviceAccounts.getClientAccounts(elem.getMdmId(), elem.getRewardId());
-//
-//        }
-
         log.info("Finish rfrm-pay processing topic = {} partition = {}", topic, partition);
 
         //internalProcessingTasksStatuses.processInternalKafkaStatus();
