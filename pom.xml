@@ -62,31 +62,31 @@
             <version>${mdc-logging.vesion}</version>
         </dependency>
 
-<!--        &lt;!&ndash; Аудит &ndash;&gt;-->
-<!--        &lt;!&ndash; модуль хранения событий аудита в оперативной памяти &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>ru.vtb.omni</groupId>-->
-<!--            <artifactId>audit-lib-in-memory-storage</artifactId>-->
-<!--            <version>${audit.version}</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; модуль отправки событий аудита непосредственно в кафку &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>ru.vtb.omni</groupId>-->
-<!--            <artifactId>audit-lib-kafka-sender</artifactId>-->
-<!--            <version>${audit.version}</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; модуль шаблонизатора событий аудита - freemarker &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>ru.vtb.omni</groupId>-->
-<!--            <artifactId>audit-lib-freemarker-template-resolver</artifactId>-->
-<!--            <version>${audit.version}</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; модуль контекста из которого используется для получения инициатора запроса, в даном случае servlet context &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>ru.vtb.omni</groupId>-->
-<!--            <artifactId>audit-lib-servlet-context</artifactId>-->
-<!--            <version>${audit.version}</version>-->
-<!--        </dependency>-->
+        <!-- Аудит -->
+        <!-- модуль хранения событий аудита в оперативной памяти -->
+        <dependency>
+            <groupId>ru.vtb.omni</groupId>
+            <artifactId>audit-lib-in-memory-storage</artifactId>
+            <version>${audit.version}</version>
+        </dependency>
+        <!-- модуль отправки событий аудита непосредственно в кафку -->
+        <dependency>
+            <groupId>ru.vtb.omni</groupId>
+            <artifactId>audit-lib-kafka-sender</artifactId>
+            <version>${audit.version}</version>
+        </dependency>
+        <!-- модуль шаблонизатора событий аудита - freemarker -->
+        <dependency>
+            <groupId>ru.vtb.omni</groupId>
+            <artifactId>audit-lib-freemarker-template-resolver</artifactId>
+            <version>${audit.version}</version>
+        </dependency>
+        <!-- модуль контекста из которого используется для получения инициатора запроса, в даном случае servlet context -->
+        <dependency>
+            <groupId>ru.vtb.omni</groupId>
+            <artifactId>audit-lib-servlet-context</artifactId>
+            <version>${audit.version}</version>
+        </dependency>
 
         <!-- Журналирование логов -->
         <dependency>
