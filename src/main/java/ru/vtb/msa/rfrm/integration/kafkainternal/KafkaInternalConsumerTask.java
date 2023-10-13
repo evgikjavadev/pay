@@ -9,6 +9,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.scheduling.annotation.Scheduled;
 import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
@@ -50,7 +51,6 @@ public class KafkaInternalConsumerTask {
                                            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                                            @Header(KafkaHeaders.OFFSET) int offsets) {
         log.info("Start rfrm-pay processing topic = {}, partition = {}, messages = {}", topic, partition, message);
-        ack.acknowledge();
 
         // Выбрать из таблицы ent_payment_task N (количество настраивается в конфиге) заданий с processed=false и blocked=0, с сортировкой по blocked_at по возрастанию
         List<EntPaymentTask> paymentTaskList = entPaymentTaskRepository.getRewardIdsByProcessAndBlocked(findSizeApplication);
@@ -61,10 +61,12 @@ public class KafkaInternalConsumerTask {
         // соберем объект для отправки в internal топик rfrm_pay_function_status_update_reward для запуска задания на обработку
         sendRunningMessageInternalTopic();
 
+        ack.acknowledge();
+
         log.info("Finish rfrm-pay processing topic = {} partition = {}", topic, partition);
     }
 
-        private void handleTasksList(List<EntPaymentTask> paymentTaskList) throws InterruptedException {
+        private void handleTasksList(List<EntPaymentTask> paymentTaskList) {
 
         List<Integer> setRewardIdList = paymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
 

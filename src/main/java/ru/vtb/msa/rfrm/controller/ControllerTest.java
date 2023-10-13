@@ -57,8 +57,10 @@ public class ControllerTest {
     public String publishMessage() {
 
         // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
-        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel();
-        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel();
+        Random rand = new Random(10000);
+
+        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(rand.nextInt(50000));
+        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(rand.nextInt(50000));
 
         // create Producer properties
         Properties properties = new Properties();
@@ -100,14 +102,13 @@ public class ControllerTest {
         return "Object to topic rfrm_core_payment_order sent! ";
     }
 
-    private CorePayKafkaModel getTestQuestionnairesKafkaModel() {
+    private CorePayKafkaModel getTestQuestionnairesKafkaModel(Integer rewardId) {
         Random rand = new Random();
 
-            Integer value = rand.nextInt();
             CorePayKafkaModel build = CorePayKafkaModel
                     .builder()
-                    .rewardId(value)
-                    .mdmId(5000015297L)
+                    .rewardId(rewardId)
+                    .mdmId(500001529L)
                     .questionnaireId(questionnaireId)
                     .recipientType(3)
                     .sourceQs("CC")
