@@ -1,96 +1,96 @@
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<configuration>-->
-<!--    <conversionRule conversionWord="esIndexLevelSuffix" converterClass="ru.vtb.logging.logback.plugin.EventLevelClassicConverter" />-->
-<!--    <appender name="TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
-<!--        <destination>127.0.0.1:5170</destination>-->
-<!--        <includeCallerData>true</includeCallerData>-->
-<!--        <reconnectionDelay>5000</reconnectionDelay>-->
-<!--        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <conversionRule conversionWord="esIndexLevelSuffix" converterClass="ru.vtb.logging.logback.plugin.EventLevelClassicConverter" />
+    <appender name="TCP" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>127.0.0.1:5170</destination>
+        <includeCallerData>true</includeCallerData>
+        <reconnectionDelay>5000</reconnectionDelay>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
 
-<!--                <providers>-->
-<!--                    <pattern>-->
-<!--                        <omitEmptyFields>true</omitEmptyFields>-->
-<!--                        &lt;!&ndash;-->
-<!--                          использование полей callerClass, callerLine и callerMethod может негативно влиять на производительность-->
-<!--                          поле encProvider может быть при необходимости добавлено в pattern-->
-<!--                        &ndash;&gt;-->
-<!--                        <pattern>-->
-<!--                            {-->
-<!--                            "appType": "JAVA",-->
-<!--                            "risCode": "1847",-->
-<!--                            "projectCode": "MOBC",-->
-<!--                            "appName": "mobc-sim-service",-->
-<!--                            "threadName": "%thread",-->
-<!--                            "loggerName": "%logger",-->
-<!--                            "text": "%message",-->
-<!--                            "callerClass": "%class",-->
-<!--                            "callerMethod": "%method",-->
-<!--                            "callerLine": "#asLong{%line}",-->
-<!--                            "level": "%level",-->
-<!--                            "extEventId": "%X{extEventId}",-->
-<!--                            "agrType": "%X{agrType:-TRACING}",-->
-<!--                            "traceId": "%X{traceId}",-->
-<!--                            "spanId": "%X{spanId}",-->
-<!--                            "parentSpanId": "%X{parentSpanId}",-->
-<!--                            "userId": "%X{userId}",-->
-<!--                            "logicTime": "%X{logicTime}",-->
-<!--                            "esIndexLevelSuffix": "%esIndexLevelSuffix",-->
-<!--                            "sessionId": "%X{sessionId}",-->
-<!--                            "mdmId": "%X{mdmId}"-->
-<!--                            }-->
-<!--                        </pattern>-->
-<!--                    </pattern>-->
-<!--                    <uuid>-->
-<!--                        <fieldName>eventId</fieldName>-->
-<!--                    </uuid>-->
-<!--                    <timestamp>-->
-<!--                        <pattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</pattern>-->
-<!--                        <fieldName>localTime</fieldName>-->
-<!--                        <timeZone>UTC</timeZone>-->
-<!--                    </timestamp>-->
-<!--                    <logLevelValue>-->
-<!--                        <fieldName>levelInt</fieldName>-->
-<!--                    </logLevelValue>-->
-<!--                    <arguments>-->
-<!--                        <includeNonStructuredArguments>false</includeNonStructuredArguments>-->
-<!--                    </arguments>-->
-<!--                    <stackTrace>-->
-<!--                        <fieldName>stack</fieldName>-->
-<!--                    </stackTrace>-->
-<!--                    <mdc>-->
-<!--                        <fieldName>mdc</fieldName>-->
-<!--                        <excludeMdcKeyName>extEventId</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>agrType</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>traceId</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>spanId</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>parentSpanId</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>sampled</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>userId</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>logicTime</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>sessionId</excludeMdcKeyName>-->
-<!--                        <excludeMdcKeyName>mdmId</excludeMdcKeyName>-->
-<!--                    </mdc>-->
-<!--                </providers>-->
+                <providers>
+                    <pattern>
+                        <omitEmptyFields>true</omitEmptyFields>
+                        <!--
+                          использование полей callerClass, callerLine и callerMethod может негативно влиять на производительность
+                          поле encProvider может быть при необходимости добавлено в pattern
+                        -->
+                        <pattern>
+                            {
+                            "appType": "JAVA",
+                            "risCode": "1847",
+                            "projectCode": "MOBC",
+                            "appName": "mobc-sim-service",
+                            "threadName": "%thread",
+                            "loggerName": "%logger",
+                            "text": "%message",
+                            "callerClass": "%class",
+                            "callerMethod": "%method",
+                            "callerLine": "#asLong{%line}",
+                            "level": "%level",
+                            "extEventId": "%X{extEventId}",
+                            "agrType": "%X{agrType:-TRACING}",
+                            "traceId": "%X{traceId}",
+                            "spanId": "%X{spanId}",
+                            "parentSpanId": "%X{parentSpanId}",
+                            "userId": "%X{userId}",
+                            "logicTime": "%X{logicTime}",
+                            "esIndexLevelSuffix": "%esIndexLevelSuffix",
+                            "sessionId": "%X{sessionId}",
+                            "mdmId": "%X{mdmId}"
+                            }
+                        </pattern>
+                    </pattern>
+                    <uuid>
+                        <fieldName>eventId</fieldName>
+                    </uuid>
+                    <timestamp>
+                        <pattern>yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</pattern>
+                        <fieldName>localTime</fieldName>
+                        <timeZone>UTC</timeZone>
+                    </timestamp>
+                    <logLevelValue>
+                        <fieldName>levelInt</fieldName>
+                    </logLevelValue>
+                    <arguments>
+                        <includeNonStructuredArguments>false</includeNonStructuredArguments>
+                    </arguments>
+                    <stackTrace>
+                        <fieldName>stack</fieldName>
+                    </stackTrace>
+                    <mdc>
+                        <fieldName>mdc</fieldName>
+                        <excludeMdcKeyName>extEventId</excludeMdcKeyName>
+                        <excludeMdcKeyName>agrType</excludeMdcKeyName>
+                        <excludeMdcKeyName>traceId</excludeMdcKeyName>
+                        <excludeMdcKeyName>spanId</excludeMdcKeyName>
+                        <excludeMdcKeyName>parentSpanId</excludeMdcKeyName>
+                        <excludeMdcKeyName>sampled</excludeMdcKeyName>
+                        <excludeMdcKeyName>userId</excludeMdcKeyName>
+                        <excludeMdcKeyName>logicTime</excludeMdcKeyName>
+                        <excludeMdcKeyName>sessionId</excludeMdcKeyName>
+                        <excludeMdcKeyName>mdmId</excludeMdcKeyName>
+                    </mdc>
+                </providers>
 
-<!--            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">-->
-<!--                <valueMasker class="ru.vtb.msa.mobc.sim.filter.log.mask.SensitiveMaskingPatternLayout"/>-->
-<!--            </jsonGeneratorDecorator>-->
-<!--        </encoder>-->
-<!--    </appender>-->
-<!--    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">-->
-<!--        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">-->
-<!--            <layout class="ru.vtb.msa.mobc.sim.filter.log.mask.MaskingPatternLayout">-->
-<!--                <pattern> %d{yyyy-MM-dd HH:mm:ss}[%thread]%-5level %logger{36} - %.-2048msg%n</pattern>-->
-<!--            </layout>-->
-<!--        </encoder>-->
-<!--       &lt;!&ndash; <layout class="ch.qos.logback.classic.PatternLayout">-->
-<!--            <Pattern>-->
-<!--                %d{yyyy-MM-dd HH:mm:ss}[%thread]%-5level %logger{36} - %.-2048msg%n-->
-<!--            </Pattern>-->
-<!--        </layout>&ndash;&gt;-->
-<!--    </appender>-->
-<!--    <root level="INFO">-->
-<!--        <appender-ref ref="TCP"/>-->
-<!--        <appender-ref ref="CONSOLE" />-->
-<!--    </root>-->
-<!--</configuration>-->
+            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <valueMasker class="ru.vtb.msa.mobc.sim.filter.log.mask.SensitiveMaskingPatternLayout"/>
+            </jsonGeneratorDecorator>
+        </encoder>
+    </appender>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ru.vtb.msa.mobc.sim.filter.log.mask.MaskingPatternLayout">
+                <pattern> %d{yyyy-MM-dd HH:mm:ss}[%thread]%-5level %logger{36} - %.-2048msg%n</pattern>
+            </layout>
+        </encoder>
+       <!-- <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss}[%thread]%-5level %logger{36} - %.-2048msg%n
+            </Pattern>
+        </layout>-->
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="TCP"/>
+        <appender-ref ref="CONSOLE" />
+    </root>
+</configuration>
