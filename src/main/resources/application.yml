@@ -111,7 +111,7 @@ logging:
   level:
     ROOT: INFO
     ru.vtb.omni: INFO
-    ru.vtb.omni.ac: ${LOG_LEVEL}
+    ru.vtb.omni.ac: ${LOG_LEVEL:INFO}
     ru.vtb.msa: ${LOG_LEVEL}
     org.apache.http: INFO
     ru.vtb.omni.audit: ${LOG_LEVEL}
