@@ -49,6 +49,7 @@ spring:
 
 audit:
   local-mode: true
+  enabled: ${AUDIT_ON:false}
   kafka:
     bootstrap:
       server: localhost:9092
