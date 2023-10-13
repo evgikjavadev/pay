@@ -38,7 +38,7 @@ public class KafkaCoreConfig {
     private String maxPartitionFetchBytes;
     @Value("${pay.kafka.max.poll.records:500}")
     private String maxPollRecords;
-    @Value("${pay.kafka.max.poll.interval.ms:300000}")
+    @Value("${pay.kafka.max.poll.interval.ms:3000}")
     private String maxPollIntervalsMs;
 
     // для организации "SSL":
