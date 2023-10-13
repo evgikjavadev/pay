@@ -111,13 +111,13 @@ logging:
   level:
     ROOT: INFO
     ru.vtb.omni: INFO
-    ru.vtb.omni.ac: ${LOG_LEVEL:INFO}
-    ru.vtb.msa: ${LOG_LEVEL}
+    ru.vtb.omni.ac: ${LOG_LEVEL:DEBUG}
+    ru.vtb.msa: ${LOG_LEVEL:DEBUG}
     org.apache.http: INFO
-    ru.vtb.omni.audit: ${LOG_LEVEL}
-    ru.vtb.msa.partner: ${LOG_LEVEL}
-    ru.vtb.msa.rfrm.integration: ${LOG_LEVEL}
-    ru.vtb.msa.mdclogging: ${LOG_LEVEL}
+    ru.vtb.omni.audit: ${LOG_LEVEL:INFO}
+    ru.vtb.msa.partner: ${LOG_LEVEL:DEBUG}
+    ru.vtb.msa.rfrm.integration: ${LOG_LEVEL:DEBUG}
+    ru.vtb.msa.mdclogging: ${LOG_LEVEL:DEBUG}
 
 product-profile-fl-accounts:
   url: ${EPA_IG_URL:http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock}
