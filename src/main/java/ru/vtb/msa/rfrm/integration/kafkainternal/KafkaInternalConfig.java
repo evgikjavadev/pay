@@ -41,7 +41,7 @@ public class KafkaInternalConfig {
     private String sessionTimeout;
     @Value("${function.kafka.bootstrap.server}")
     private String servers;
-    @Value("${function.kafka.max.partition.fetch.bytes:300000}")
+    @Value("${function.kafka.max.partition.fetch.bytes:100000}")
     private String maxPartitionFetchBytes;
     @Value("${function.kafka.max.poll.records:500}")
     private String maxPollRecords;
