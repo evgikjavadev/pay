@@ -55,10 +55,11 @@ opentracing:
 
 #Аудит
 audit:
-  local-mode: ${AUDIT_LOCAL_MODE:false}
+  local-mode: ${AUDIT_LOCAL_MODE:true}
+  enabled: ${AUDIT_ON:false}
   kafka:
     bootstrap:
-      server: ${AUDIT_KAFKA_SERVER}
+      server: ${AUDIT_KAFKA_SERVER:server}
     consumer:
       group-id: audit-management
     topic: audit
