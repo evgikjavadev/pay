@@ -9,7 +9,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.service.ProcessQuestionnairesService;
+import ru.vtb.msa.rfrm.functions.ProcessQuestionnairesService;
 import ru.vtb.msa.rfrm.service.ServiceAccountsInterface;
 
 import java.util.List;

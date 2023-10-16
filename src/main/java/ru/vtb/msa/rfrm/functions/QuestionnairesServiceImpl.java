@@ -1,8 +1,9 @@
-package ru.vtb.msa.rfrm.integration.rfrmkafka.service;
+package ru.vtb.msa.rfrm.functions;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.vtb.msa.rfrm.functions.ProcessQuestionnairesService;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
@@ -33,13 +34,11 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
             }
         }
 
-        if (modelList.size() != 0) {
-            // если поля в входящем объекте ок, то обогащаем объект дополнит. полями
-            List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(modelList);
+        // если поля в входящем объекте ок, то обогащаем объект дополнит. полями
+        List<EntPaymentTask> entPaymentTasks = mapper.quesKafkaToQuesModel(validList);
 
-            // проверяем есть ли в ent_payment_task объект с таким rewardId и сохраняем его
-            checkAndInsertNewTaskToEntPaymentTask(entPaymentTasks);
-        }
+        // проверяем есть ли в ent_payment_task объект с таким rewardId и сохраняем его
+        checkAndInsertNewTaskToEntPaymentTask(entPaymentTasks);
 
     }
 

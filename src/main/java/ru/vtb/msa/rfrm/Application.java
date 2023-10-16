@@ -6,12 +6,11 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.Managemen
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-//import ru.vtb.msa.rfrm.integration.internalkafka.BootstrapKafkaProperties;
+//import ru.vtb.msa.rfrm.functions.FunctionPC;
+//import ru.vtb.msa.rfrm.functions.FunctionPCImpl;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class, QuartzEndpointAutoConfiguration.class,
         DataSourceAutoConfiguration.class })
@@ -23,5 +22,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+        //FunctionPC functionPC = new FunctionPCImpl();
+        //functionPC.startProcess();
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ru.vtb.msa.rfrm.functions.FunctionPD;
 import ru.vtb.msa.rfrm.integration.kafkainternal.KafkaInternalProducer;
 import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel;
@@ -18,6 +19,7 @@ import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
 import ru.vtb.msa.rfrm.integration.util.enums.Statuses;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
+import ru.vtb.msa.rfrm.service.ServiceAccountsInterface;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,8 +31,9 @@ import java.util.*;
 public class ControllerTest {
     private final ServiceAccounts serviceAccounts;
     private final KafkaResultRewardProducer kafkaResultRewardProducer;
-
     private final KafkaInternalProducer kafkaInternalProducer;
+    private final ServiceAccountsInterface serviceAccountsInterface;
+    private final FunctionPD functionPD;
 
 //    private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
 //    private final InternalProcessingTasksPayment internalProcessingTasksPayment;
@@ -45,8 +48,15 @@ public class ControllerTest {
     @GetMapping("/getaccounts")
     public String getAccounts() {
 
-        //serviceAccounts.getClientAccounts(5000015297L);
-        return "Accounts for clients are received !";
+        serviceAccountsInterface.getClientAccounts(5000015297L, 12165456);
+
+        return "Accounts for client are received !";
+    }
+
+    @GetMapping("/pd")
+    public String callFunctionPD() {
+        functionPD.startFunctionPD();
+        return "Called Function ПД. Подготовка данных для выплаты вознаграждения участнику РФП successfully";
     }
 
 

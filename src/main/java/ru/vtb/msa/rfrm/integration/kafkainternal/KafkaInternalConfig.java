@@ -18,6 +18,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import ru.vtb.msa.rfrm.functions.FunctionPD;
 import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
@@ -147,8 +148,8 @@ public class KafkaInternalConfig {
 
     @Bean
     KafkaInternalConsumer consumerFunction(EntPaymentTaskRepository entPaymentTaskRepository, ActionEntPaymentTaskRepo actionEntPaymentTaskRepo,
-                                           ServiceAccounts serviceAccounts, KafkaInternalProducer kafkaInternalProducer) {
-        return new KafkaInternalConsumer(entPaymentTaskRepository, actionEntPaymentTaskRepo, serviceAccounts, kafkaInternalProducer);
+                                           ServiceAccounts serviceAccounts, KafkaInternalProducer kafkaInternalProducer, FunctionPD functionPD) {
+        return new KafkaInternalConsumer(entPaymentTaskRepository, actionEntPaymentTaskRepo, serviceAccounts, kafkaInternalProducer, functionPD);
     }
 
     @Bean

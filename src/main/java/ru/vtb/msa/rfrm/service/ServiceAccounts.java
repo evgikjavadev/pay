@@ -20,9 +20,9 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountIn
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ServiceAccounts implements ServiceAccountsInterface {
     private final PersonClientAccounts personClientAccounts;
     private final EntPaymentTaskActions entPaymentTaskActions;
