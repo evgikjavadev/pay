@@ -5,3 +5,121 @@ metadata:
 data:
   {{range $key, $value := .Values.params_cm }}
   {{ $key }}: {{ $value | quote }}{{end}}
+  log4j2.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <Configuration status="OFF" packages="ru.vtb.msa.rfrm.log.mask">
+
+        <Properties>
+            <Property name="appName">rfrm-core</Property>
+            <Property name="appType">JAVA</Property>
+            <Property name="encProvider"/>
+            <Property name="risCode">2155</Property>
+            <Property name="projectCode">RFRM</Property>
+            <Property name="HOSTNAME">${env:HOSTNAME}</Property>
+        </Properties>
+        <Appenders>
+                <Socket name="Socket" host="127.0.0.1" port="5170"
+                reconnectionDelayMillis="5000">
+    
+            <!-- locationInfoEnabled нужно включать, если передаете информацию об callerClass, callerMethod, callerLine -->
+            <JsonTemplateLayout locationInfoEnabled="true"
+                                maxStringLength="1048576">
+                <EventTemplate>
+                    {
+                        "appName": "${appName}",
+                        "projectCode": "${projectCode}",
+                        "risCode": "${risCode}",
+                        "localTime": {
+                            "$resolver": "timestamp",
+                            "pattern": {
+                                "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                                "timeZone": "UTC"
+                            }
+                        },
+                        "level": {
+                            "$resolver": "level",
+                            "field": "name"
+                        },
+                        "text": {
+                            "$resolver": "message",
+                            "stringified": true
+                        },
+                        "eventId": "${vtbEventId:uuid}",
+                        "extEventId": {
+                            "$resolver": "mdc",
+                            "key": "extEventId"
+                        },
+                        "parentId": null,
+                        "encProvider": "${encProvider}",
+                        "agrType": "${jaegerSpan:agrType}",
+                        "traceId": "${jaegerSpan:traceId}",
+                        "spanId": "${jaegerSpan:spanId}",
+                        "parentSpanId": {
+                            "$resolver": "mdc",
+                            "key": "parentSpanId"
+                        },
+                        "userId": {
+                            "$resolver": "mdc",
+                            "key": "userId"
+                        },
+                        "logicTime": {
+                            "$resolver": "mdc",
+                            "key": "logicTime"
+                        },
+                        "appType": "${appType}",
+                    <!-- Значение вычитывается из MDC для возможности кастомизации поля stack в приложении-->
+                    <!-- "stack": "${json:exception:stackTrace:text}", -->
+                        "stack": {
+                            "$resolver": "exception",
+                            "field": "stackTrace",
+                            "stackTrace": {
+                                "stringified": true
+                            }
+                        },
+                        "levelInt": {
+                            "$resolver": "level",
+                            "field": "severity",
+                            "severity": {
+                                "field": "code"
+                            }
+                        },
+                        "loggerName": {
+                            "$resolver": "logger",
+                            "field": "name"
+                        },
+                        "threadName": {
+                            "$resolver": "thread",
+                            "field": "name"
+                        },
+                        "callerClass": {
+                            "$resolver": "source",
+                            "field": "className"
+                        },
+                        "callerMethod": {
+                            "$resolver": "source",
+                            "field": "methodName"
+                        },
+                        "callerLine": {
+                            "$resolver": "source",
+                            "field": "lineNumber"
+                        },
+                        "mdc": {
+                            "$resolver": "mdc"
+                        },
+                        "esIndexLevelSuffix": "${esIndexLevelSuffix:level}"
+                    }
+                </EventTemplate>
+            </JsonTemplateLayout>
+    
+        </Socket>
+                <Console name="Console" target="SYSTEM_OUT"  pattern="%mask">
+                    <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} &#45;&#45; %mask%n"/>
+                </Console>
+        </Appenders>
+        <Loggers>
+            <Root level="debug">
+                <AppenderRef ref="Socket"/>
+                <AppenderRef ref="Console"/>
+            </Root>
+        </Loggers>
+    </Configuration>
