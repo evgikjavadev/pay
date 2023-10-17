@@ -10,7 +10,7 @@ data:
     <Configuration status="OFF" packages="ru.vtb.msa.rfrm.log.mask">
 
         <Properties>
-            <Property name="appName">rfrm-core</Property>
+            <Property name="appName">rfrm-pay</Property>
             <Property name="appType">JAVA</Property>
             <Property name="encProvider"/>
             <Property name="risCode">2155</Property>
