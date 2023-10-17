@@ -41,7 +41,8 @@ public class FunctionPDImpl implements FunctionPD {
         // передаем в обработку List задач
         handleMdmIdList(entPaymentTaskList);
 
-        sendRunningMessageInternalTopic();
+        // отправить сообщение в rfrm_pay_function_result_reward для инициации следующего цикла обработки заданий
+        kafkaInternalProducer.sendObjectToInternalKafka(rfrm_pay_function_result_reward, createMessageToTopicInternal());
 
         log.info("Finish function PD. ПД. Подготовка данных для выплаты вознаграждения участнику РФП");
     }
@@ -65,15 +66,13 @@ public class FunctionPDImpl implements FunctionPD {
         //Thread.sleep(sleepMs);
     }
 
-    private void sendRunningMessageInternalTopic() {
+    private InternalMessageModel createMessageToTopicInternal() {
 
-        InternalMessageModel internalMessageModel = InternalMessageModel
+        return InternalMessageModel
                 .builder()
                 .functionName("function_result_reward")
                 .status(Statuses.COMPLETED.name())
                 .timeStamp(LocalDateTime.now())
                 .build();
-
-        kafkaInternalProducer.sendObjectToInternalKafka(rfrm_pay_function_result_reward, internalMessageModel);
     }
 }
