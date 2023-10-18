@@ -43,9 +43,9 @@ public class KafkaInternalConsumerTask {
     private final KafkaInternalProducer kafkaInternalProducer;
 
     @SneakyThrows
-    @KafkaListener(id = "${function.kafka.consumer.group-id-res}",
-            topics = "${function.kafka.topic.rfrm_pay_function_status_update_reward}",
-            containerFactory = "kafkaListenerInternalResult")
+//    @KafkaListener(id = "${function.kafka.consumer.group-id-res}",
+//            topics = "${function.kafka.topic.rfrm_pay_function_status_update_reward}",
+//            containerFactory = "kafkaListenerInternalResult")
     public void listenFunctionStatusUpdateReward(@Payload InternalMessageModel message, Acknowledgment ack,
                                            @Header(KafkaHeaders.RECEIVED_PARTITION_ID) Integer partition,
                                            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
@@ -59,7 +59,7 @@ public class KafkaInternalConsumerTask {
         handleTasksList(paymentTaskList);
 
         // соберем объект для отправки в internal топик rfrm_pay_function_status_update_reward для запуска задания на обработку
-        sendRunningMessageInternalTopic();
+        //sendRunningMessageInternalTopic();
 
         ack.acknowledge();
 

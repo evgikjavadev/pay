@@ -48,7 +48,7 @@ public class ControllerTest {
     @GetMapping("/getaccounts")
     public String getAccounts() {
 
-        serviceAccountsInterface.getClientAccounts(5000015297L, 12165456);
+        serviceAccountsInterface.getClientAccounts(5000015297L, 12345);
 
         return "Accounts for client are received !";
     }
