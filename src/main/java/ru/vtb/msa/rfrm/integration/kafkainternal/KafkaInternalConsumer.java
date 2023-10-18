@@ -38,9 +38,9 @@ public class KafkaInternalConsumer {
     private final FunctionPD functionPD;
 
     @SneakyThrows
-//    @KafkaListener(id = "${function.kafka.consumer.group-id}",
-//            topics = "${function.kafka.topic.rfrm_pay_function_result_reward}",
-//            containerFactory = "kafkaListenerInternalResult")
+    @KafkaListener(id = "${function.kafka.consumer.group-id}",
+            topics = "${function.kafka.topic.rfrm_pay_function_result_reward}",
+            containerFactory = "kafkaListenerInternalResult")
     public void listenResultRewardInternal(@Payload InternalMessageModel message, Acknowledgment ack,
                                            @Header(KafkaHeaders.RECEIVED_PARTITION_ID) Integer partition,
                                            @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
