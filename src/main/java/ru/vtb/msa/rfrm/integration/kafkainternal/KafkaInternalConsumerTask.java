@@ -59,7 +59,7 @@ public class KafkaInternalConsumerTask {
         handleTasksList(paymentTaskList);
 
         // соберем объект для отправки в internal топик rfrm_pay_function_status_update_reward для запуска задания на обработку
-        sendRunningMessageInternalTopic();
+        //sendRunningMessageInternalTopic();
 
         ack.acknowledge();
 
