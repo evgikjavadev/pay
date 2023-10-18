@@ -121,7 +121,7 @@ logging:
     ru.vtb.msa.mdclogging: ${LOG_LEVEL:DEBUG}
 
 product-profile-fl-accounts:
-  url: ${EPA_IG_URL:http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock}
+  url: ${URL_REGISTRATION:http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock}
   resource:  ${GET_RESOURCE:/portfolio/portfolio-agregator/portfolio/active}
   headers:
     X-INITIATOR-SERVICE: rfrm-pay
