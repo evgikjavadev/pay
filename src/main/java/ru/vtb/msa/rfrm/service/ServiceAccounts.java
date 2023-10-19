@@ -37,7 +37,7 @@ public class ServiceAccounts implements ServiceAccountsInterface {
             // получаем весь объект с данными счета клиента из 1503
             Response<?> personAccounts = personClientAccounts
                     .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
-            getAndPassParameters(personAccounts, mdmIdFromKafka, rewardId);
+            getAndPassParameters(personAccounts, mdmIdFromKafka, rewardId);   //todo exception
 
         } catch (HttpStatusException e) {
             HttpStatus status = e.getStatus();
@@ -93,9 +93,8 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
     }
 
-    // в методе бполучаем нужные параметры и передаем их в обработку счета
     private void getAndPassParameters(Response<?> personAccounts, Long mdmId, Integer rewardId) {
-
+        log.info("Start process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
         List<Account> accountList = new ArrayList<>(personAccounts.getBody().getAccounts().values());
         Account masterAccount = findMasterAccountRub(accountList);
 
@@ -106,7 +105,7 @@ public class ServiceAccounts implements ServiceAccountsInterface {
         //Long mdmId = getMdmId(personAccounts);
 
         processClientAccounts.processAccounts(masterAccount, result, mdmId, rewardId);
-
+        log.info("Finish process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
     }
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {

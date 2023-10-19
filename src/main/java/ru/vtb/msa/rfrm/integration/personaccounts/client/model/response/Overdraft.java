@@ -5,13 +5,13 @@ import lombok.Data;
 
 @Data
 public class Overdraft {
-    @JsonProperty("status")
-    private Boolean status;
-    @JsonProperty("ownBalance")
-    private Double ownBalance;
-    @JsonProperty("principalDebt")
-    private Double principalDebt;
-    @JsonProperty("pastDueTotal")
-    private Double pastDueTotal;
+//    @JsonProperty("status")
+//    private Boolean status;
+//    @JsonProperty("ownBalance")
+//    private Double ownBalance;
+//    @JsonProperty("principalDebt")
+//    private Double principalDebt;
+//    @JsonProperty("pastDueTotal")
+//    private Double pastDueTotal;
 
 }
