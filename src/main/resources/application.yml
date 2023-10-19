@@ -67,8 +67,8 @@ audit:
       enabled: true
       truststore:
         # для запуска из idea
-       location: ${PATH_TRUSTSTORE_PAY}
-       password: ${STORE_PASSWORD_PAY}
+        location: ${PATH_TRUSTSTORE_PAY}
+        password: ${STORE_PASSWORD_PAY}
       keystore:
         # для запуска из idea
         location: ${PATH_KEYSTORE_PAY}
@@ -193,7 +193,7 @@ core:
     enable: ${PAY_ENABLE:true}
     max.poll.records: 1
     bootstrap:
-      server: ${PROCES_PALTF_KAFKA_SERVER_PAY:d5rfrm-kfc001lk.corp.dev.vtb:9092}
+      server: ${PROCES_PALTF_KAFKA_SERVER_PAY}
     consumer:
       group-id-core: pay-core
     topic: ${PAY_TOPIC:rfrm_core_payment_order}
