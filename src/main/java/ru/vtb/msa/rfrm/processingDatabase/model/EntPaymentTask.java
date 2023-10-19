@@ -75,7 +75,7 @@ public class EntPaymentTask {
      Тип вознаграждения:
      1 - Выплата (рубли)
      2 - Выплата (бонусы) */
-    @Column("reward_id")
+    @Column("reward_type")
     private Integer rewardType;
 
     public LocalDateTime getCreatedAt() {
