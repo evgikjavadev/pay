@@ -67,8 +67,8 @@ audit:
       enabled: true
       truststore:
         # для запуска из idea
-       location: ${PATH_TRUSTSTORE_PAY}
-       password: ${STORE_PASSWORD_PAY}
+        location: ${PATH_TRUSTSTORE_PAY}
+        password: ${STORE_PASSWORD_PAY}
       keystore:
         # для запуска из idea
         location: ${PATH_KEYSTORE_PAY}
