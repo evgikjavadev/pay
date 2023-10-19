@@ -43,7 +43,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
                     createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null, rewardId);
 
             // создать новую запись в таблице taskStatusHistory
-            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+            //entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);  //todo
 
         }
 

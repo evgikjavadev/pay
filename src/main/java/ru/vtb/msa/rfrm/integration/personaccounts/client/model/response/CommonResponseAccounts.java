@@ -31,20 +31,27 @@ public class CommonResponseAccounts<R> {
     public SelfEmploymentInfo selfEmploymentInfo;
     @JsonProperty("wallets")
     public Wallets wallets;
+    @JsonProperty("loadingInfo")
+    private LoadingInfo loadingInfo;
     @JsonProperty("technicalAccounts")
     public TechnicalAccounts technicalAccounts;
-    @JsonProperty("relations")
-    public List<Object> relations;
-    @JsonProperty("ibsContracts")
-    public IbsContracts ibsContracts;
-
-    @JsonProperty("system")
-    public String system;
     @JsonProperty("userId")
     public String userId;
+
     @JsonProperty("timestamp")
     public String timestamp;
     @JsonProperty("result")
     public String result;
+    @JsonProperty("system")
+    public String system;
+    @JsonProperty("statusMode")
+    public String statusMode;
+    @JsonProperty("errorString")
+    public String errorString;
+
+//    @JsonProperty("relations")
+//    public List<Object> relations;
+//    @JsonProperty("ibsContracts")
+//    public IbsContracts ibsContracts;
 
 }
