@@ -36,7 +36,7 @@ public class KafkaProducerCoreConfig {
     private String maxPollIntervalsMs;
 
     // для организации "SSL":
-    @Value("${pay.kafka.security.protocol:}")
+    @Value("${pay.kafka.security.protocol:SSL}")
     private String securityProtocol;
 
     // При securityProtocol = "SSL" обязательны:
