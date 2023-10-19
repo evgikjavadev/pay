@@ -52,9 +52,9 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
-    public void updateAccountNumber(String accountNumber, String accountSystem, Long mdmId, Integer status, String accountBranch) {
-        String sql = "UPDATE ent_payment_task SET account = ?, account_system = ?, account_branch = ? WHERE mdm_id = ?";
-        jdbcTemplate.update(sql, accountNumber, accountSystem, accountBranch, mdmId);
+    public void updateAccountNumber(String accountNumber, String accountSystem,  Integer status, String accountBranch, Long mdmId, Integer blocked) {
+        String sql = "UPDATE ent_payment_task SET account = ?, account_system = ?, status = ?, account_branch = ?, blocked = ? WHERE mdm_id = ?";
+        jdbcTemplate.update(sql, accountNumber, accountSystem, status, accountBranch, blocked, mdmId);
     }
 
     @Override

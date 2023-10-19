@@ -9,7 +9,7 @@ public interface EntPaymentTaskActions {
 
     List<EntPaymentTask> getPaymentTaskByMdmId(Long mdmId);
 
-    void updateAccountNumber(String accountNumber, String accountSystem, Long mdmId, Integer status, String accountBranch);
+    void updateAccountNumber(String accountNumber, String accountSystem, Integer status, String accountBranch,  Long mdmId, Integer blocked);
 
     void updateStatusEntPaymentTaskByMdmId(Long mdmId, Integer status);
 

@@ -47,7 +47,7 @@ public class ControllerTest {
     @GetMapping("/getaccounts")
     public String getAccounts() {
 
-        serviceAccountsInterface.getClientAccounts(5000015297L, 12165456);
+        serviceAccountsInterface.getClientAccounts(5000015297L, 12488);
 
         return "Accounts for client are received !";
     }
@@ -116,7 +116,7 @@ public class ControllerTest {
             CorePayKafkaModel build = CorePayKafkaModel
                     .builder()
                     .rewardId(rewardId)
-                    .mdmId(500001529L)
+                    .mdmId(5000015297L)
                     .questionnaireId(UUID.randomUUID())
                     .recipientTypeId(3)
                     .rewardTypeId(1)

@@ -9,13 +9,10 @@ import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctTaskStatuses;
-import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntTaskStatusHistory;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +20,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
     private final KafkaResultRewardProducer kafkaResultRewardProducer;
-    //private final ProcessAccount processAccount;
+
     @Override
     public void processAccounts(Account accountNumberEntity, String result, Long mdmId, Integer rewardId) {
 
@@ -36,14 +33,14 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
 
             // Записать в БД для данного задания ent_payment_task.status=50 и blocked=0
             entPaymentTaskActions.updateAccountNumber(masterAccountNumber,
-                    accountSystem, mdmId, DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), accountBranch);
+                    accountSystem, DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), accountBranch, mdmId, 0);
 
             // формируем объект для записи в табл. taskStatusHistory
             EntTaskStatusHistory entTaskStatusHistory =
                     createEntTaskStatusHistory(DctTaskStatuses.STATUS_READY_FOR_PAYMENT.getStatus(), null, rewardId);
 
             // создать новую запись в таблице taskStatusHistory
-            //entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);  //todo
+            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
         }
 
