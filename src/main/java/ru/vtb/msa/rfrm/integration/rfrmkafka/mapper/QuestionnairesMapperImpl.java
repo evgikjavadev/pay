@@ -23,8 +23,8 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
                     .rewardId(elem.getRewardId())
                     .mdmId(elem.getMdmId())
                     .questionnaireId(elem.getQuestionnaireId())
-                    .recipientType(elem.getRecipientType())
-                    .amount(elem.getAmount())
+                    .recipientType(elem.getRecipientTypeId())
+                    .amount(elem.getAmountReward())
                     .status(DctTaskStatuses.STATUS_NEW.getStatus())
                     .sourceQs(elem.getSourceQs())
                     .accountSystem(null)
@@ -33,6 +33,7 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
                     .processed(false)
                     .blocked(0)
                     .blockedAt(LocalDateTime.now())
+                    .rewardType(elem.getRewardTypeId())
                     .build();
 
             entPayTaskList.add(task);

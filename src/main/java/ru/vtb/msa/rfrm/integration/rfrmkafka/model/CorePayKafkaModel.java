@@ -14,18 +14,20 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CorePayKafkaModel {
-    @JsonProperty("reward_id")
-    private Integer rewardId;
-    @JsonProperty("mdm_id")
-    private Long mdmId;
     @JsonProperty("questionnaire_id")
     private UUID questionnaireId;
+    @JsonProperty("reward_id")
+    private Integer rewardId;
+    @JsonProperty("reward_type_id")
+    private Integer rewardTypeId;
     @JsonProperty("recipient_type_id")
-    private Integer recipientType;
-    @JsonProperty("amount_reward")
-    private BigDecimal amount;
+    private Integer recipientTypeId;
+    @JsonProperty("mdm_id")
+    private Long mdmId;
     @JsonProperty("source_qs")
     private String sourceQs;
+    @JsonProperty("amount_reward")
+    private BigDecimal amountReward;
     @JsonProperty("create_date")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDate;

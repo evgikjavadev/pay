@@ -3,7 +3,6 @@ package ru.vtb.msa.rfrm.functions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.vtb.msa.rfrm.functions.ProcessQuestionnairesService;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.mapper.QuestionnairesMapper;
@@ -49,8 +48,8 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
         checkList.add(elem.getRewardId());
         checkList.add(elem.getQuestionnaireId());
         checkList.add(elem.getMdmId());
-        checkList.add(elem.getAmount());
-        checkList.add(elem.getRecipientType());
+        checkList.add(elem.getAmountReward());
+        checkList.add(elem.getRecipientTypeId());
         checkList.add(elem.getSourceQs());
         List<Object> objectList = checkList.stream().filter(Objects::isNull).collect(Collectors.toList());
         if (objectList.size() != 0) {
@@ -67,10 +66,12 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
 
             EntPaymentTask taskFromDb = entPaymentTaskRepository.findByRewardId(elem.getRewardId());
 
-            if (taskFromDb != null) {
+            if (taskFromDb == null) {
+                entPaymentTaskActions.insertPaymentTaskInDB(elem);
+            } else {
                 log.warn("Задание с таким reward_id уже существует");
             }
-            entPaymentTaskActions.insertPaymentTaskInDB(elem);
+
         }
     }
 

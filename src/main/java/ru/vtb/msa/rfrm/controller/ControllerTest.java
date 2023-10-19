@@ -120,9 +120,9 @@ public class ControllerTest {
                     .rewardId(rewardId)
                     .mdmId(500001529L)
                     .questionnaireId(questionnaireId)
-                    .recipientType(3)
+                    .recipientTypeId(3)
                     .sourceQs("CC")
-                    .amount(BigDecimal.valueOf(69000.00))
+                    .amountReward(BigDecimal.valueOf(69000.00))
                     .createDate(LocalDateTime.now())
                     .build();
 

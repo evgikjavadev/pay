@@ -48,9 +48,9 @@ class QuestionnairesMapperImplTest {
                 .rewardId(random.nextInt())
                 .mdmId(random.nextLong())
                 .questionnaireId(UUID.randomUUID())
-                .recipientType(3)
+                .recipientTypeId(3)
                 .sourceQs("CC")
-                .amount(BigDecimal.valueOf(random.nextDouble()))
+                .amountReward(BigDecimal.valueOf(random.nextDouble()))
                 .createDate(LocalDateTime.now())
                 .build();
 
