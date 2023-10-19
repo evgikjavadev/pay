@@ -49,47 +49,9 @@ public class KafkaInternalConsumer {
 
         functionPD.startFunctionPD();
 
-//        // Осуществить поиск N заданий в таблице paymentTask, у которых status=10 (Новая) и blocked=0, с сортировкой по blocked_at возрастанию
-//        List<EntPaymentTask> entPaymentTaskList = entPaymentTaskRepository.findByStatus(DctTaskStatuses.STATUS_NEW.getStatus(), findSizeApplication);
-//
-//        // передаем в обработку List задач
-//        handleMdmIdList(entPaymentTaskList);
-//
-//        sendRunningMessageInternalTopic();
-
         ack.acknowledge();
         log.info("Finish processing topic = {} partition = {}", topic, partition);
 
     }
 
-//    @SneakyThrows
-//    private void handleMdmIdList(List<EntPaymentTask> entPaymentTaskList) {
-//
-//        List<Integer> setRewardIdList = entPaymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
-//
-//        //Установить для задачи blocked=1 и blocked_at=now()
-//        actionEntPaymentTaskRepo.updateBlockByRewardIdEqualOne(setRewardIdList);
-//
-//        for (EntPaymentTask elem: entPaymentTaskList) {
-//            // получаем счета клиента из 1503 для каждого mdmId и rewardId
-//            serviceAccounts.getClientAccounts(elem.getMdmId(), elem.getRewardId());
-//        }
-//
-//        // Установить для задачи blocked=0 и blocked_at=now()
-//        actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);
-//
-//        //Thread.sleep(sleepMs);
-//    }
-
-//    private void sendRunningMessageInternalTopic() {
-//
-//        InternalMessageModel internalMessageModel = InternalMessageModel
-//                .builder()
-//                .functionName("function_result_reward")
-//                .status(Statuses.COMPLETED.name())
-//                .timeStamp(LocalDateTime.now())
-//                .build();
-//
-//        kafkaInternalProducer.sendObjectToInternalKafka(rfrm_pay_function_result_reward, internalMessageModel);
-//    }
 }

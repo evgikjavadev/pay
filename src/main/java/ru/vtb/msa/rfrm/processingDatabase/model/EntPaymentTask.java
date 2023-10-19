@@ -71,6 +71,13 @@ public class EntPaymentTask {
     @Column("account_branch")
     private String accountBranch;
 
+    /**
+     Тип вознаграждения:
+     1 - Выплата (рубли)
+     2 - Выплата (бонусы) */
+    @Column("reward_type")
+    private Integer rewardType;
+
     public LocalDateTime getCreatedAt() {
         return LocalDateTime.now();
     }

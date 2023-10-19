@@ -43,7 +43,6 @@ public class ControllerTest {
     private String rfrm_pay_function_result_reward;
     @Value("${core.kafka.bootstrap.server}")
     private String bootstrapServers;
-    private static final UUID questionnaireId = UUID.randomUUID();
 
     @GetMapping("/getaccounts")
     public String getAccounts() {
@@ -113,16 +112,16 @@ public class ControllerTest {
     }
 
     private CorePayKafkaModel getTestQuestionnairesKafkaModel(Integer rewardId) {
-        Random rand = new Random();
 
             CorePayKafkaModel build = CorePayKafkaModel
                     .builder()
                     .rewardId(rewardId)
                     .mdmId(500001529L)
-                    .questionnaireId(questionnaireId)
-                    .recipientType(3)
+                    .questionnaireId(UUID.randomUUID())
+                    .recipientTypeId(3)
+                    .rewardTypeId(1)
                     .sourceQs("CC")
-                    .amount(BigDecimal.valueOf(69000.00))
+                    .amountReward(BigDecimal.valueOf(69000.00))
                     .createDate(LocalDateTime.now())
                     .build();
 
