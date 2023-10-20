@@ -2,6 +2,7 @@ package ru.vtb.msa.rfrm.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Account;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
@@ -22,6 +23,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
     private final KafkaResultRewardProducer kafkaResultRewardProducer;
 
     @Override
+    @Transactional
     public void processAccounts(Account accountNumberEntity, String result, Long mdmId, Integer rewardId) {
 
         String masterAccountNumber = accountNumberEntity.getNumber();

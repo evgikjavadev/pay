@@ -62,7 +62,7 @@ public class ControllerTest {
     /**
      * Отправляем тестовый объект в топик rfrm_core_payment_order (Core), ТЕСТИРУЕМ CONSUMER в Pay
      * */
-    @GetMapping("/publish")
+    @GetMapping("/send_to_rfrm_core_payment_order")
     public String publishMessage() {
 
         // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
