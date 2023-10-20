@@ -37,7 +37,8 @@ public class ServiceAccounts implements ServiceAccountsInterface {
             // получаем весь объект с данными счета клиента из 1503
             Response<?> personAccounts = personClientAccounts
                     .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
-            getAndPassParameters(personAccounts, mdmIdFromKafka, rewardId);   //todo exception
+
+            getAndPassParameters(personAccounts, mdmIdFromKafka, rewardId);
 
         } catch (HttpStatusException e) {
             HttpStatus status = e.getStatus();

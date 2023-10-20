@@ -10,7 +10,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.CorePayKafkaModel;
 import ru.vtb.msa.rfrm.functions.ProcessQuestionnairesService;
-import ru.vtb.msa.rfrm.service.ServiceAccountsInterface;
+import ru.vtb.msa.rfrm.service.PrepareProcessGetAccounts;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
 @Component
 public class KafkaConsumerCoreClient {
     private final ProcessQuestionnairesService service;
-    private final ServiceAccountsInterface serviceAccounts;
+    private final PrepareProcessGetAccounts prepareProcessGetAccounts;
     //private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
     //private final InternalProcessingTasksPayment internalProcessingTasksPayment;
 
@@ -34,6 +34,9 @@ public class KafkaConsumerCoreClient {
 
         try {
             service.validateFieldsAndSaveTaskToDB(messageList);
+
+            prepareProcessGetAccounts.firstStepProcessAccounts(messageList);
+
             ack.acknowledge();
         } catch (Exception e) {
             ack.nack(0,100);
