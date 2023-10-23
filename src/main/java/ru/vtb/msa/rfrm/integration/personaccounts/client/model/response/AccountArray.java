@@ -15,5 +15,5 @@ import java.util.Map;
 @AllArgsConstructor
 public class AccountArray {
     //@JsonProperty("accounts")
-    private List<Map<String, Account>> accountsListMap;
+    private Map<String, Account> accountsListMap;
 }
