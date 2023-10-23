@@ -19,6 +19,7 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountIn
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -96,9 +97,15 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
     private void getAndPassParameters(Response<?> personAccounts, Long mdmId, Long rewardId) {
         log.info("Start process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
-        //personAccounts.getBody().getAccounts().stream().filter(a -> a.)
 
-        //new ArrayList<>(personAccounts.getBody().getAccounts());
+        ArrayList<Map.Entry<String, Account>> entries = new ArrayList<>(personAccounts.getBody().getAccounts().entrySet());
+        Map.Entry<String, Account> masterAccount = entries.stream()
+                .filter(a -> (a.getValue().getEntityType().equalsIgnoreCase("MASTER_ACCOUNT")
+                        && a.getValue().getBalance().getCurrency().equalsIgnoreCase("RUB")))
+                .findFirst()
+                .get();
+
+
         //Account masterAccount = findMasterAccountRub(accountList);
 
         // получаем значение result в ответе от 1503
@@ -107,7 +114,7 @@ public class ServiceAccounts implements ServiceAccountsInterface {
         // получаем mdmId из заголовков ответа от 1503
         //Long mdmId = getMdmId(personAccounts);
 
-        //processClientAccounts.processAccounts(masterAccount, result, mdmId, rewardId);
+        processClientAccounts.processAccounts(masterAccount.getValue(), result, mdmId, rewardId);
         log.info("Finish process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
     }
 

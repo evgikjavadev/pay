@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Builder
@@ -11,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CommonResponseAccounts<R> {
     @JsonProperty("accounts")
-    private AccountArray accounts;
+    private Map<String, Account> accounts;
     @JsonProperty("deposites")
     private Deposites deposites;
     @JsonProperty("cards")
