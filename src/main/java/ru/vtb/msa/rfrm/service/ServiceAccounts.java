@@ -31,7 +31,7 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
     @SneakyThrows
     @Override
-    public void getClientAccounts(Long mdmIdFromKafka, Integer rewardId) {
+    public void getClientAccounts(Long mdmIdFromKafka, Long rewardId) {
 
         try {
             // получаем весь объект с данными счета клиента из 1503
@@ -81,7 +81,7 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
         if (status.value() == 400 || status.value() == 500) {
 
-            List<Integer> rewardIdList = new ArrayList<>();
+            List<Long> rewardIdList = new ArrayList<>();
 
             for (EntPaymentTask elem: paymentTaskByMdmId) {
                 rewardIdList.add(elem.getRewardId());
@@ -94,10 +94,12 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
     }
 
-    private void getAndPassParameters(Response<?> personAccounts, Long mdmId, Integer rewardId) {
+    private void getAndPassParameters(Response<?> personAccounts, Long mdmId, Long rewardId) {
         log.info("Start process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
-        List<Account> accountList = new ArrayList<>(personAccounts.getBody().getAccounts().values());
-        Account masterAccount = findMasterAccountRub(accountList);
+        //personAccounts.getBody().getAccounts().stream().filter(a -> a.)
+
+        //new ArrayList<>(personAccounts.getBody().getAccounts());
+        //Account masterAccount = findMasterAccountRub(accountList);
 
         // получаем значение result в ответе от 1503
         String result = personAccounts.getBody().getResult();
@@ -105,7 +107,7 @@ public class ServiceAccounts implements ServiceAccountsInterface {
         // получаем mdmId из заголовков ответа от 1503
         //Long mdmId = getMdmId(personAccounts);
 
-        processClientAccounts.processAccounts(masterAccount, result, mdmId, rewardId);
+        //processClientAccounts.processAccounts(masterAccount, result, mdmId, rewardId);
         log.info("Finish process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
     }
 

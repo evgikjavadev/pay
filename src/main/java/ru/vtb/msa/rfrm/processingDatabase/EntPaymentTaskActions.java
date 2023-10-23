@@ -13,8 +13,8 @@ public interface EntPaymentTaskActions {
 
     void updateStatusEntPaymentTaskByMdmId(Long mdmId, Integer status);
 
-    void updateStatusEntPaymentTaskByRewardId(Integer rewardId, Integer status);
+    void updateStatusEntPaymentTaskByRewardId(Long rewardId, Integer status);
 
-    void updateProcessedBPaymentTaskByRewardId(Integer rewardId);
+    void updateProcessedBPaymentTaskByRewardId(Long rewardId);
 
 }

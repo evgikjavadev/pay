@@ -47,7 +47,7 @@ public class ControllerTest {
     @GetMapping("/getaccounts")
     public String getAccounts() {
 
-        serviceAccountsInterface.getClientAccounts(5000015297L, 12488);
+        serviceAccountsInterface.getClientAccounts(5000015293L, 12447L);
 
         return "Accounts for client are received !";
     }
@@ -68,8 +68,8 @@ public class ControllerTest {
         // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
         Random rand = new Random(10000);
 
-        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(rand.nextInt(50000));
-        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(rand.nextInt(50000));
+        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(907445L);
+        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(3225376L);
 
         // create Producer properties
         Properties properties = new Properties();
@@ -102,7 +102,7 @@ public class ControllerTest {
         PayCoreKafkaModel payCoreKafkaModel = PayCoreKafkaModel
                 .builder()
                 .status(20)
-                .rewardId(124684648)
+                .rewardId(124684648L)
                 .statusDescription("Status description ... ")
                 .build();
 
@@ -111,21 +111,19 @@ public class ControllerTest {
         return "Object to topic rfrm_core_payment_order sent! ";
     }
 
-    private CorePayKafkaModel getTestQuestionnairesKafkaModel(Integer rewardId) {
+    private CorePayKafkaModel getTestQuestionnairesKafkaModel(Long rewardId) {
 
-            CorePayKafkaModel build = CorePayKafkaModel
-                    .builder()
-                    .rewardId(rewardId)
-                    .mdmId(5000015297L)
-                    .questionnaireId(UUID.randomUUID())
-                    .recipientTypeId(3)
-                    .rewardTypeId(1)
-                    .sourceQs("CC")
-                    .amountReward(BigDecimal.valueOf(69000.00))
-                    .createDate(LocalDateTime.now())
-                    .build();
-
-        return build;
+        return CorePayKafkaModel
+                .builder()
+                .rewardId(rewardId)
+                .mdmId(5000015235L)
+                .questionnaireId(UUID.fromString("23ae7ee8-ce50-466c-9ec7-1f0028cee0c4"))
+                .recipientTypeId(3)
+                .rewardTypeId(1)
+                .sourceQs("CC")
+                .amountReward(BigDecimal.valueOf(5500.00))
+                .createDate(LocalDateTime.now())
+                .build();
     }
 
     //сохранение заданий в табл начальное заполнение
@@ -171,7 +169,7 @@ public class ControllerTest {
     public String sendObjectToRfrmPayResultReward() {
         PayCoreKafkaModel object = PayCoreKafkaModel
                 .builder()
-                .rewardId(1234567)
+                .rewardId(1234567L)
                 .status(30)
                 .statusDescription("Description status ... ")
                 .build();

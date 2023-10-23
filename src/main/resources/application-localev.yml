@@ -26,9 +26,9 @@ spring:
             authorization-grant-type: client_credentials
         provider:
           epa-session-client:
-            token-uri: http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock/passport/tech/oauth2/token
+            token-uri: http://localhost:8070/passport/tech/oauth2/token
           epa-tyk-client:
-            token-uri: http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock/passport/oauth2/token
+            token-uri: http://localhost:8070/passport/oauth2/token
 
   datasource:
     hikari:
@@ -100,7 +100,7 @@ epa-anti-replay:
   epa-endpoint: http://localhost:8070/passport/jti?{jti}
 
 product-profile-fl-accounts:
-  url: http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock
+  url: http://localhost:8070
   resource: /portfolio/portfolio-agregator/portfolio/active
   headers:
     X-INITIATOR-SERVICE: rfrm-pay

@@ -10,7 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 public class PayCoreKafkaModel {
     @JsonProperty("reward_id")
-    private Integer rewardId;
+    private Long rewardId;
     @JsonProperty("status")
     private Integer status;
     @JsonProperty("status_description")

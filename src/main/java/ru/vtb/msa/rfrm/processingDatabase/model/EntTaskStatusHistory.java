@@ -28,7 +28,7 @@ public class EntTaskStatusHistory {
 
     /** id задания, по которому изменился статус соответствует reward_id */
     @Column("reward_id")
-    private Integer rewardId;
+    private Long rewardId;
 
     /** Код комментария к статусу заявки */
     @Column("status_details_code")

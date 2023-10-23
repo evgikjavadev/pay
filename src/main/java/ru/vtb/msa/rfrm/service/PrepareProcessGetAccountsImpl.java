@@ -15,7 +15,7 @@ public class PrepareProcessGetAccountsImpl implements PrepareProcessGetAccounts 
 
         for (CorePayKafkaModel elem: messagesFromKafka) {
             Long mdmId = elem.getMdmId();
-            Integer rewardId = elem.getRewardId();
+            Long rewardId = elem.getRewardId();
             serviceAccountsInterface.getClientAccounts(mdmId, rewardId);
         }
 

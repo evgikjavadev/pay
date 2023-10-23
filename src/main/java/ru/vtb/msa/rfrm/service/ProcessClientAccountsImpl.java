@@ -24,7 +24,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
 
     @Override
     @Transactional
-    public void processAccounts(Account accountNumberEntity, String result, Long mdmId, Integer rewardId) {
+    public void processAccounts(Account accountNumberEntity, String result, Long mdmId, Long rewardId) {
 
         String masterAccountNumber = accountNumberEntity.getNumber();
         String accountSystem = accountNumberEntity.getEntitySubSystems();
@@ -102,7 +102,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
         }
     }
 
-    private PayCoreKafkaModel createResultMessage(Integer rewardId, Integer status, String description) {
+    private PayCoreKafkaModel createResultMessage(Long rewardId, Integer status, String description) {
 
         return PayCoreKafkaModel
                 .builder()
@@ -112,7 +112,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
                 .build();
     }
 
-    private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode, Integer rewardId) {
+    private EntTaskStatusHistory createEntTaskStatusHistory(Integer taskStatus, Integer statusDetailsCode, Long rewardId) {
         return EntTaskStatusHistory
                 .builder()
                 .rewardId(rewardId)
