@@ -41,6 +41,7 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
                 uriBuilder -> uriBuilder.path(properties.getResource()).build(),
                 request,
                 CommonResponseAccounts.class);
+        log.info("Response object: {}", post.getBody().getAccounts());
 
         log.info("Финиш вызова {}", PRODUCT_PROFILE_FL.getValue());
         return post;

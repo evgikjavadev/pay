@@ -6,8 +6,10 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@RequiredArgsConstructor
-@Data
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Account {
     @JsonProperty("balance")
     private Balance balance;
@@ -50,7 +52,7 @@ public class Account {
     @JsonProperty("overdraft")
     private Overdraft overdraft;
     @JsonProperty("timestamp")
-    private String timestamp;
+    private LocalDateTime timestamp;
 
     /** Идентификатор пользователя в учетной системе */
     @JsonProperty("userId")

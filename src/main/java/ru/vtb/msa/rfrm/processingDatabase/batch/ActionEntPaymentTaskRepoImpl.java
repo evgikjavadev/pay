@@ -26,20 +26,20 @@ public class ActionEntPaymentTaskRepoImpl implements ActionEntPaymentTaskRepo {
 
     @Override
     @Transactional
-    public void updateBlockByRewardIdEqualOne(List<Integer> entities) {
+    public void updateBlockByRewardIdEqualOne(List<Long> entities) {
 
-        for (Integer elem: entities) {
+        for (Long elem: entities) {
             jdbcTemplate.update(updateListUuidEqualOne, elem);
         }
     }
 
     @Override
     @Transactional
-    public void updateBlockByRewardIdEqualZero(List<Integer> entities){
+    public void updateBlockByRewardIdEqualZero(List<Long> entities){
 //        SqlParameterSource[] batch = getBatch(entities);
 //        this.jdbcTemplateName.batchUpdate(updateListUuidEqualZero, batch);
 
-        for (Integer elem: entities) {
+        for (Long elem: entities) {
             jdbcTemplate.update(updateListUuidEqualZero, elem);
         }
 

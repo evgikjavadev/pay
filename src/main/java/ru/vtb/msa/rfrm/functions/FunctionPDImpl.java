@@ -50,7 +50,7 @@ public class FunctionPDImpl implements FunctionPD {
     @SneakyThrows
     private void handleMdmIdList(List<EntPaymentTask> entPaymentTaskList) {
 
-        List<Integer> setRewardIdList = entPaymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
+        List<Long> setRewardIdList = entPaymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
 
         //Установить для задачи blocked=1 и blocked_at=now()
         actionEntPaymentTaskRepo.updateBlockByRewardIdEqualOne(setRewardIdList);

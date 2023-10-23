@@ -4,4 +4,5 @@ import lombok.Data;
 
 @Data
 public class Loans {
+    private Object obj;
 }

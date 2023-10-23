@@ -45,7 +45,7 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
                 new Object[] {mdmId},
                 (rs, rowNum) -> {
                     EntPaymentTask task = new EntPaymentTask();
-                    task.setRewardId(rs.getObject(1, Integer.class));
+                    task.setRewardId(rs.getObject(1, Long.class));
                     task.setMdmId(rs.getObject(3, Long.class));
                     return task;
                 });
@@ -64,13 +64,13 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
-    public void updateStatusEntPaymentTaskByRewardId(Integer rewardId, Integer status) {
+    public void updateStatusEntPaymentTaskByRewardId(Long rewardId, Integer status) {
         String sql = "UPDATE ent_payment_task SET status = ? WHERE reward_id = ?";
         jdbcTemplate.update(sql, status, rewardId);
     }
 
     @Override
-    public void updateProcessedBPaymentTaskByRewardId(Integer rewardId) {
+    public void updateProcessedBPaymentTaskByRewardId(Long rewardId) {
         String sql = "UPDATE ent_payment_task SET processed = ? WHERE reward_id = ?";
         jdbcTemplate.update(sql, true, rewardId);
     }

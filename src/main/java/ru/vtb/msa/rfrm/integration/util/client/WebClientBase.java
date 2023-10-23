@@ -17,6 +17,7 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Function;
 
 @Slf4j

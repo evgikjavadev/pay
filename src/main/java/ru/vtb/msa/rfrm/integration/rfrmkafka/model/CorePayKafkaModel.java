@@ -17,7 +17,7 @@ public class CorePayKafkaModel {
     @JsonProperty("questionnaire_id")
     private UUID questionnaireId;
     @JsonProperty("reward_id")
-    private Integer rewardId;
+    private Long rewardId;
     @JsonProperty("reward_type_id")
     private Integer rewardTypeId;
     @JsonProperty("recipient_type_id")

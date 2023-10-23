@@ -68,7 +68,7 @@ public class KafkaInternalConsumerTask {
 
         private void handleTasksList(List<EntPaymentTask> paymentTaskList) {
 
-        List<Integer> setRewardIdList = paymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
+        List<Long> setRewardIdList = paymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
 
         // Установить для задачи blocked=1 и blocked_at=now()
         actionEntPaymentTaskRepo.updateBlockByRewardIdEqualOne(setRewardIdList);
@@ -102,7 +102,7 @@ public class KafkaInternalConsumerTask {
         kafkaInternalProducer.sendObjectToInternalKafka(rfrm_pay_function_status_update_reward, internalMessageModel);
     }
 
-    private static PayCoreKafkaModel getPayCoreLinkModel(Integer rewardId, Integer status) {
+    private static PayCoreKafkaModel getPayCoreLinkModel(Long rewardId, Integer status) {
 
         // status_description = Если ent_payment_task.status = 30, то привести к строке (SELECT description FROM dct_status_details WHERE status_details_code = 203),
         // иначе - поле не отправлять

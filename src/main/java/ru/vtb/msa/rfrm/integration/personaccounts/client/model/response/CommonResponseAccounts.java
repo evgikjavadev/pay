@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Builder
@@ -12,9 +11,9 @@ import java.util.Map;
 @AllArgsConstructor
 public class CommonResponseAccounts<R> {
     @JsonProperty("accounts")
-    private Map<String, Account> accounts;
+    private AccountArray accounts;
     @JsonProperty("deposites")
-    private Map<String, Object> deposites;
+    private Deposites deposites;
     @JsonProperty("cards")
     public Cards cards;
     @JsonProperty("investments")
@@ -48,10 +47,9 @@ public class CommonResponseAccounts<R> {
     public String statusMode;
     @JsonProperty("errorString")
     public String errorString;
-
-//    @JsonProperty("relations")
-//    public List<Object> relations;
-//    @JsonProperty("ibsContracts")
-//    public IbsContracts ibsContracts;
+    @JsonProperty("relations")
+    public List<Object> relations;
+    @JsonProperty("ibsContracts")
+    public IbsContracts ibsContracts;
 
 }

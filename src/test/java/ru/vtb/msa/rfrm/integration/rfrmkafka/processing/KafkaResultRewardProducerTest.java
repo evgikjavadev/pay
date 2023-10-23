@@ -1,6 +1,5 @@
 package ru.vtb.msa.rfrm.integration.rfrmkafka.processing;
 
-import org.apache.thrift.TException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -22,7 +22,7 @@ public class EntPaymentTask {
     /** ID задачи на оплату (генерируется ядром 2155 rfrm-core) */
     @Id
     @Column("reward_id")
-    private Integer rewardId;
+    private Long rewardId;
 
     /** ID заявки на участие в реферальной программе */
     @Column("questionnaire_id")
