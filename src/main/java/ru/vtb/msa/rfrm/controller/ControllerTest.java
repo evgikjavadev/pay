@@ -161,7 +161,7 @@ public class ControllerTest {
 
         kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_status_update_reward", functionResultReward);
 
-        return "Object sent to topic rfrm_pay_function_result_reward successfully!";
+        return "Object sent to topic rfrm_pay_function_update_reward successfully!";
     }
 
     /** Тест ПРОДЮСЕРА отправки объекта в топик rfrm_pay_result_reward */

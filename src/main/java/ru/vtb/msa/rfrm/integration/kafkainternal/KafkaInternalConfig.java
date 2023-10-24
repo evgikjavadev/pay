@@ -18,6 +18,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import ru.vtb.msa.rfrm.functions.FunctionPC;
 import ru.vtb.msa.rfrm.functions.FunctionPD;
 import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
@@ -152,12 +153,18 @@ public class KafkaInternalConfig {
         return new KafkaInternalConsumer(entPaymentTaskRepository, actionEntPaymentTaskRepo, serviceAccounts, kafkaInternalProducer, functionPD);
     }
 
+//    @Bean
+//    KafkaInternalConsumerTask consumerFunctionUpdate(EntPaymentTaskActions entPaymentTaskActions, KafkaResultRewardProducer kafkaResultRewardProducer,
+//                                                     EntPaymentTaskRepository entPaymentTaskRepository, ActionEntPaymentTaskRepo actionEntPaymentTaskRepo,
+//                                                     KafkaInternalProducer kafkaInternalProducer) {
+//        return new KafkaInternalConsumerTask(entPaymentTaskActions, kafkaResultRewardProducer, entPaymentTaskRepository, actionEntPaymentTaskRepo, kafkaInternalProducer);
+//    }
+
     @Bean
-    KafkaInternalConsumerTask consumerFunctionUpdate(EntPaymentTaskActions entPaymentTaskActions, KafkaResultRewardProducer kafkaResultRewardProducer,
-                                                     EntPaymentTaskRepository entPaymentTaskRepository, ActionEntPaymentTaskRepo actionEntPaymentTaskRepo,
-                                                     KafkaInternalProducer kafkaInternalProducer) {
-        return new KafkaInternalConsumerTask(entPaymentTaskActions, kafkaResultRewardProducer, entPaymentTaskRepository, actionEntPaymentTaskRepo, kafkaInternalProducer);
+    KafkaInternalConsumerTask consumerFunctionUpdate(FunctionPC functionPC) {
+        return new KafkaInternalConsumerTask(functionPC);
     }
+
 
     @Bean
     public static ConcurrentKafkaListenerContainerFactory<String, InternalMessageModel> kafkaListenerContainerFactoryInternal(
