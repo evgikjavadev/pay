@@ -9,8 +9,6 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
-//import ru.vtb.msa.rfrm.functions.FunctionPC;
-//import ru.vtb.msa.rfrm.functions.FunctionPCImpl;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class, QuartzEndpointAutoConfiguration.class,
         DataSourceAutoConfiguration.class })
@@ -22,7 +20,5 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        //FunctionPC functionPC = new FunctionPCImpl();
-        //functionPC.startProcess();
     }
 }
