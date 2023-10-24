@@ -47,7 +47,7 @@ public class ControllerTest {
     @GetMapping("/getaccounts")
     public String getAccounts() {
 
-        serviceAccountsInterface.getClientAccounts(5000015293L, 12447L);
+        serviceAccountsInterface.getClientAccounts(5000015293L, 12488L);
 
         return "Accounts for client are received !";
     }
@@ -68,8 +68,8 @@ public class ControllerTest {
         // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
         Random rand = new Random(10000);
 
-        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(907445L);
-        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(3225376L);
+        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(9074478L);
+        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(3225378L);
 
         // create Producer properties
         Properties properties = new Properties();
@@ -117,7 +117,7 @@ public class ControllerTest {
                 .builder()
                 .rewardId(rewardId)
                 .mdmId(5000015235L)
-                .questionnaireId(UUID.fromString("23ae7ee8-ce50-466c-9ec7-1f0028cee0c4"))
+                .questionnaireId(UUID.fromString("23ae7ee8-ce50-466c-9ec7-1f0028cee0c5"))
                 .recipientTypeId(3)
                 .rewardTypeId(1)
                 .sourceQs("CC")
