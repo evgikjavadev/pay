@@ -131,7 +131,7 @@ product-profile-fl-accounts:
 
 pay:
   kafka:
-    enable: ${PROCES_PALTF_ENABLE_PAY:false}
+    enable: ${PROCES_PALTF_ENABLE_PAY:true}
     bootstrap:
       server: ${PROCES_PALTF_KAFKA_SERVER_PAY:d5rfrm-kfc001lk.corp.dev.vtb:9092}
     consumer:
@@ -159,7 +159,7 @@ pay:
 
 function:
   kafka:
-    enable: ${FUNCTION_ENABLE:false}
+    enable: ${FUNCTION_ENABLE:true}
     #Интервал черезготорый кафкаоткоючит consumer и начент пере балансировку
     max.poll.interval.ms: ${FUNCTION_MAX_POLL_INTERVAL:300000}
     #паузара в работе consumer влиает на max.poll.interval = max.poll.interval + pause.work.consumer
