@@ -20,8 +20,6 @@ import java.util.List;
 public class KafkaConsumerCoreClient {
     private final ProcessQuestionnairesService service;
     private final PrepareProcessGetAccounts prepareProcessGetAccounts;
-    //private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
-    //private final InternalProcessingTasksPayment internalProcessingTasksPayment;
 
     @KafkaListener(id = "${core.kafka.consumer.group-id-core}",
                    topics = "${core.kafka.topic}",

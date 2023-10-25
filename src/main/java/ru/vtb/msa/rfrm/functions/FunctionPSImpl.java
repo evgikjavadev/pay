@@ -17,6 +17,7 @@ import ru.vtb.msa.rfrm.processingDatabase.model.DctTaskStatuses;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FunctionPCImpl implements FunctionPC {
+public class FunctionPSImpl implements FunctionPS {
     @Value("${function.kafka.topic.rfrm_pay_function_status_update_reward}")
     private String rfrm_pay_function_status_update_reward;
     @Value("${findSizeApplication}")
@@ -35,10 +36,14 @@ public class FunctionPCImpl implements FunctionPC {
     private final ActionEntPaymentTaskRepo actionEntPaymentTaskRepo;
     private final KafkaInternalProducer kafkaInternalProducer;
 
+    @PostConstruct
+    public void init() {
+        startProcessFunctionPS();
+    }
+
     @Override
-    @Scheduled(fixedDelay = 4000)
-    public void startProcess() {
-        log.info("Initial start функции ПС. Передача события о ручной смене статуса задания на оплату");
+    public void startProcessFunctionPS() {
+        log.info("Initial start function PS. Transfer event hand change status. Передача события о ручной смене статуса задания на оплату");
 
         // Выбрать из таблицы ent_payment_task N (количество настраивается в конфиге) заданий с processed=false и blocked=0, с сортировкой по blocked_at по возрастанию
         List<EntPaymentTask> paymentTaskList = entPaymentTaskRepository.getRewardIdsByProcessAndBlocked(findSizeApplication);
@@ -67,7 +72,10 @@ public class FunctionPCImpl implements FunctionPC {
             PayCoreKafkaModel coreLinkModel = getPayCoreLinkModel(task.getRewardId(), task.getStatus());
 
             // Отправить сообщение в топик rfrm_pay_result_reward (Core service)
-            kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
+            // добавил условие что задания с статусом 10, 40, 50 не пишутся в топик
+            if (coreLinkModel.getStatus() == 20 || coreLinkModel.getStatus() == 30) {
+                kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
+            }
 
             // Установить для задачи blocked=0
             actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);
