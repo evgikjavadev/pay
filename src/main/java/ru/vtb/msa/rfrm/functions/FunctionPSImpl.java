@@ -72,10 +72,7 @@ public class FunctionPSImpl implements FunctionPS {
             PayCoreKafkaModel coreLinkModel = getPayCoreLinkModel(task.getRewardId(), task.getStatus());
 
             // Отправить сообщение в топик rfrm_pay_result_reward (Core service)
-            // добавил условие что задания с статусом 10, 40, 50 не пишутся в топик
-            if (coreLinkModel.getStatus() == 20 || coreLinkModel.getStatus() == 30) {
-                kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
-            }
+            kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
 
             // Установить для задачи blocked=0
             actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);
