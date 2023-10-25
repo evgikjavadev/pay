@@ -46,7 +46,7 @@ public class FunctionPSImpl implements FunctionPS {
         log.info("Initial start function PS. Transfer event hand change status. Передача события о ручной смене статуса задания на оплату");
 
         // Выбрать из таблицы ent_payment_task N (количество настраивается в конфиге) заданий с processed=false и blocked=0, с сортировкой по blocked_at по возрастанию
-        List<EntPaymentTask> paymentTaskList = entPaymentTaskRepository.getRewardIdsByProcessAndBlocked(findSizeApplication);
+        List<EntPaymentTask> paymentTaskList = entPaymentTaskRepository.getRewardIdsByProcessAndBlocked(List.of(20,30), findSizeApplication);
 
         // передаем в обработку задачи
         handleTasksList(paymentTaskList);

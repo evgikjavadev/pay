@@ -44,7 +44,7 @@ public class KafkaInternalConsumerTask {
 //        log.info("Finish rfrm-pay processing topic = {} partition = {}", topic, partition);
 //    }
 
-    @Scheduled(fixedRate = 4000, initialDelay = 2000)   //читаем сообщения каждые сутки
+    @Scheduled(fixedRate = 7000, initialDelay = 2000)  //todo  set every day for production
     public void readEveryDay() {
 
         consumer.subscribe(Collections.singletonList("rfrm_pay_function_result_reward"));
