@@ -16,13 +16,10 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import ru.vtb.msa.rfrm.functions.FunctionPC;
+import ru.vtb.msa.rfrm.functions.FunctionPS;
 import ru.vtb.msa.rfrm.functions.FunctionPD;
 import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
-import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
-import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.batch.ActionEntPaymentTaskRepo;
 import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
@@ -161,8 +158,8 @@ public class KafkaInternalConfig {
 //    }
 
     @Bean
-    KafkaInternalConsumerTask consumerFunctionUpdate(FunctionPC functionPC) {
-        return new KafkaInternalConsumerTask(functionPC);
+    KafkaInternalConsumerTask consumerFunctionUpdate(FunctionPS functionPS) {
+        return new KafkaInternalConsumerTask(functionPS);
     }
 
 

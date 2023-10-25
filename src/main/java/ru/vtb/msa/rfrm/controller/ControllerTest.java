@@ -35,8 +35,6 @@ public class ControllerTest {
     private final ServiceAccountsInterface serviceAccountsInterface;
     private final FunctionPD functionPD;
 
-//    private final InternalProcessingTasksStatuses internalProcessingTasksStatuses;
-//    private final InternalProcessingTasksPayment internalProcessingTasksPayment;
     @Value("${core.kafka.topic}")
     private String rfrm_core_payment_order;
     @Value("function.kafka.topic.rfrm_pay_function_result_reward")
@@ -68,8 +66,8 @@ public class ControllerTest {
         // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
         Random rand = new Random(10000);
 
-        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(9074478L);
-        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(3225378L);
+        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(9074480L);
+        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(3225380L);
 
         // create Producer properties
         Properties properties = new Properties();
