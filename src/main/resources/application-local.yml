@@ -49,7 +49,7 @@ spring:
 
 audit:
   local-mode: true
-  enabled: ${AUDIT_ON:false}
+  enabled: ${AUDIT_ON:true}
   kafka:
     bootstrap:
       server: localhost:9092
@@ -86,7 +86,7 @@ ru:
       client-starter:
         enabled: false
       kafka:
-        bootstrap-servers: "d5mobc-kfc002lk.corp.dev.vtb:9092"
+        bootstrap-servers: d5tstr-kfc002lk.corp.dev.vtb:9092,d5tstr-kfc003lk.corp.dev.vtb:9092,d5tstr-kfc004lk.corp.dev.vtb:9092
 
 ms:
   frame-link: 'gui-vtbmobile.test.vtb.ru'

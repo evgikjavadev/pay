@@ -45,7 +45,7 @@ ru:
       client-starter:
         enabled: ${TRACING_MODE:true}
       kafka:
-        bootstrap-servers: ${TRACE_KAFKA_SERVER}
+        bootstrap-servers: ${TRACE_KAFKA_SERVER:d5tstr-kfc002lk.corp.dev.vtb:9092,d5tstr-kfc003lk.corp.dev.vtb:9092,d5tstr-kfc004lk.corp.dev.vtb:9092}
 
 opentracing:
   jaeger:
@@ -55,7 +55,7 @@ opentracing:
 
 #Аудит
 audit:
-  local-mode: ${AUDIT_LOCAL_MODE:false}
+  local-mode: ${AUDIT_LOCAL_MODE:true}
   enabled: ${AUDIT_ON:false}
   kafka:
     bootstrap:

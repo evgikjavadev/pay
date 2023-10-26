@@ -83,7 +83,7 @@ public class FunctionPSImpl implements FunctionPS {
 
         InternalMessageModel internalMessageModel = InternalMessageModel
                 .builder()
-                .functionName("function_result_reward")
+                .functionName("function_status_update_reward")
                 .status(Statuses.COMPLETED.name())
                 .timeStamp(LocalDateTime.now())
                 .build();
