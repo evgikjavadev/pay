@@ -14,6 +14,7 @@ import ru.vtb.msa.rfrm.service.PrepareProcessGetAccounts;
 
 import java.util.List;
 
+/** Класс консьюмера для функции ПЗ. Получение заданий на оплату и сохранение их в БД */
 @Slf4j
 @RequiredArgsConstructor
 @Component
