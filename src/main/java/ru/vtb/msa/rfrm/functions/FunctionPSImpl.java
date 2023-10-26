@@ -46,7 +46,7 @@ public class FunctionPSImpl implements FunctionPS {
         log.info("Initial start function PS. Transfer event hand change status. Передача события о ручной смене статуса задания на оплату");
 
         // Выбрать из таблицы ent_payment_task N (количество настраивается в конфиге) заданий с processed=false и blocked=0, с сортировкой по blocked_at по возрастанию
-        List<EntPaymentTask> paymentTaskList = entPaymentTaskRepository.getRewardIdsByProcessAndBlocked(findSizeApplication);
+        List<EntPaymentTask> paymentTaskList = entPaymentTaskRepository.getRewardIdsByProcessAndBlocked(List.of(20,30), findSizeApplication);
 
         // передаем в обработку задачи
         handleTasksList(paymentTaskList);
@@ -72,10 +72,7 @@ public class FunctionPSImpl implements FunctionPS {
             PayCoreKafkaModel coreLinkModel = getPayCoreLinkModel(task.getRewardId(), task.getStatus());
 
             // Отправить сообщение в топик rfrm_pay_result_reward (Core service)
-            // добавил условие что задания с статусом 10, 40, 50 не пишутся в топик
-            if (coreLinkModel.getStatus() == 20 || coreLinkModel.getStatus() == 30) {
-                kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
-            }
+            kafkaResultRewardProducer.sendToResultReward(coreLinkModel);
 
             // Установить для задачи blocked=0
             actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);

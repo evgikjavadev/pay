@@ -1,11 +1,14 @@
 package ru.vtb.msa.rfrm.integration.kafkainternal;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -113,6 +116,22 @@ public class KafkaInternalConfig {
 
     @Bean
     public ConsumerFactory<String, InternalMessageModel> consumerFactoryInternal(KafkaProperties kafkaProp) {
+        Map<String, Object> props = setPropertiesInternalConsumer(kafkaProp);
+
+        DefaultKafkaConsumerFactory<String, InternalMessageModel> factory = new DefaultKafkaConsumerFactory<>(props);
+        factory.setKeyDeserializer(new StringDeserializer());
+        factory.setValueDeserializer(new JsonDeserializer<>());
+
+        return factory;
+    }
+
+    @Bean
+    public Consumer<String, InternalMessageModel> createConsumerInternalKafka(ConsumerFactory<String, InternalMessageModel> consumerFactory) {
+        return consumerFactory.createConsumer();
+    }
+
+    @NotNull
+    public Map<String, Object> setPropertiesInternalConsumer(KafkaProperties kafkaProp) {
         Map<String, Object> props = kafkaProp.buildConsumerProperties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
@@ -128,12 +147,7 @@ public class KafkaInternalConfig {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         //props.put(ConsumerConfig.FETCH_MAX_BYTES_CONFIG, 30000);
         setSecurityProps(props);
-
-        DefaultKafkaConsumerFactory<String, InternalMessageModel> factory = new DefaultKafkaConsumerFactory<>(props);
-        factory.setKeyDeserializer(new StringDeserializer());
-        factory.setValueDeserializer(new JsonDeserializer<>());
-
-        return factory;
+        return props;
     }
 
     @Bean
@@ -150,16 +164,9 @@ public class KafkaInternalConfig {
         return new KafkaInternalConsumer(entPaymentTaskRepository, actionEntPaymentTaskRepo, serviceAccounts, kafkaInternalProducer, functionPD);
     }
 
-//    @Bean
-//    KafkaInternalConsumerTask consumerFunctionUpdate(EntPaymentTaskActions entPaymentTaskActions, KafkaResultRewardProducer kafkaResultRewardProducer,
-//                                                     EntPaymentTaskRepository entPaymentTaskRepository, ActionEntPaymentTaskRepo actionEntPaymentTaskRepo,
-//                                                     KafkaInternalProducer kafkaInternalProducer) {
-//        return new KafkaInternalConsumerTask(entPaymentTaskActions, kafkaResultRewardProducer, entPaymentTaskRepository, actionEntPaymentTaskRepo, kafkaInternalProducer);
-//    }
-
     @Bean
-    KafkaInternalConsumerTask consumerFunctionUpdate(FunctionPS functionPS) {
-        return new KafkaInternalConsumerTask(functionPS);
+    KafkaInternalConsumerTask consumerFunctionUpdate(FunctionPS functionPS, Consumer<String, InternalMessageModel> consumer) {
+        return new KafkaInternalConsumerTask(functionPS, consumer);
     }
 
 
@@ -176,7 +183,6 @@ public class KafkaInternalConfig {
         factory.getContainerProperties().setPollTimeout(500);
         factory.getContainerProperties().setMicrometerEnabled(true);
         // factory.getContainerProperties().setMicrometerTags();
-
         return factory;
     }
 
