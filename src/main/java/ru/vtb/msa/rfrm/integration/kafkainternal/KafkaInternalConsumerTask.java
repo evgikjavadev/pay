@@ -47,7 +47,7 @@ public class KafkaInternalConsumerTask {
     @Scheduled(fixedRate = 7000, initialDelay = 2000)  //todo  set every day for production
     public void readEveryDay() {
 
-        consumer.subscribe(Collections.singletonList("rfrm_pay_function_result_reward"));
+        consumer.subscribe(Collections.singletonList("rfrm_pay_function_status_update_reward"));
         ConsumerRecords<String, InternalMessageModel> records = consumer.poll(Duration.ofMillis(500));
         records.forEach(record -> {
             log.info("Start function PS from topic {}, partition = {}, messages = {}", record.topic(), record.partition(), record.value());
