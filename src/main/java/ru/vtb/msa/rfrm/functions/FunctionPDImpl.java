@@ -14,6 +14,7 @@ import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 import ru.vtb.msa.rfrm.repository.EntPaymentTaskRepository;
 import ru.vtb.msa.rfrm.service.ServiceAccounts;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +32,12 @@ public class FunctionPDImpl implements FunctionPD {
     private final ActionEntPaymentTaskRepo actionEntPaymentTaskRepo;
     private final ServiceAccounts serviceAccounts;
     private final KafkaInternalProducer kafkaInternalProducer;
+
+    @PostConstruct
+    public void init() {
+        startFunctionPD();
+    }
+
     @Override
     public void startFunctionPD() {
         log.info("Start function PD. ПД. Подготовка данных для выплаты вознаграждения участнику РФП");
@@ -42,12 +49,12 @@ public class FunctionPDImpl implements FunctionPD {
         handleMdmIdList(entPaymentTaskList);
 
         // отправить сообщение в rfrm_pay_function_result_reward для инициации следующего цикла обработки заданий
-        kafkaInternalProducer.sendObjectToInternalKafka(rfrm_pay_function_result_reward, createMessageToTopicInternal());
+        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", createMessageToTopicInternal());
 
         log.info("Finish function PD. ПД. Подготовка данных для выплаты вознаграждения участнику РФП");
     }
 
-    @SneakyThrows
+    //@SneakyThrows
     private void handleMdmIdList(List<EntPaymentTask> entPaymentTaskList) {
 
         List<Long> setRewardIdList = entPaymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());
@@ -63,7 +70,7 @@ public class FunctionPDImpl implements FunctionPD {
         // Установить для задачи blocked=0 и blocked_at=now()
         actionEntPaymentTaskRepo.updateBlockByRewardIdEqualZero(setRewardIdList);
 
-        //Thread.sleep(sleepMs);
+        //Thread.sleep(2000);
     }
 
     private InternalMessageModel createMessageToTopicInternal() {
