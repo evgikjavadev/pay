@@ -45,7 +45,7 @@ class QuestionnairesMapperImplTest {
 
         return CorePayKafkaModel
                 .builder()
-                .rewardId(random.nextInt())
+                .rewardId(random.nextLong())
                 .mdmId(random.nextLong())
                 .questionnaireId(UUID.randomUUID())
                 .recipientTypeId(3)

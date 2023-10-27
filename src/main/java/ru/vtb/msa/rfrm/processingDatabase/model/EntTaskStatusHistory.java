@@ -1,6 +1,5 @@
 package ru.vtb.msa.rfrm.processingDatabase.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import javax.validation.constraints.NotBlank;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Builder
 @Data
@@ -41,5 +38,9 @@ public class EntTaskStatusHistory {
     /** status_updated_at */
     @Column("status_updated_at")
     private LocalDateTime statusUpdatedAt;
+
+    public LocalDateTime getStatusUpdatedAt(LocalDateTime str) {
+        return str;
+    }
 
 }

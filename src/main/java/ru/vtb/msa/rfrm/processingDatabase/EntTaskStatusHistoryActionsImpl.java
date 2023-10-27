@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntTaskStatusHistory;
 
+import java.time.LocalDateTime;
+
 @Repository
 @RequiredArgsConstructor
 @Slf4j
@@ -32,7 +34,7 @@ public class EntTaskStatusHistoryActionsImpl implements EntTaskStatusHistoryActi
                 entTaskStatusHistory.getRewardId(),
                 entTaskStatusHistory.getStatusDetailsCode(),
                 entTaskStatusHistory.getTaskStatus(),
-                entTaskStatusHistory.getStatusUpdatedAt()
+                entTaskStatusHistory.getStatusUpdatedAt(LocalDateTime.now())
         );
     }
 

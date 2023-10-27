@@ -30,7 +30,7 @@ public class QuestionnairesMapperImpl implements QuestionnairesMapper {
                     .accountSystem(null)
                     .account(null)
                     .createdAt(LocalDateTime.now())
-                    .processed(false)
+                    .processed(null)
                     .blocked(0)
                     .blockedAt(LocalDateTime.now())
                     .rewardType(elem.getRewardTypeId())
