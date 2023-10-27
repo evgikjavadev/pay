@@ -31,7 +31,8 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
         Boolean isArrested = accountNumberEntity.getIsArrested();
         String accountBranch = accountNumberEntity.getBranch();
 
-        if (isArrested.equals(false)) {
+        if (!masterAccountNumber.isEmpty() || !masterAccountNumber.equals("")
+                && isArrested.equals(false)) {
 
             // Записать в БД для данного задания ent_payment_task.status=50 и blocked=0
             entPaymentTaskActions.updateAccountNumber(masterAccountNumber,
@@ -59,7 +60,8 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
 //            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 //        }
 
-        if (isArrested.equals(true)) {
+        if (!masterAccountNumber.isEmpty() || masterAccountNumber.equals("")
+                && isArrested.equals(true)) {
 
             //обновляем в БД для данного задания paymentTask.status=30
             entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(rewardId, DctTaskStatuses.STATUS_REJECTED.getStatus());
@@ -78,7 +80,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
             kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
         }
 
-        if (masterAccountNumber.isEmpty() && result.equals("ok")) {
+        if (masterAccountNumber.isEmpty() && result.equalsIgnoreCase("ok")) {
 
             //  создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details=201
             EntTaskStatusHistory entTaskStatusHistory =
