@@ -32,9 +32,11 @@ public class KafkaConsumerCoreClient {
         log.info("Start rfrm-pay processing topic = {}, partition = {}, messages = {}", topic, partition, messageList);
 
         try {
+            // валидация полей, запись в БД задания на оплату, вызов прод профиля если совпадений по rewardId не найдено
             service.validateFieldsAndSaveTaskToDB(messageList);
 
-            prepareProcessGetAccounts.firstStepProcessAccounts(messageList);
+            // вызов прод профиля 1503
+            //prepareProcessGetAccounts.firstStepProcessAccounts(messageList);
 
             ack.acknowledge();
         } catch (Exception e) {

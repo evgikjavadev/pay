@@ -49,7 +49,7 @@ public class FunctionPDImpl implements FunctionPD {
         handleMdmIdList(entPaymentTaskList);
 
         // отправить сообщение в rfrm_pay_function_result_reward для инициации следующего цикла обработки заданий
-        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", createMessageToTopicInternal());
+        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", createMessageToTopicInternal());   //todo   возм переместить в топик
 
         log.info("Finish function PD. ПД. Подготовка данных для выплаты вознаграждения участнику РФП");
     }

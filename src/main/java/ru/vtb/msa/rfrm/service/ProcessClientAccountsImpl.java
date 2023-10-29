@@ -47,21 +47,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
 
         }
 
-//        if (accountNumberEntity.getNumber().isEmpty()) {
-//            // формируем объект для записи в табл. taskStatusHistory
-//            EntTaskStatusHistory entTaskStatusHistory =
-//                    createEntTaskStatusHistory(DctTaskStatuses.STATUS_REJECTED.getStatus(), null, rewardId);
-//
-//            // изменяем статус задания на "отклонено" (paymentTask.status=30)
-//            entPaymentTaskActions
-//                    .updateAccountNumber(accountNumberEntity, accountSystem, mdmId, DctTaskStatuses.STATUS_REJECTED.getStatus(), accountBranch);
-//
-//            // создать новую запись в таблице taskStatusHistory
-//            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
-//        }
-
-        if (!masterAccountNumber.isEmpty() || masterAccountNumber.equals("")
-                && isArrested.equals(true)) {
+        if (isArrested.equals(true)) {
 
             //обновляем в БД для данного задания paymentTask.status=30
             entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(rewardId, DctTaskStatuses.STATUS_REJECTED.getStatus());

@@ -69,6 +69,7 @@ public class QuestionnairesServiceImpl implements ProcessQuestionnairesService {
             if (taskFromDb == null) {
                 entPaymentTaskActions.insertPaymentTaskInDB(elem);
             } else {
+                log.warn("Task with rewardId {} has in DB", elem.getRewardId());
                 log.warn("Задание с таким reward_id уже существует");
             }
 

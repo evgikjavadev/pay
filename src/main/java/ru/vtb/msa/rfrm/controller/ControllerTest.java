@@ -63,11 +63,8 @@ public class ControllerTest {
     @GetMapping("/send_to_rfrm_core_payment_order")
     public String publishMessage() {
 
-        // создадим тестовый объект-заглушку кот приходит из кафка топика rfrm_core_payment_order
-        Random rand = new Random(10000);
-
-        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(9074480L);
-        CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(3225380L);
+        CorePayKafkaModel testCorePayKafkaModel = getTestQuestionnairesKafkaModel(111L);
+        //CorePayKafkaModel testCorePayKafkaModel1 = getTestQuestionnairesKafkaModel(3225380L);
 
         // create Producer properties
         Properties properties = new Properties();
@@ -81,12 +78,12 @@ public class ControllerTest {
                 new ProducerRecord<>(rfrm_core_payment_order, testCorePayKafkaModel);
         log.info("Object: {} WAS SENT TO TOPIC: rfrm_core_payment_order ", producerRecord.value());
 
-        ProducerRecord<String, CorePayKafkaModel> producerRecord1 =
-                new ProducerRecord<>(rfrm_core_payment_order, testCorePayKafkaModel1);
-        log.info("Object: {} WAS SENT TO TOPIC: rfrm_core_payment_order ", producerRecord.value());
+//        ProducerRecord<String, CorePayKafkaModel> producerRecord1 =
+//                new ProducerRecord<>(rfrm_core_payment_order, testCorePayKafkaModel1);
+//        log.info("Object: {} WAS SENT TO TOPIC: rfrm_core_payment_order ", producerRecord.value());
 
         producer.send(producerRecord);
-        producer.send(producerRecord1);
+        //producer.send(producerRecord1);
 
         producer.flush();
         producer.close();
@@ -114,8 +111,8 @@ public class ControllerTest {
         return CorePayKafkaModel
                 .builder()
                 .rewardId(rewardId)
-                .mdmId(5000015235L)
-                .questionnaireId(UUID.fromString("23ae7ee8-ce50-466c-9ec7-1f0028cee0c5"))
+                .mdmId(2271833341L)
+                .questionnaireId(UUID.fromString("9071eee-254d-44c1-9ded-c12bf4ada341"))
                 .recipientTypeId(3)
                 .rewardTypeId(1)
                 .sourceQs("CC")
