@@ -24,7 +24,7 @@ import java.util.Objects;
 public class KafkaProducerCoreConfig {
 
     private static final String SECURITY_PROTOCOL = "security.protocol";
-    @Value("${pay.kafka.topic.rfrm_pay_result_reward}")
+    @Value("${pay.kafka.topic.rfrm_pay_result_reward:}")
     private String rfrm_pay_result_reward;
     @Value("${pay.kafka.bootstrap.server}")
     private String servers;
