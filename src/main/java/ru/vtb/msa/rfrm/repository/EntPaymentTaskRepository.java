@@ -26,4 +26,7 @@ public interface EntPaymentTaskRepository extends CrudRepository<EntPaymentTask,
 
     @Query("SELECT * FROM ent_payment_task WHERE status in (:status) AND processed = false AND blocked = 0 ORDER BY blocked_at ASC limit :size")
     List<EntPaymentTask> getRewardIdsByProcessAndBlocked(@Param("status") List<Integer> status, @Param("size") Integer size);
+
+    @Query("SELECT * FROM ent_payment_task where questionnaire_id =: questionnaireId")
+    EntPaymentTask findByQuestionnaireId(@Param("rewardId") UUID questionnaireId);
 }
