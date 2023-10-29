@@ -43,14 +43,14 @@ ru:
   vtb:
     tstr:
       client-starter:
-        enabled: ${TRACING_MODE:true}
+        enabled: ${TRACING_MODE:false}
       kafka:
         bootstrap-servers: ${TRACE_KAFKA_SERVER:d5tstr-kfc002lk.corp.dev.vtb:9092,d5tstr-kfc003lk.corp.dev.vtb:9092,d5tstr-kfc004lk.corp.dev.vtb:9092}
 
 opentracing:
   jaeger:
-    enabled: true
-    log-spans: true
+    enabled: false
+    log-spans: false
     service-name: RFRM.rfrm-pay
 
 #Аудит
