@@ -29,8 +29,6 @@ public class KafkaInternalConsumer {
     private Integer findSizeApplication;
     @Value("${sleep-task-payment}")
     private Integer sleepMs;
-    @Value("function.kafka.topic.rfrm_pay_function_result_reward")
-    private String rfrm_pay_function_result_reward;
     private final EntPaymentTaskRepository entPaymentTaskRepository;
     private final ActionEntPaymentTaskRepo actionEntPaymentTaskRepo;
     private final ServiceAccounts serviceAccounts;
