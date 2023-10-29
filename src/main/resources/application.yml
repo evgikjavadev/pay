@@ -12,18 +12,18 @@ spring:
     name: rfrm-pay
     version: @project.version@
 
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          epa-tyk-client:
-#            provider: epa-tyk-client
-#            client-id: ${TUS_EPA}
-#            client-secret: ${TUS_PASSW_EPA}
-#            authorization-grant-type: client_credentials
-#        provider:
-#          epa-tyk-client:
-#            token-uri: ${EPA_AM_URL}/passport/oauth2/token
+  security:
+    oauth2:
+      client:
+        registration:
+          epa-tyk-client:
+            provider: epa-tyk-client
+            client-id: ${TUS_EPA}
+            client-secret: ${TUS_PASSW_EPA}
+            authorization-grant-type: client_credentials
+        provider:
+          epa-tyk-client:
+            token-uri: ${EPA_AM_URL}/passport/oauth2/token
   datasource:
     hikari:
       driverClassName: org.postgresql.Driver
@@ -121,7 +121,7 @@ logging:
     ru.vtb.msa.mdclogging: ${LOG_LEVEL:DEBUG}
 
 product-profile-fl-accounts:
-  url: ${PRODUCT_PROFILE_URL:http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock}
+  url: ${EPA_IG_URL:http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock}
   resource:  ${GET_RESOURCE:/portfolio/portfolio-agregator/portfolio/active}
   headers:
     X-INITIATOR-SERVICE: rfrm-pay
