@@ -35,8 +35,6 @@ import java.util.Objects;
 @Configuration
 public class KafkaInternalConfig {
     private static final String SECURITY_PROTOCOL = "security.protocol";
-    public static final int COUNT_THREAD = 1;
-
     @Value("${function.kafka.consumer.group-id}")
     private String groupId;
     @Value("${function.kafka.session.timeout.ms:15000}")
@@ -45,16 +43,16 @@ public class KafkaInternalConfig {
     private String servers;
     @Value("${function.kafka.max.partition.fetch.bytes:100000}")
     private String maxPartitionFetchBytes;
-    @Value("${function.kafka.max.poll.records:500}")
+    @Value("${function.kafka.max.poll.records}")
     private String maxPollRecords;
     @Value("${function.kafka.max.poll.interval.ms:300000}")
     private String maxPollIntervalsMs;
-    @Value("${function.kafka.pause.work.consumer.ms:0}")
+    @Value("${function.kafka.pause.work.consumer.ms}")
     private String pauseWorkConsumerMs;
 
 
     // для организации "SSL":
-    @Value("${function.kafka.security.protocol:SSL}")
+    @Value("${function.kafka.security.protocol:}")
     private String securityProtocol;
 
     // При securityProtocol = "SSL" обязательны:
@@ -98,7 +96,6 @@ public class KafkaInternalConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel");
-        //props.put(JsonDeserializer.TRUSTED_PACKAGES, "ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel");
         //props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "20000");
         setSecurityProps(props);
         return new DefaultKafkaProducerFactory<>(props);

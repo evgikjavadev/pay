@@ -2,7 +2,7 @@ server:
   port: 8080
 
 #Количество заявок в поиске
-findSizeApplication: 3
+findSizeApplication: ${FIND_SIZE_APPLICATION:1}
 
 sleep-task-payment: 10000
 sleep-task-status: 10000
@@ -12,18 +12,18 @@ spring:
     name: rfrm-pay
     version: @project.version@
 
-  security:
-    oauth2:
-      client:
-        registration:
-          epa-tyk-client:
-            provider: epa-tyk-client
-            client-id: ${TUS_EPA}
-            client-secret: ${TUS_PASSW_EPA}
-            authorization-grant-type: client_credentials
-        provider:
-          epa-tyk-client:
-            token-uri: ${EPA_AM_URL}/passport/oauth2/token
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          epa-tyk-client:
+#            provider: epa-tyk-client
+#            client-id: ${TUS_EPA}
+#            client-secret: ${TUS_PASSW_EPA}
+#            authorization-grant-type: client_credentials
+#        provider:
+#          epa-tyk-client:
+#            token-uri: ${EPA_AM_URL}/passport/oauth2/token
   datasource:
     hikari:
       driverClassName: org.postgresql.Driver
@@ -121,7 +121,7 @@ logging:
     ru.vtb.msa.mdclogging: ${LOG_LEVEL:DEBUG}
 
 product-profile-fl-accounts:
-  url: ${EPA_IG_URL:http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock}
+  url: ${PRODUCT_PROFILE_URL:http://rfrm-wiremock.oslb-dev01.corp.dev.vtb/bsc-wire-mock}
   resource:  ${GET_RESOURCE:/portfolio/portfolio-agregator/portfolio/active}
   headers:
     X-INITIATOR-SERVICE: rfrm-pay
@@ -132,25 +132,27 @@ product-profile-fl-accounts:
 pay:
   kafka:
     enable: ${PROCES_PALTF_ENABLE_PAY:true}
+    max.poll.records: ${PAY_MAX_POLL_RECORDS:10}
     bootstrap:
       server: ${PROCES_PALTF_KAFKA_SERVER_PAY:d5rfrm-kfc001lk.corp.dev.vtb:9092}
     consumer:
       group-id: pay
     topic:
-      rfrm_core_payment_order: ${RFRM_CORE_PAYMENT_ORDER}
-      rfrm_pay_result_reward: ${RFRM_PAY_RESULT_REWARD}
-    max.poll.records: 500
+      rfrm_core_payment_order: ${RFRM_CORE_PAYMENT_ORDER:rfrm_core_payment_order}
+      rfrm_pay_result_reward: ${RFRM_PAY_RESULT_REWARD:rfrm_pay_result_reward}
     listener:
       poll-timeout: 1000
+    security:
+      protocol: SSL
     ssl:
       enabled: true
       truststore:
         # для запуска из idea
-        location: ${PATH_TRUSTSTORE_PAY}
+        location: ${PATH_TRUSTSTORE_PAY:etc/certificate/truststore.jks}
         password: ${STORE_PASSWORD_PAY}
       keystore:
         # для запуска из idea
-        location: ${PATH_KEYSTORE_PAY}
+        location: ${PATH_KEYSTORE_PAY:etc/certificate/keystore.jks}
         password: ${STORE_PASSWORD_PAY}
       key:
         password: ${STORE_PASSWORD_PAY}
@@ -159,9 +161,10 @@ pay:
 
 function:
   kafka:
-    enable: ${FUNCTION_ENABLE:true}
+    enable: ${FUNCTION_ENABLE:false}
     #Интервал черезготорый кафкаоткоючит consumer и начент пере балансировку
     max.poll.interval.ms: ${FUNCTION_MAX_POLL_INTERVAL:300000}
+    max.poll.records: 500
     #паузара в работе consumer влиает на max.poll.interval = max.poll.interval + pause.work.consumer
     pause.work.consumer.ms: ${FUNCTION_PAUSE_WORK_CONSUMER:0}
     bootstrap:
@@ -172,6 +175,8 @@ function:
     topic:
       rfrm_pay_function_result_reward: ${RFRM_PAY_FUNCTION_RESULT_REWARD:rfrm_pay_function_result_reward}
       rfrm_pay_function_status_update_reward: ${RFRM_PAY_DUNCTION_STATUS_UPDATE_REWARD:rfrm_pay_function_status_update_reward}
+    security:
+      protocol: SSL
     ssl:
       enabled: true
       truststore:

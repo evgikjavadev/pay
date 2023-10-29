@@ -42,7 +42,7 @@ public class KafkaCoreConfig {
     private String maxPollIntervalsMs;
 
     // для организации "SSL":
-    @Value("${pay.kafka.security.protocol:SSL}")
+    @Value("${pay.kafka.security.protocol:}")
     private String securityProtocol;
 
     // При securityProtocol = "SSL" обязательны:
