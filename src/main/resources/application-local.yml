@@ -160,6 +160,7 @@ function:
     enable: true
     #Интервал черезготорый кафкаоткоючит consumer и начент пере балансировку
     max.poll.interval.ms: 3000
+    max.poll.records: 500
     #паузара в работе consumer влиает на max.poll.interval = max.poll.interval + pause.work.consumer
     pause.work.consumer.ms: 0
     bootstrap:

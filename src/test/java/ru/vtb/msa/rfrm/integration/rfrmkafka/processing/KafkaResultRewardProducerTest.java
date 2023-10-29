@@ -31,7 +31,7 @@ class KafkaResultRewardProducerTest {
 
         PayCoreKafkaModel payCoreKafkaModel = PayCoreKafkaModel
                 .builder()
-                .rewardId(1234567)
+                .rewardId(1234567l)
                 .status(30)
                 .statusDescription("Description status ... ")
                 .build();
