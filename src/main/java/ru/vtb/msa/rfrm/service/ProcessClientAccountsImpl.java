@@ -48,8 +48,7 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
 
         }
 
-        if (!masterAccountNumber.isEmpty() || !masterAccountNumber.equals("")
-                && isArrested.equals(false)) {
+        if ( !masterAccountNumber.equals("") && isArrested.equals(false)) {
 
             // Записать в БД для данного задания ent_payment_task.status=50 и blocked=0
             entPaymentTaskActions.updateAccountNumber(masterAccountNumber,
