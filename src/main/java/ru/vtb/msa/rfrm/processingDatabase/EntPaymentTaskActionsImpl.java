@@ -75,4 +75,10 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
         jdbcTemplate.update(sql, true, rewardId);
     }
 
+    @Override
+    public void updatePaymentTaskByRewardIdSetStatusAndBlocked(Long rewardId) {
+        String sql = "UPDATE ent_payment_task SET status = 30 AND blocked = 0 WHERE reward_id = ?";
+        jdbcTemplate.update(sql, rewardId);
+    }
+
 }

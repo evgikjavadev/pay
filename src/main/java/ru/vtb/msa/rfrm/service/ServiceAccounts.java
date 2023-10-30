@@ -133,18 +133,55 @@ public class ServiceAccounts implements ServiceAccountsInterface {
     private void getAndPassParameters(Response<?> personAccounts, Long mdmId, Long rewardId) {
         log.info("Start process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
 
-        ArrayList<Map.Entry<String, Account>> entries = new ArrayList<>(personAccounts.getBody().getAccounts().entrySet());
-
-        Map.Entry<String, Account> masterAccount = entries.stream()
-                .filter(a -> (a.getValue().getEntityType().equalsIgnoreCase("MASTER_ACCOUNT")
-                        && a.getValue().getBalance().getCurrency().equalsIgnoreCase("RUB")))
-                .findFirst()
-                .get();
+        Map.Entry<String, Account> masterAccount = null;
 
         // получаем значение result в ответе от 1503
         String result = personAccounts.getBody().getResult();
 
-        processClientAccounts.processAccounts(masterAccount.getValue(), result, mdmId, rewardId);
+        ArrayList<Map.Entry<String, Account>> entries = new ArrayList<>(personAccounts.getBody().getAccounts().entrySet());
+
+        try {
+            masterAccount = entries.stream()
+                    .filter(a -> (a.getValue().getEntityType().equalsIgnoreCase("MASTER_ACCOUNT")
+                            && a.getValue().getBalance().getCurrency().equalsIgnoreCase("RUB")))
+                    .findFirst()
+                    .orElseThrow();
+
+            processClientAccounts.processAccounts(masterAccount.getValue(), result, mdmId, rewardId);
+
+        } catch (Exception e) {
+            log.info("MASTER_ACCOUNT with RUB is not found!");
+            assert result != null;
+            if (result.equalsIgnoreCase("ok")) {
+                // Записать в БД для данного задания paymentTask.status=30 и blocked=0
+                entPaymentTaskActions.updatePaymentTaskByRewardIdSetStatusAndBlocked(rewardId);
+
+                // соберем объект для табл status history
+                EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
+                        .builder()
+                        .rewardId(rewardId)
+                        .statusDetailsCode(DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode())
+                        .taskStatus(DctTaskStatuses.STATUS_REJECTED.getStatus())
+                        .statusUpdatedAt(LocalDateTime.now())
+                        .build();
+
+                // создать новую запись в таблице ent_task_status_history с ent_task_status_history.status_details=201
+                entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+                // соберем объект для записи в топик
+                PayCoreKafkaModel payCoreKafkaModel = PayCoreKafkaModel
+                        .builder()
+                        .rewardId(rewardId)
+                        .status(DctTaskStatuses.STATUS_REJECTED.getStatus())
+                        .statusDescription(DctTaskStatuses.STATUS_REJECTED.getStatusBusinessDescription())
+                        .build();
+
+                // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201
+                kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
+
+            }
+        }
+
         log.info("Finish process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
     }
 

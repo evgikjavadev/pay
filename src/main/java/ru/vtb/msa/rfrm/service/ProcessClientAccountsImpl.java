@@ -104,6 +104,9 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
             kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel1);
 
         }
+
+        //todo   resolve if only result = ok
+
     }
 
     private PayCoreKafkaModel createResultMessage(Long rewardId, Integer status, String description) {
