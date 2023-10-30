@@ -52,9 +52,9 @@ public class ServiceAccounts implements ServiceAccountsInterface {
             // если ловим JsonEOFException - то ответ от прод профиля не валидный и соответственно счет не найден
             if (ex.getCause().toString().contains("JsonEOFException")) {
 
-                log.info("Account is not found !" + ex.getCause().toString());
+                log.info("JSON is not valid and Account is not found! " + ex.getCause().toString());
 
-                handlingJsonException(rewardId);
+                //handlingJsonException(rewardId);
             }
         }
 
