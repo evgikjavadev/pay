@@ -10,6 +10,7 @@ import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
 import ru.vtb.msa.rfrm.processingDatabase.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
+import ru.vtb.msa.rfrm.processingDatabase.batch.ActionEntPaymentTaskRepo;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctTaskStatuses;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntTaskStatusHistory;
@@ -49,12 +50,15 @@ public class ServiceAccounts implements ServiceAccountsInterface {
             HttpStatus status = e.getStatus();
             handleResponseHttpStatuses(status, mdmIdFromKafka);
         } catch (Exception ex ) {
-            // если ловим JsonEOFException - то ответ от прод профиля не валидный и соответственно счет не найден
+            // если здесь - то ответ от прод профиля не валидный и соответственно счет не найден
             if (ex.getCause().toString().contains("JsonEOFException")) {
 
                 log.info("JSON is not valid and Account is not found! " + ex.getCause().toString());
 
                 //handlingJsonException(rewardId);
+
+            } else {
+                log.info("Valid account is not found! for rewardId {}", rewardId);
             }
         }
 
@@ -173,7 +177,7 @@ public class ServiceAccounts implements ServiceAccountsInterface {
                         .builder()
                         .rewardId(rewardId)
                         .status(DctTaskStatuses.STATUS_REJECTED.getStatus())
-                        .statusDescription(DctTaskStatuses.STATUS_REJECTED.getStatusBusinessDescription())
+                        .statusDescription(DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getDescription())
                         .build();
 
                 // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201

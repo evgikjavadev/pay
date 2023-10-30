@@ -3,6 +3,8 @@ package ru.vtb.msa.rfrm.processingDatabase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.processingDatabase.model.EntPaymentTask;
 
 import java.util.List;
@@ -76,8 +78,9 @@ public class EntPaymentTaskActionsImpl implements EntPaymentTaskActions {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void updatePaymentTaskByRewardIdSetStatusAndBlocked(Long rewardId) {
-        String sql = "UPDATE ent_payment_task SET status = 30 AND blocked = 0 WHERE reward_id = ?";
+        String sql = "UPDATE ent_payment_task SET status = 30, blocked = 0 WHERE reward_id = ?";
         jdbcTemplate.update(sql, rewardId);
     }
 
