@@ -34,10 +34,10 @@ public class FunctionPDImpl implements FunctionPD {
     private final ServiceAccounts serviceAccounts;
     private final KafkaInternalProducer kafkaInternalProducer;
 
-    @PostConstruct
-    public void init() {
-        startFunctionPD();
-    }
+//    @PostConstruct
+//    public void init() {
+//        startFunctionPD();
+//    }
 
     @Override
     @Transactional

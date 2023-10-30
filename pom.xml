@@ -18,7 +18,7 @@
     <description>metric processing service</description>
 
     <properties>
-        <revision>0.0.17</revision>
+        <revision>0.0.18</revision>
         <java.version>11</java.version>
         <finalName>rfrm-pay</finalName>
         <mapstruct.version>1.4.1.Final</mapstruct.version>
