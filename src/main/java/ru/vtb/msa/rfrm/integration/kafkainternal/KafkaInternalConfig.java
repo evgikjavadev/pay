@@ -43,7 +43,7 @@ public class KafkaInternalConfig {
     private String servers;
     @Value("${function.kafka.max.partition.fetch.bytes:100000}")
     private String maxPartitionFetchBytes;
-    @Value("${function.kafka.max.poll.records}")
+    @Value("${function.kafka.max.poll.records:}")
     private String maxPollRecords;
     @Value("${function.kafka.max.poll.interval.ms:300000}")
     private String maxPollIntervalsMs;
@@ -52,7 +52,7 @@ public class KafkaInternalConfig {
 
 
     // для организации "SSL":
-    @Value("${function.kafka.security.protocol:}")
+    @Value("${function.kafka.security.protocol}")
     private String securityProtocol;
 
     // При securityProtocol = "SSL" обязательны:

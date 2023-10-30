@@ -31,6 +31,23 @@ public class ProcessClientAccountsImpl implements ProcessClientAccounts {
         Boolean isArrested = accountNumberEntity.getIsArrested();
         String accountBranch = accountNumberEntity.getBranch();
 
+        // обработка если мастер счет не найден
+        if (masterAccountNumber.isEmpty() || masterAccountNumber.isBlank()) {
+            // формируем объект для записи в табл. taskStatusHistory
+            EntTaskStatusHistory entTaskStatusHistory =
+                    createEntTaskStatusHistory(DctTaskStatuses.STATUS_REJECTED.getStatus(), null, rewardId);
+
+            // создать новую запись в таблице taskStatusHistory
+            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+            // собираем и отправляем объект в топик rfrm_pay_result_reward содержащее id задания, status=30, status_description если 30, status_details_code=201
+            PayCoreKafkaModel payCoreKafkaModel = createResultMessage(rewardId, DctTaskStatuses.STATUS_REJECTED.getStatus(),
+                    DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getDescription());
+
+            kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
+
+        }
+
         if (!masterAccountNumber.isEmpty() || !masterAccountNumber.equals("")
                 && isArrested.equals(false)) {
 

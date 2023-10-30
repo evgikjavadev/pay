@@ -30,7 +30,7 @@ public class KafkaProducerCoreConfig {
     private String servers;
     @Value("${pay.kafka.max.partition.fetch.bytes:1048576}")
     private String maxPartitionFetchBytes;
-    @Value("${pay.kafka.max.poll.records:500}")
+    @Value("${pay.kafka.max.poll.records:}")
     private String maxPollRecords;
     @Value("${pay.kafka.max.poll.interval.ms:300000}")
     private String maxPollIntervalsMs;

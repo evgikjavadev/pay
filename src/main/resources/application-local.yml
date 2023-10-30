@@ -132,7 +132,7 @@ pay:
       server: localhost:9092
     consumer:
       group-id: pay
-      max.poll.records: 500
+      max.poll.records: 10
     topic:
       rfrm_core_payment_order: rfrm_core_payment_order
       rfrm_pay_result_reward: rfrm_pay_result_reward
@@ -157,15 +157,18 @@ pay:
 
 function:
   kafka:
-    enable: true
+    enable: false
     #Интервал черезготорый кафкаоткоючит consumer и начент пере балансировку
-    max.poll.interval.ms: 3000
-    max.poll.records: 500
+    max.poll.interval.ms: 5000
+    max.poll.records: 10
     #паузара в работе consumer влиает на max.poll.interval = max.poll.interval + pause.work.consumer
-    pause.work.consumer.ms: 0
+    pause.work.consumer.ms: 100
     bootstrap:
       server: localhost:9092
-    consumer:
+#    listener:
+#      ack-mode: manual
+#    consumer:
+#      enable-auto-commit: false
       group-id: function-pay
       group-id-res: function-pay-result
     topic:
@@ -222,7 +225,7 @@ data.event:
 core:
   kafka:
     enable: true
-    max.poll.records: 1
+    max.poll.records: 10
     bootstrap:
       server: localhost:9092
     consumer:

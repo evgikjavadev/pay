@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vtb.msa.rfrm.integration.kafkainternal.KafkaInternalProducer;
 import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.util.enums.Statuses;
@@ -39,6 +40,7 @@ public class FunctionPDImpl implements FunctionPD {
     }
 
     @Override
+    @Transactional
     public void startFunctionPD() {
         log.info("Start function PD. ПД. Подготовка данных для выплаты вознаграждения участнику РФП");
 
@@ -46,10 +48,12 @@ public class FunctionPDImpl implements FunctionPD {
         List<EntPaymentTask> entPaymentTaskList = entPaymentTaskRepository.findByStatus(DctTaskStatuses.STATUS_NEW.getStatus(), findSizeApplication);
 
         // передаем в обработку List задач
-        handleMdmIdList(entPaymentTaskList);
+        if(entPaymentTaskList.size() > 0) {
+            handleMdmIdList(entPaymentTaskList);
+        }
 
-        // отправить сообщение в rfrm_pay_function_result_reward для инициации следующего цикла обработки заданий
-        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", createMessageToTopicInternal());   //todo   возм переместить в топик
+//        // отправить сообщение в rfrm_pay_function_result_reward для инициации следующего цикла обработки заданий
+//        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", createMessageToTopicInternal());   //todo   возм переместить в топик
 
         log.info("Finish function PD. ПД. Подготовка данных для выплаты вознаграждения участнику РФП");
     }

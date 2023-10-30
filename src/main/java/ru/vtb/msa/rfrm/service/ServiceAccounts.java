@@ -1,10 +1,13 @@
 package ru.vtb.msa.rfrm.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.vtb.msa.rfrm.integration.kafkainternal.KafkaInternalProducer;
+import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
+import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
 import ru.vtb.msa.rfrm.processingDatabase.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.model.DctStatusDetails;
@@ -19,7 +22,6 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountIn
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,22 +31,55 @@ public class ServiceAccounts implements ServiceAccountsInterface {
     private final EntPaymentTaskActions entPaymentTaskActions;
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
     private final ProcessClientAccounts processClientAccounts;
+    private final KafkaResultRewardProducer kafkaResultRewardProducer;
 
-    @SneakyThrows
     @Override
     public void getClientAccounts(Long mdmIdFromKafka, Long rewardId) {
 
         try {
             // получаем весь объект с данными счета клиента из 1503
-            Response<?> personAccounts = personClientAccounts
+            Response<?> account = personClientAccounts
                     .getPersonAccounts(mdmIdFromKafka, sendRequestListAccounts(Collections.singletonList("ACCOUNT")));
 
-            getAndPassParameters(personAccounts, mdmIdFromKafka, rewardId);
+            if (!account.getBody().getAccounts().isEmpty()) {
+                getAndPassParameters(account, mdmIdFromKafka, rewardId);
+            }
 
         } catch (HttpStatusException e) {
             HttpStatus status = e.getStatus();
             handleResponseHttpStatuses(status, mdmIdFromKafka);
+        } catch (Exception ex ) {
+            // если ловим JsonEOFException - то ответ от прод профиля не валидный и соответственно счет не найден
+            if (ex.getCause().toString().contains("JsonEOFException")) {
+
+                log.info("Account is not found !" + ex.getCause().toString());
+
+                handlingJsonException(rewardId);
+            }
         }
+
+    }
+
+    private void handlingJsonException(Long rewardId) {
+
+        EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
+                .builder()
+                .rewardId(rewardId)
+                .taskStatus(DctTaskStatuses.STATUS_REJECTED.getStatus())
+                .statusDetailsCode(DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode())
+                .statusUpdatedAt(LocalDateTime.now())
+                .build();
+
+        entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+        PayCoreKafkaModel payCoreKafkaModel = PayCoreKafkaModel
+                .builder()
+                .rewardId(rewardId)
+                .status(DctTaskStatuses.STATUS_REJECTED.getStatus())
+                .statusDescription(DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getDescription())
+                .build();
+
+        kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
 
     }
 
@@ -99,20 +134,15 @@ public class ServiceAccounts implements ServiceAccountsInterface {
         log.info("Start process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
 
         ArrayList<Map.Entry<String, Account>> entries = new ArrayList<>(personAccounts.getBody().getAccounts().entrySet());
+
         Map.Entry<String, Account> masterAccount = entries.stream()
                 .filter(a -> (a.getValue().getEntityType().equalsIgnoreCase("MASTER_ACCOUNT")
                         && a.getValue().getBalance().getCurrency().equalsIgnoreCase("RUB")))
                 .findFirst()
                 .get();
 
-
-        //Account masterAccount = findMasterAccountRub(accountList);
-
         // получаем значение result в ответе от 1503
         String result = personAccounts.getBody().getResult();
-
-        // получаем mdmId из заголовков ответа от 1503
-        //Long mdmId = getMdmId(personAccounts);
 
         processClientAccounts.processAccounts(masterAccount.getValue(), result, mdmId, rewardId);
         log.info("Finish process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
@@ -121,27 +151,5 @@ public class ServiceAccounts implements ServiceAccountsInterface {
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {
         return AccountInfoRequest.builder().productTypes(str).build();
     }
-
-    private Account findMasterAccountRub(List<Account> accountList) {
-
-        return accountList.stream()
-                .filter(a -> a.getEntityType().equals("MASTER_ACCOUNT"))
-                .filter(b -> b.getBalance().getCurrency().equals("RUB"))
-                .findFirst()
-                .orElseThrow();
-    }
-
-//    private static Long getMdmId(Response<?> personAccounts) {
-//
-//        return Long.valueOf(personAccounts
-//                .getHeaders()
-//                .entrySet()
-//                .stream()
-//                .filter(a -> a.getKey().equals("X-Mdm-Id"))
-//                .findFirst()
-//                .orElseThrow()
-//                .getValue()
-//                .get(0));
-//    }
     
 }

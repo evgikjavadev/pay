@@ -13,6 +13,9 @@ import java.util.Map;
 public class CommonResponseAccounts<R> {
     @JsonProperty("accounts")
     private Map<String, Account> accounts;
+//    @JsonProperty("accounts")
+//    private AccountMap accounts;
+
     @JsonProperty("deposites")
     private Deposites deposites;
     @JsonProperty("cards")

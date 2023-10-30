@@ -47,9 +47,22 @@ public class KafkaInternalConsumer {
 
         functionPD.startFunctionPD();
 
+        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", createMessageToTopicInternal());
+
         ack.acknowledge();
+
         log.info("Finish processing topic = {} partition = {}", topic, partition);
 
+    }
+
+    private InternalMessageModel createMessageToTopicInternal() {
+
+        return InternalMessageModel
+                .builder()
+                .functionName("function_result_reward")
+                .status(Statuses.COMPLETED.name())
+                .timeStamp(LocalDateTime.now())
+                .build();
     }
 
 }
