@@ -58,7 +58,6 @@ public class FunctionPDImpl implements FunctionPD {
         log.info("Finish function PD. ПД. Подготовка данных для выплаты вознаграждения участнику РФП");
     }
 
-    //@SneakyThrows
     private void handleMdmIdList(List<EntPaymentTask> entPaymentTaskList) {
 
         List<Long> setRewardIdList = entPaymentTaskList.stream().map(EntPaymentTask::getRewardId).distinct().collect(Collectors.toList());

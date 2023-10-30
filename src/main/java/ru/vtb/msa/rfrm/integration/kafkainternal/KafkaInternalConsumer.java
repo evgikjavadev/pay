@@ -45,11 +45,17 @@ public class KafkaInternalConsumer {
                                            @Header(KafkaHeaders.OFFSET) int offsets) {
         log.info("Start processing topic = {}, partition = {}, messages = {}", topic, partition, message);
 
-        functionPD.startFunctionPD();
+        try {
+            functionPD.startFunctionPD();
 
-        kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", createMessageToTopicInternal());
+            kafkaInternalProducer.sendObjectToInternalKafka("rfrm_pay_function_result_reward", createMessageToTopicInternal());
 
-        ack.acknowledge();
+            ack.acknowledge();
+
+        } catch (Exception e) {
+        ack.nack(0,100);
+            log.error(e.getMessage(), e.fillInStackTrace());
+        }
 
         log.info("Finish processing topic = {} partition = {}", topic, partition);
 

@@ -17,6 +17,8 @@ public interface EntPaymentTaskActions {
 
     void updateProcessedBPaymentTaskByRewardId(Long rewardId);
 
-    void updatePaymentTaskByRewardIdSetStatusAndBlocked(Long rewardId);
+    void updatePaymentTaskByRewardIdSetStatusAndBlocked(Long rewardId, Integer status);
+
+    void updatePaymentTaskByRewardIdSetBlockedZero(Long rewardId);
 
 }

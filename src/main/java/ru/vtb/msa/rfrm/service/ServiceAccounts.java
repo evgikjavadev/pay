@@ -48,7 +48,8 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
         } catch (HttpStatusException e) {
             HttpStatus status = e.getStatus();
-            handleResponseHttpStatuses(status, mdmIdFromKafka);
+            handleResponseHttpStatuses(status, rewardId);
+
         } catch (Exception ex ) {
             // если здесь - то ответ от прод профиля не валидный и соответственно счет не найден
             if (ex.getCause().toString().contains("JsonEOFException")) {
@@ -87,50 +88,54 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
     }
 
-    private void handleResponseHttpStatuses(HttpStatus status, Long mdmIdFromKafka) {
-
-        // найдем в табл. ent_payment_task rewardId по mdmId
-        List<EntPaymentTask> paymentTaskByMdmId = entPaymentTaskActions
-                .getPaymentTaskByMdmId(mdmIdFromKafka);
+    private void handleResponseHttpStatuses(HttpStatus status, Long rewardId) {
 
         if (status.value() == 404) {
 
-            for (EntPaymentTask elem: paymentTaskByMdmId) {
+            // Записать в БД для данного задания ent_payment_task.status=40 и blocked=0
+            entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(rewardId, DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus());
 
-                // формируем объект для табл. taskStatusHistory
-                EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
-                        .builder()
-                        .rewardId(elem.getRewardId())
-                        .statusDetailsCode(DctStatusDetails.CLIENT_NOT_FOUND_IN_MDM.getStatusDetailsCode())
-                        .taskStatus(DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus())
-                        .statusUpdatedAt(LocalDateTime.now())
-                        .build();
 
-                // обновляем табл. ent_payment_task
-                entPaymentTaskActions.updateStatusEntPaymentTaskByRewardId(elem.getRewardId(), DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus());
+            // создать новую запись в таблице ent_task_status_history с ent_task_status_history.status_details_code=101
+            EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
+                    .builder()
+                    .rewardId(rewardId)
+                    .statusDetailsCode(DctStatusDetails.CLIENT_NOT_FOUND_IN_MDM.getStatusDetailsCode())
+                    .taskStatus(DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus())
+                    .statusUpdatedAt(LocalDateTime.now())
+                    .build();
 
-                // создать новую запись в таблице taskStatusHistory с taskStatusHistory.status_details_code=101
-                entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
-
-            }
-
-            // отправить сообщение об ошибке, требующей ручного разбора, в мониторинг
-            //todo  отправить сообщение об ошибке, требующей ручного разбора, в мониторинг
+            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
 
         }
 
-        if (status.value() == 400 || status.value() == 500) {
+        if (status.value() == 400) {
 
-            List<Long> rewardIdList = new ArrayList<>();
+            // Записать в БД для данного задания ent_payment_task.status=40 и blocked=0
+            entPaymentTaskActions.updatePaymentTaskByRewardIdSetStatusAndBlocked(rewardId, DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus());
 
-            for (EntPaymentTask elem: paymentTaskByMdmId) {
-                rewardIdList.add(elem.getRewardId());
-            }
+            // создать новую запись в таблице ent_task_status_history с status=40 ent_task_status_history.status_details_code=103
+            EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
+                    .builder()
+                    .rewardId(rewardId)
+                    .statusDetailsCode(DctStatusDetails.NOT_CORRECT_REQUEST.getStatusDetailsCode())
+                    .taskStatus(DctTaskStatuses.STATUS_MANUAL_PROCESSING.getStatus())
+                    .statusUpdatedAt(LocalDateTime.now())
+                    .build();
+
+            entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+        }
+
+        if (status.value() == 500) {
 
             // присвоить заданию blocked=0
-            //entPaymentTaskRepository.updateBlockedByRewardId(0, Timestamp.valueOf(LocalDateTime.now()), rewardIdList);   //todo
+            // Процесс обработки задания завершается и переходит к следующему заданию списка,
+            // текущее задание остается в том же статусе и будет взято в работу заново при следующем запуске процесса обработки
+            entPaymentTaskActions.updatePaymentTaskByRewardIdSetBlockedZero(rewardId);
 
         }
+
 
     }
 
@@ -158,7 +163,7 @@ public class ServiceAccounts implements ServiceAccountsInterface {
             assert result != null;
             if (result.equalsIgnoreCase("ok")) {
                 // Записать в БД для данного задания paymentTask.status=30 и blocked=0
-                entPaymentTaskActions.updatePaymentTaskByRewardIdSetStatusAndBlocked(rewardId);
+                entPaymentTaskActions.updatePaymentTaskByRewardIdSetStatusAndBlocked(rewardId, DctTaskStatuses.STATUS_REJECTED.getStatus());
 
                 // соберем объект для табл status history
                 EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
