@@ -1,5 +1,6 @@
 package ru.vtb.msa.rfrm.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import ru.vtb.msa.rfrm.integration.kafkainternal.KafkaInternalProducer;
 import ru.vtb.msa.rfrm.integration.kafkainternal.model.InternalMessageModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.model.PayCoreKafkaModel;
 import ru.vtb.msa.rfrm.integration.rfrmkafka.processing.KafkaResultRewardProducer;
+import ru.vtb.msa.rfrm.integration.util.ErrorCounter;
 import ru.vtb.msa.rfrm.processingDatabase.EntTaskStatusHistoryActions;
 import ru.vtb.msa.rfrm.processingDatabase.EntPaymentTaskActions;
 import ru.vtb.msa.rfrm.processingDatabase.batch.ActionEntPaymentTaskRepo;
@@ -21,6 +23,7 @@ import ru.vtb.msa.rfrm.integration.personaccounts.client.model.response.Response
 import ru.vtb.msa.rfrm.integration.personaccounts.client.PersonClientAccounts;
 import ru.vtb.msa.rfrm.integration.personaccounts.client.model.request.AccountInfoRequest;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -33,6 +36,15 @@ public class ServiceAccounts implements ServiceAccountsInterface {
     private final EntTaskStatusHistoryActions entTaskStatusHistoryActions;
     private final ProcessClientAccounts processClientAccounts;
     private final KafkaResultRewardProducer kafkaResultRewardProducer;
+    private ErrorCounter errorCounter;
+    private MeterRegistry registry;
+    @PostConstruct
+    private void init() {
+        // или rfrm_ppfl_integration_error_count_total
+        this.errorCounter = new ErrorCounter("rfrm_activeproducts_integration_error_count_total",
+                "Количество ошибок при получении счетов клиента из \"Продуктовый профиль\"", "status",
+                registry, getClass().getSimpleName(), "POST");
+    }
 
     @Override
     public void getClientAccounts(Long mdmIdFromKafka, Long rewardId) {
@@ -44,13 +56,21 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
             if (!account.getBody().getAccounts().isEmpty()) {
                 getAndPassParameters(account, mdmIdFromKafka, rewardId);
+            } else {
+                handleNegativeResponse(rewardId);
             }
 
         } catch (HttpStatusException e) {
+
+            errorCounter.increment(e.getStatus().toString());
+
             HttpStatus status = e.getStatus();
             handleResponseHttpStatuses(status, rewardId);
 
         } catch (Exception ex ) {
+
+            errorCounter.increment(ex.toString());
+
             // если здесь - то ответ от прод профиля не валидный и соответственно счет не найден
             if (ex.getCause().toString().contains("JsonEOFException")) {
 
@@ -136,7 +156,6 @@ public class ServiceAccounts implements ServiceAccountsInterface {
 
         }
 
-
     }
 
     private void getAndPassParameters(Response<?> personAccounts, Long mdmId, Long rewardId) {
@@ -162,36 +181,40 @@ public class ServiceAccounts implements ServiceAccountsInterface {
             log.info("MASTER_ACCOUNT with RUB is not found!");
             assert result != null;
             if (result.equalsIgnoreCase("ok")) {
-                // Записать в БД для данного задания paymentTask.status=30 и blocked=0
-                entPaymentTaskActions.updatePaymentTaskByRewardIdSetStatusAndBlocked(rewardId, DctTaskStatuses.STATUS_REJECTED.getStatus());
-
-                // соберем объект для табл status history
-                EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
-                        .builder()
-                        .rewardId(rewardId)
-                        .statusDetailsCode(DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode())
-                        .taskStatus(DctTaskStatuses.STATUS_REJECTED.getStatus())
-                        .statusUpdatedAt(LocalDateTime.now())
-                        .build();
-
-                // создать новую запись в таблице ent_task_status_history с ent_task_status_history.status_details=201
-                entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
-
-                // соберем объект для записи в топик
-                PayCoreKafkaModel payCoreKafkaModel = PayCoreKafkaModel
-                        .builder()
-                        .rewardId(rewardId)
-                        .status(DctTaskStatuses.STATUS_REJECTED.getStatus())
-                        .statusDescription(DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getDescription())
-                        .build();
-
-                // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201
-                kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
+                handleNegativeResponse(rewardId);
 
             }
         }
 
         log.info("Finish process handle personAccounts: {}, mdmId: {}, rewardId: {}", personAccounts, mdmId, rewardId);
+    }
+
+    private void handleNegativeResponse(Long rewardId) {
+        // Записать в БД для данного задания paymentTask.status=30 и blocked=0
+        entPaymentTaskActions.updatePaymentTaskByRewardIdSetStatusAndBlocked(rewardId, DctTaskStatuses.STATUS_REJECTED.getStatus());
+
+        // соберем объект для табл status history
+        EntTaskStatusHistory entTaskStatusHistory = EntTaskStatusHistory
+                .builder()
+                .rewardId(rewardId)
+                .statusDetailsCode(DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getStatusDetailsCode())
+                .taskStatus(DctTaskStatuses.STATUS_REJECTED.getStatus())
+                .statusUpdatedAt(LocalDateTime.now())
+                .build();
+
+        // создать новую запись в таблице ent_task_status_history с ent_task_status_history.status_details=201
+        entTaskStatusHistoryActions.insertEntTaskStatusHistoryInDb(entTaskStatusHistory);
+
+        // соберем объект для записи в топик
+        PayCoreKafkaModel payCoreKafkaModel = PayCoreKafkaModel
+                .builder()
+                .rewardId(rewardId)
+                .status(DctTaskStatuses.STATUS_REJECTED.getStatus())
+                .statusDescription(DctStatusDetails.MASTER_ACCOUNT_NOT_FOUND.getDescription())
+                .build();
+
+        // Записать в топик rfrm_pay_result_reward сообщение, содержащее id задания и status=30, status_details_code=201
+        kafkaResultRewardProducer.sendToResultReward(payCoreKafkaModel);
     }
 
     private AccountInfoRequest sendRequestListAccounts(List<String> str) {

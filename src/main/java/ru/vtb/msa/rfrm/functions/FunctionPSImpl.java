@@ -95,7 +95,7 @@ public class FunctionPSImpl implements FunctionPS {
         // status_description = Если ent_payment_task.status = 30, то привести к строке (SELECT description FROM dct_status_details WHERE status_details_code = 203),
         // иначе - поле не отправлять
         if (status.equals(DctTaskStatuses.STATUS_REJECTED.getStatus())) {
-            String description = DctStatusDetails.ERR_REQUIREMENTS.getDescription();
+            String description = DctStatusDetails.MASTER_ACCOUNT_ARRESTED.getDescription();
             return PayCoreKafkaModel
                     .builder()
                     .rewardId(rewardId)

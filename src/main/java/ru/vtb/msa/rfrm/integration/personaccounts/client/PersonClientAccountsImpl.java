@@ -27,8 +27,9 @@ public class PersonClientAccountsImpl extends WebClientBase implements PersonCli
 
     @PostConstruct
     private void init() {
-        this.errorCounter = new ErrorCounter("rfrm_ppfl_integration_error_count_total",
-                "Количество неудачных запросов к ИС 1503 Продуктовый профиль", "status",
+        // или rfrm_ppfl_integration_error_count_total
+        this.errorCounter = new ErrorCounter("rfrm_activeproducts_integration_error_count_total",
+                "Количество ошибок при получении счетов клиента из \"Продуктовый профиль\"", "status",
                 registry, getClass().getSimpleName(), "POST");
     }
 

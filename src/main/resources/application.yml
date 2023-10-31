@@ -148,11 +148,11 @@ pay:
       enabled: true
       truststore:
         # для запуска из idea
-        location: ${PATH_TRUSTSTORE_PAY:etc/certificate/truststore.jks}
+        location: ${PATH_TRUSTSTORE_PAY}
         password: ${STORE_PASSWORD_PAY}
       keystore:
         # для запуска из idea
-        location: ${PATH_KEYSTORE_PAY:etc/certificate/keystore.jks}
+        location: ${PATH_KEYSTORE_PAY}
         password: ${STORE_PASSWORD_PAY}
       key:
         password: ${STORE_PASSWORD_PAY}
